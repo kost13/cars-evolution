@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
 
-
 project(CarsEvolution LANGUAGES CXX)
 
 option(BUILD_TESTS "Build the CarsEvolution unit tests" ON)
