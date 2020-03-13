@@ -16,7 +16,7 @@ git submodule update --init
 ### budowanie 
 ```
 mkdir build && cd build
-cmake <PATH_TO_SOURCE_CODE> <FLAGS>
+cmake <FLAGI> <SCIEZKA_DO_KODU> 
 ```
 
 flagi:
@@ -35,3 +35,10 @@ instalacja
 ```
 cmake build --install
 ```
+
+## Zarzadzanie kodem
+Kod źródłowy jest formatowany za pomocą clang-format. \
+Jakość kodu jest sprawdzana za pomocą clang-tidy:
+*cppcoreguidelines, boost, google, misc, modernize, performance, readability*. \
+Opis: https://clang.llvm.org/extra/clang-tidy/#using-clang-tidy
+
