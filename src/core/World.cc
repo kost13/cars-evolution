@@ -1,5 +1,5 @@
 #include "World.h"
 
-physics::World::World() : vec_{} {}
+physics::World::World() : vec_{3, 4} {}
 
-int physics::World::posY() { return 1; }
+float physics::World::vecNorm() const { return vec_.Length(); }

@@ -68,7 +68,6 @@ ApplicationWindow {
         console.log(pos)
         if(pos[0] !== -1){
             car.y = pos[1]
-            car_rotation.origin.y = car.verticalCenter
             car_rotation.angle = pos[2]
 
         }
