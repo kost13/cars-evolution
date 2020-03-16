@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "core/CarsEvolutionRoot.h"
+#include "CarsEvolutionCore/CarsEvolutionRoot.h"
 
 #include "AppInterface.h"
 #include "Worker.h"
@@ -24,10 +24,12 @@ int main(int argc, char *argv[]) {
   const QUrl url(QStringLiteral("qrc:/gui/main.qml"));
   QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app,
                    [url](QObject *obj, const QUrl &objUrl) {
-                     if (!obj && url == objUrl) QCoreApplication::exit(-1);
+                     if ((obj == nullptr) && url == objUrl) {
+                       QCoreApplication::exit(-1);
+                     }
                    },
                    Qt::QueuedConnection);
   engine.load(url);
 
-  return app.exec();
+  return QGuiApplication::exec();
 }

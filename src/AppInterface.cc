@@ -1,7 +1,8 @@
 #include "AppInterface.h"
 
+#include "CarsEvolutionCore/CarsEvolutionRoot.h"
+
 #include "Worker.h"
-#include "core/CarsEvolutionRoot.h"
 
 AppInterface::AppInterface(CarsEvolutionRoot *root, concurrent::Worker *worker)
     : root_(root), worker_(worker) {}

@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE sample_test test
 #include <boost/test/unit_test.hpp>
 #include <vector>
-#include "core/World.h"
+#include "CarsEvolutionCore/World.h"
 
 BOOST_AUTO_TEST_CASE(sample_test) {
   std::vector<int> v = {1, 2, 3, 4, 5};
