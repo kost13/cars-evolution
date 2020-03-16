@@ -6,20 +6,20 @@
 
 class CarsEvolutionRoot;
 
-namespace concurrent {
+namespace cpputils {
 class Worker;
 }
 
 class AppInterface : public QObject {
   Q_OBJECT
  public:
-  AppInterface(CarsEvolutionRoot *root, concurrent::Worker *worker);
+  AppInterface(CarsEvolutionRoot *root, cpputils::Worker *worker);
   Q_INVOKABLE void startSimulation();
   Q_INVOKABLE QVariantList getPosition();
 
  private:
   CarsEvolutionRoot *root_;
-  concurrent::Worker *worker_;
+  cpputils::Worker *worker_;
 };
 
 #endif  // APPINTERFACE_H

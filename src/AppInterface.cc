@@ -1,10 +1,9 @@
 #include "AppInterface.h"
 
 #include "CarsEvolutionCore/CarsEvolutionRoot.h"
+#include "cpputils/worker.h"
 
-#include "Worker.h"
-
-AppInterface::AppInterface(CarsEvolutionRoot *root, concurrent::Worker *worker)
+AppInterface::AppInterface(CarsEvolutionRoot *root, cpputils::Worker *worker)
     : root_(root), worker_(worker) {}
 
 void AppInterface::startSimulation() {

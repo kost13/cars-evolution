@@ -4,8 +4,9 @@
 
 #include "CarsEvolutionCore/CarsEvolutionRoot.h"
 
+#include "cpputils/worker.h"
+
 #include "AppInterface.h"
-#include "Worker.h"
 
 int main(int argc, char *argv[]) {
   QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -13,7 +14,7 @@ int main(int argc, char *argv[]) {
 
   CarsEvolutionRoot root;
 
-  concurrent::Worker worker;
+  cpputils::Worker worker;
   worker.start();
 
   AppInterface interface(&root, &worker);

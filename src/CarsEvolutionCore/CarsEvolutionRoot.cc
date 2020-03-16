@@ -3,15 +3,18 @@
 #include <mutex>
 #include <queue>
 
+#include "cpputils/logger.hpp"
+
 // temp
 #include <chrono>
-#include <iostream>
 #include <thread>
 
 #include "World.h"
 
+namespace logger = cpputils::log;
+
 struct CarsEvolutionRoot::Opaque {
-  Opaque(CarsEvolutionRoot *parent) : p_(parent) {}
+  explicit Opaque(CarsEvolutionRoot *parent) : p_(parent) {}
 
   physics::World world_;
   std::queue<Position> positions_;
@@ -21,12 +24,12 @@ struct CarsEvolutionRoot::Opaque {
 
 CarsEvolutionRoot::CarsEvolutionRoot() : o_(std::make_unique<Opaque>(this)) {}
 
-CarsEvolutionRoot::~CarsEvolutionRoot() {}
+CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
 void CarsEvolutionRoot::runSimulation() {
   for (int i = 0; i < 100; ++i) {
     // simulate computations
-    std::cout << "runSimulation" << i << std::endl;
+    logger::info() << "runSimulation" << i;
 
     std::this_thread::sleep_for(std::chrono::milliseconds{40});
     {
@@ -38,11 +41,11 @@ void CarsEvolutionRoot::runSimulation() {
 
 Position CarsEvolutionRoot::getPosition() {
   std::lock_guard<std::mutex> lock(o_->queue_mutex_);
-  std::cout << "size: " << o_->positions_.size() << std::endl;
+  logger::info() << "size: " << o_->positions_.size();
   if (o_->positions_.empty()) {
     return {-1, -1, {}};
   }
-  auto position = std::move(o_->positions_.front());
+  auto position = o_->positions_.front();
   o_->positions_.pop();
   return position;
 }

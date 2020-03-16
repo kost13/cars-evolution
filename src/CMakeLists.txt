@@ -9,7 +9,6 @@ endif()
 
 set(SRC
     main.cc
-    Worker.cc
     AppInterface.cc
 )
 
@@ -21,7 +20,7 @@ add_subdirectory(CarsEvolutionCore)
 
 add_executable(${PROJECT_NAME} ${SRC} ${RESOURCES})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC CarsEvolutionCore)
+target_link_libraries(${PROJECT_NAME} PRIVATE CarsEvolutionCore CppUtils)
 
 if(BUILD_GUI)
 	target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Core Qt5::Quick)

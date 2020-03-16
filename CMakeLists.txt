@@ -9,8 +9,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 14)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -pthread")
 
-add_subdirectory(src)
+add_subdirectory(CppUtils)
 add_subdirectory(box2d/src)
+add_subdirectory(src)
 
 if(BUILD_TESTS)
     add_subdirectory(tests)
