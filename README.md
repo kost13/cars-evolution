@@ -6,6 +6,10 @@
 - Boost 1.65
 - Windows: MSVC 14 (Microsoft Visual Studio Express for Dekstop 2015)
 
+For development
+- clang-format
+- clang-tidy
+
 ### Linux dependencies installation
 For Ubuntu 18.04 LTS
 ```
