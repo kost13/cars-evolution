@@ -49,6 +49,7 @@ cmake <FLAGI> ..
 flagi:
 - BUILD_TESTS
 - BUILD_GUI
+
 np.
 ```
 cmake -DBUILD_GUI=OFF ..
@@ -73,3 +74,8 @@ Jakość kodu jest sprawdzana za pomocą clang-tidy:
 *cppcoreguidelines, boost, google, misc, modernize, performance, readability*. \
 Opis: https://clang.llvm.org/extra/clang-tidy/#using-clang-tidy
 
+## Code style
+Consistent with https://google.github.io/styleguide/cppguide.html
+exceptions:
+- methods and functions start with lowercase
+- files names - upper camel case
