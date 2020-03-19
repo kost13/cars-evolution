@@ -3,4 +3,4 @@
 	url = https://github.com/erincatto/box2d
 [submodule "CppUtils"]
 	path = CppUtils
-	url = git@github.com:kost13/cpp-utils.git
+	url = https://github.com/kost13/cpp-utils
