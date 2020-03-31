@@ -8,69 +8,108 @@ ApplicationWindow {
     height: 480
     title: qsTr("Ewolucja Pojazdow")
 
-    Rectangle {
-        anchors.fill: parent
+    property var car_objects: []
 
-        Button {
-            anchors.left: parent.left
-            anchors.top: parent.top
-            id: run
-            width: 100
-            height: 50
-            onClicked:{
-                AppInterface.startSimulation()          
-            }
-            Text { text: "Simulate" }
+    SimulationWindow {
+        id: simulation_window
+        anchors {
+            right: parent.right
+            top: parent.top
+            topMargin: 5
+            rightMargin: 5
+        }
+    }
+
+    Column {
+        anchors {
+            top: parent.top
+            left: parent.left
+            topMargin: 5
+            leftMargin: 5
         }
 
+        spacing: 10
+
         Button {
-            anchors.left: parent.left
-            anchors.top: run.bottom
+            id: run_button
+            width: 100
+            height: 50
+            Text {
+                text: "Simulate"
+                font.pointSize: 24
+                anchors.centerIn: parent
+            }
+            onClicked: AppInterface.startSimulation()
+        }
+        Button {
             id: simulation_button
             width: 100
             height: 50
-            onClicked:{
-                timer_.restart()
+            Text {
+                text: "Fall"
+                font.pointSize: 24
+                anchors.centerIn: parent
             }
-            Text { text: "Fall" }
+            onClicked: timer_.restart()
         }
         Button {
-            anchors.left: parent.left
-            anchors.top: simulation_button.bottom
-            id: stop
+            id: stop_button
             width: 100
             height: 50
-            onClicked:{
-                timer_.stop()
+            Text {
+                text: "Stop"
+                font.pointSize: 24
+                anchors.centerIn: parent
             }
-            Text { text: "Stop" }
+            onClicked: timer_.stop()
+        }
+        Button {
+            id: populate_button
+            width: 100
+            height: 50
+            Text {
+                text: "Populate"
+                font.pointSize: 24
+                anchors.centerIn: parent
+            }
+            onClicked: loadCars()
         }
 
-        Timer {
-            id: timer_
-             interval: 50
-             running: false
-             repeat: true
-             onTriggered: updateCarPosition()
-         }
-
-        Car {
-            id:car
-            x: parent.width/2 - width/2
-            y: 100
-            antialiasing: true
-            transform: Rotation { id: car_rotation; origin.x: car.horizontalCenter; origin.y: car.verticalCenter; angle: 0}
-        }
     }
+
+
+    Timer {
+        id: timer_
+         interval: 50
+         running: false
+         repeat: true
+         onTriggered: updateCarPosition()
+     }
 
     function updateCarPosition() {
-        var pos = AppInterface.getPosition()
-        console.log(pos)
-        if(pos[0] !== -1){
-            car.y = pos[1]
-            car_rotation.angle = pos[2]
-
+        for(var i=0; i<car_objects.length; i++){
+            var pos = AppInterface.getPosition(i)
+            if(pos[0] !== -1){
+                car_objects[i].move(pos)
+            }
         }
     }
 
+    function clearCars(){
+        for(var i=0; i<car_objects.length; i++){
+            car_objects[i].destroy()
+        }
+        car_objects = []
+    }
+
+    function loadCars(){
+        clearCars()
+        var cars = AppInterface.getCars()
+        var car_component = Qt.createComponent("Car.qml");
+        for(var i=0; i<cars.length; i++){
+            var car = car_component.createObject(simulation_window);
+            car.initialize(cars[i])
+            car_objects.push(car)
+        }
+    }
 }

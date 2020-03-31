@@ -2,6 +2,7 @@
 #define APPINTERFACE_H
 
 #include <cpputils/worker.h>
+
 #include <QObject>
 #include <QVariant>
 
@@ -12,7 +13,8 @@ class AppInterface : public QObject {
  public:
   AppInterface(CarsEvolutionRoot *root);
   Q_INVOKABLE void startSimulation();
-  Q_INVOKABLE QVariantList getPosition();
+  Q_INVOKABLE QVariantList getPosition(int car_num);
+  Q_INVOKABLE QVariantList getCars();
 
  private:
   CarsEvolutionRoot *root_;

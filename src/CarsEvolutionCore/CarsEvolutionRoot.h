@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "CarStructure.h"
+
 struct Position {
   Position(float xx, float yy, float thetaa) : x(xx), y(yy), theta(thetaa) {}
   float x, y, theta;
@@ -22,7 +24,9 @@ class CarsEvolutionRoot {
   ~CarsEvolutionRoot();
 
   void runSimulation();
-  Position getPosition();
+  Position getPosition(int car_num);
+
+  std::vector<Car::Parameters> getCars() const;
 
  private:
   struct Opaque;
