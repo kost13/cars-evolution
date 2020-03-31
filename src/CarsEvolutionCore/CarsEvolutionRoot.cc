@@ -34,7 +34,7 @@ void CarsEvolutionRoot::runSimulation() {
     std::this_thread::sleep_for(std::chrono::milliseconds{40});
     {
       std::lock_guard<std::mutex> lock(o_->queue_mutex_);
-      o_->positions_.push(Position(0.0f, 2.5f * i, 0.2f * i));
+      o_->positions_.emplace(0.0f, 2.5f * i, 0.2f * i);
     }
   }
 }

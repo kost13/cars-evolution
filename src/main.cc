@@ -4,8 +4,6 @@
 
 #include "CarsEvolutionCore/CarsEvolutionRoot.h"
 
-#include "cpputils/worker.h"
-
 #include "AppInterface.h"
 
 int main(int argc, char *argv[]) {
@@ -14,10 +12,7 @@ int main(int argc, char *argv[]) {
 
   CarsEvolutionRoot root;
 
-  cpputils::Worker worker;
-  worker.start();
-
-  AppInterface interface(&root, &worker);
+  AppInterface interface(&root);
 
   QQmlApplicationEngine engine;
   engine.rootContext()->setContextProperty("AppInterface", &interface);

@@ -1,25 +1,22 @@
 #ifndef APPINTERFACE_H
 #define APPINTERFACE_H
 
+#include <cpputils/worker.h>
 #include <QObject>
 #include <QVariant>
 
 class CarsEvolutionRoot;
 
-namespace cpputils {
-class Worker;
-}
-
 class AppInterface : public QObject {
   Q_OBJECT
  public:
-  AppInterface(CarsEvolutionRoot *root, cpputils::Worker *worker);
+  AppInterface(CarsEvolutionRoot *root);
   Q_INVOKABLE void startSimulation();
   Q_INVOKABLE QVariantList getPosition();
 
  private:
   CarsEvolutionRoot *root_;
-  cpputils::Worker *worker_;
+  cpputils::Worker worker_;
 };
 
 #endif  // APPINTERFACE_H
