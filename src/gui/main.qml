@@ -1,7 +1,8 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-//import QtQuick.Controls.Material 2.2
+import QtCharts 2.2
+import QtQuick.Controls.Material 2.2
 
 
 ApplicationWindow {
@@ -20,7 +21,6 @@ ApplicationWindow {
 //                color: "yellow"
 //            }
 
-
         RowLayout {
             anchors.fill: parent
 
@@ -35,24 +35,76 @@ ApplicationWindow {
         id: footer_
     }
 
-
-    RowLayout {
+    ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10
-        spacing: 10
 
-        MainMenu {
-            id: main_menu
-            anchors.top: parent.top
+        RowLayout {
+            id: row_layout
+            anchors.fill: parent
+//            anchors.margins:
+            spacing: 10
+
+            Layout.fillWidth: true;
+
+            MainMenu {
+                id: main_menu
+                anchors.top: parent.top
+            }
+
+            SimulationWindow {
+                id: simulation_window
+
+                Layout.fillWidth: true
+                Layout.preferredHeight: 500
+
+                anchors.top: parent.top
+            }
         }
 
-        SimulationWindow {
-            id: simulation_window
-
+        //![1]
+        ChartView {
+            id: chartView
+            title: "Cars position"
+            legend.visible: false
+            antialiasing: true
             Layout.fillWidth: true
-            Layout.preferredHeight: 500
+            Layout.fillHeight: true
 
-            anchors.top: parent.top
+            ValueAxis {
+                id: axisX
+                titleText: "X"
+            }
+
+            ValueAxis {
+                id: axisY
+                titleText: "Y"
+            }
+
+            LineSeries {
+                id: s1
+                axisX: axisX
+                axisY: axisY
+            }
+
+            LineSeries {
+                id: s2
+                axisX: axisX
+                axisY: axisY
+            }
+
+            function updateChart(i, x, y){
+                console.log(i, x, y)
+                if(i === 0){
+                    s1.append(x,y)
+                    chartView.axisX(s1).max = x;
+                    chartView.axisY(s1).max = y;
+                } else if(i === 1){
+                    s2.append(x,y)
+                    chartView.axisX(s2).max = x;
+                    chartView.axisY(s2).max = y;
+                }
+            }
         }
     }
 

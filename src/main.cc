@@ -1,4 +1,4 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
@@ -9,7 +9,7 @@
 #include "AppInterface.h"
 
 int main(int argc, char *argv[]) {
-  QGuiApplication app(argc, argv);
+  QApplication app(argc, argv);
 
   CarsEvolutionRoot root;
 
@@ -30,12 +30,5 @@ int main(int argc, char *argv[]) {
                    Qt::QueuedConnection);
   engine.load(url);
 
-  //  QQuickView view;
-  //  view.engine()->rootContext()->setContextProperty("AppInterface",
-  //  &interface);
-  //  view.setSource(QUrl("qrc:/gui/main.qml"));
-  //  view.setResizeMode(QQuickView::SizeRootObjectToView);
-  //  view.show();
-
-  return QGuiApplication::exec();
+  return QApplication::exec();
 }

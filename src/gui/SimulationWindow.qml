@@ -13,6 +13,7 @@ Rectangle {
             var pos = AppInterface.getPosition(i)
             if(pos[0] !== -1){
                 car_objects[i].move(pos)
+                chartView.updateChart(i, pos[0], pos[1])
             }
         }
     }
