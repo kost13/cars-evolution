@@ -1,8 +1,13 @@
 <RCC>
     <qresource prefix="/">
-        <file>gui/main.qml</file>
         <file>gui/qtquickcontrols2.conf</file>
+        <file>gui/main.qml</file>
         <file>gui/Car.qml</file>
         <file>gui/SimulationWindow.qml</file>
+        <file>gui/MainMenu.qml</file>
+        <file>gui/Footer.qml</file>
+        <file>gui/img/icon_loading.png</file>
     </qresource>
+    <!--<qresource prefix="img">
+    </qresource>-->
 </RCC>

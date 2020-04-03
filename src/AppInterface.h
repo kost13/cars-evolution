@@ -16,6 +16,9 @@ class AppInterface : public QObject {
   Q_INVOKABLE QVariantList getPosition(int car_num);
   Q_INVOKABLE QVariantList getCars();
 
+ signals:
+  void simulationEnded();
+
  private:
   CarsEvolutionRoot *root_;
   cpputils::Worker worker_;

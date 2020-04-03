@@ -2,12 +2,13 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
+#include <QQuickStyle>
+
 #include "CarsEvolutionCore/CarsEvolutionRoot.h"
 
 #include "AppInterface.h"
 
 int main(int argc, char *argv[]) {
-  QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QGuiApplication app(argc, argv);
 
   CarsEvolutionRoot root;
@@ -16,6 +17,8 @@ int main(int argc, char *argv[]) {
 
   QQmlApplicationEngine engine;
   engine.rootContext()->setContextProperty("AppInterface", &interface);
+
+  QQuickStyle::setStyle("Material");
 
   const QUrl url(QStringLiteral("qrc:/gui/main.qml"));
   QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app,
@@ -26,6 +29,13 @@ int main(int argc, char *argv[]) {
                    },
                    Qt::QueuedConnection);
   engine.load(url);
+
+  //  QQuickView view;
+  //  view.engine()->rootContext()->setContextProperty("AppInterface",
+  //  &interface);
+  //  view.setSource(QUrl("qrc:/gui/main.qml"));
+  //  view.setResizeMode(QQuickView::SizeRootObjectToView);
+  //  view.show();
 
   return QGuiApplication::exec();
 }

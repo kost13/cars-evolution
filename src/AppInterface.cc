@@ -3,12 +3,19 @@
 #include "CarsEvolutionCore/CarsEvolutionRoot.h"
 #include "cpputils/worker.h"
 
+#include <QDebug>
+
 AppInterface::AppInterface(CarsEvolutionRoot *root) : root_(root) {
   worker_.start();
 }
 
 void AppInterface::startSimulation() {
-  worker_.async([r = root_] { r->runSimulation(); });
+  worker_.async([=] {
+    root_->runSimulation();
+    if (worker_.empty()) {
+      emit simulationEnded();
+    }
+  });
 }
 
 QVariantList AppInterface::getPosition(int car_num) {

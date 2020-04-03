@@ -1,9 +1,37 @@
-import QtQuick 2.0
+import QtQuick 2.9
 
 Rectangle {
-    width: 500
-    height: 400
-    border.color: "black"
-    border.width: 5
 
+    property var car_objects: []
+
+    color: "#d3ecf6"
+    border.color: "#000000"
+    border.width: 2
+
+    function updateCarPosition() {
+        for(var i=0; i<car_objects.length; i++){
+            var pos = AppInterface.getPosition(i)
+            if(pos[0] !== -1){
+                car_objects[i].move(pos)
+            }
+        }
+    }
+
+    function clearCars(){
+        for(var i=0; i<car_objects.length; i++){
+            car_objects[i].destroy()
+        }
+        car_objects = []
+    }
+
+    function loadCars(){
+        clearCars()
+        var cars = AppInterface.getCars()
+        var car_component = Qt.createComponent("Car.qml");
+        for(var i=0; i<cars.length; i++){
+            var car = car_component.createObject(simulation_window);
+            car.initialize(cars[i])
+            car_objects.push(car)
+        }
+    }
 }
