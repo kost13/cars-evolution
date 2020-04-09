@@ -7,47 +7,46 @@ Item {
         anchors.fill: parent
         color: "#3f51b5"
 
-            Text {
-                id: computations_text
-                text: "Running computations"
-                color: "white"
-                font.pixelSize: 16
-                anchors {
-                    left: parent.left
-                    bottom: parent.bottom
-                    bottomMargin: 5
-                    leftMargin: 5
-                }
-                visible: false
+        Text {
+            id: computationsText
+            text: "Running computations"
+            color: "white"
+            font.pixelSize: 16
+            anchors {
+                left: parent.left
+                bottom: parent.bottom
+                bottomMargin: 5
+                leftMargin: 5
+            }
+            visible: false
+        }
+
+        Image {
+            id: loadingIcon
+            height: parent.height*0.7
+            width: parent.height*0.7
+            fillMode: Image.PreserveAspectFit
+            source: "img/icon_loading.png"
+            anchors {
+                left: computationsText.right
+                leftMargin: 5
+                bottom: parent.bottom
+                bottomMargin: 5
+
             }
 
-            Image {
-                id: loading_icon
-                height: parent.height*0.7
-                width: parent.height*0.7
-                fillMode: Image.PreserveAspectFit
-                source: "img/icon_loading.png"
-                anchors {
-                    left: computations_text.right
-                    leftMargin: 5
-                    bottom: parent.bottom
-                    bottomMargin: 5
+            RotationAnimator {
+               id: loadingAnimation
+               target: loadingIcon;
+               from: 0;
+               to: 360;
+               duration: 1000
+               running: false
+               loops: Animation.Infinite
+           }
 
-                }
-
-                RotationAnimator {
-                       id: loading_animation
-                       target: loading_icon;
-                       from: 0;
-                       to: 360;
-                       duration: 1000
-                       running: false
-                       loops: Animation.Infinite
-                   }
-
-                visible: false
-            }
-
+           visible: false
+        }
     }
 
     Connections {
@@ -55,18 +54,20 @@ Item {
         onSimulationEnded: {
             computationsOff()
         }
+        onSimulationStarted: {
+            computationsOn()
+        }
     }
 
     function computationsOn(){
-        computations_text.visible = true
-        loading_icon.visible = true
-        loading_animation.start()
+        computationsText.visible = true
+        loadingIcon.visible = true
+        loadingAnimation.start()
     }
 
     function computationsOff(){
-        computations_text.visible = false
-        loading_icon.visible = false
-        loading_animation.stop()
-
+        computationsText.visible = false
+        loadingIcon.visible = false
+        loadingAnimation.stop()
     }
 }

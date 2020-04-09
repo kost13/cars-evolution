@@ -7,6 +7,7 @@
 #include "CarsEvolutionCore/CarsEvolutionRoot.h"
 
 #include "AppInterface.h"
+#include "FileIO.h"
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
@@ -16,6 +17,7 @@ int main(int argc, char *argv[]) {
   AppInterface interface(&root);
 
   QQmlApplicationEngine engine;
+  qmlRegisterType<FileIO>("carsevolution", 1, 0, "FileIO");
   engine.rootContext()->setContextProperty("AppInterface", &interface);
 
   QQuickStyle::setStyle("Material");

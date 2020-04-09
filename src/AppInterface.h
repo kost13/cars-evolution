@@ -18,6 +18,7 @@ class AppInterface : public QObject {
 
  signals:
   void simulationEnded();
+  void simulationStarted();
 
  private:
   CarsEvolutionRoot *root_;

@@ -10,6 +10,7 @@ AppInterface::AppInterface(CarsEvolutionRoot *root) : root_(root) {
 }
 
 void AppInterface::startSimulation() {
+  emit simulationStarted();
   worker_.async([=] {
     root_->runSimulation();
     if (worker_.empty()) {

@@ -7,7 +7,11 @@
         <file>gui/MainMenu.qml</file>
         <file>gui/Footer.qml</file>
         <file>gui/img/icon_loading.png</file>
+        <file>gui/ToolbarButton.qml</file>
+        <file>gui/HeaderToolbar.qml</file>
+        <file>gui/SimulationPage.qml</file>
+        <file>gui/SettingsPage.qml</file>
+        <file>gui/AlgorithmPage.qml</file>
+        <file alias="docs/algorithm_overview.html">../docs/algorithm_overview.html</file>
     </qresource>
-    <!--<qresource prefix="img">
-    </qresource>-->
 </RCC>

@@ -22,8 +22,7 @@ Item {
             }
 
             onClicked: {
-                AppInterface.startSimulation()
-                footer_.computationsOn()
+                AppInterface.startSimulation()                
             }
         }
 
@@ -38,7 +37,7 @@ Item {
             }
             onClicked: {
                 simulation_window.loadCars()
-                timer_.restart()
+                simulationTimer.restart()
                 simulation_button.enabled = false
             }
         }
@@ -53,7 +52,7 @@ Item {
                 anchors.centerIn: parent
             }
             onClicked: {
-                timer_.restart()
+                simulationTimer.restart()
             }
         }
 
@@ -66,10 +65,7 @@ Item {
                 font.pixelSize: 20
                 anchors.centerIn: parent
             }
-            onClicked: timer_.stop()
+            onClicked: simulationTimer.stop()
         }
-
-
-
     }
 }

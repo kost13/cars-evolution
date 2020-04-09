@@ -10,6 +10,9 @@ endif()
 set(SRC
     main.cc
     AppInterface.cc
+    AppInterface.h
+    FileIO.cc
+    FileIO.h
 )
 
 set(RESOURCES
