@@ -9,10 +9,14 @@ endif()
 
 set(SRC
     main.cc
+    AppBuilder.cc
+    AppBuilder.h
     AppInterface.cc
     AppInterface.h
     FileIO.cc
     FileIO.h
+    CarsPopulationModel.cc
+    CarsPopulationModel.h
 )
 
 set(RESOURCES

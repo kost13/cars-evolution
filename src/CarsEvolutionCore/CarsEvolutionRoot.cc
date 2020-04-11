@@ -9,33 +9,38 @@
 #include <chrono>
 #include <thread>
 
+#include "CarsPopulationData.h"
 #include "World.h"
 
 namespace logger = cpputils::log;
 
-struct CarsEvolutionRoot::Opaque {
+struct cer::CarsEvolutionRoot::Opaque {
   explicit Opaque(CarsEvolutionRoot *parent) : p_(parent) {
-    cars_.emplace_back(20, 20, std::vector<double>{40, 40, 120, 40, 100, 100,
-                                                   80, 60, 60, 100});
-    cars_.emplace_back(20, 30, std::vector<double>{40, 40, 120, 40, 100, 100,
-                                                   80, 140, 60, 100});
+    //    cars_.emplace_back(20, 20, std::vector<double>{40, 40, 120, 40, 100,
+    //    100,
+    //                                                   80, 60, 60, 100});
+    //    cars_.emplace_back(20, 30, std::vector<double>{40, 40, 120, 40, 100,
+    //    100,
+    //                                                   80, 140, 60, 100});
 
-    positions_ = std::vector<std::queue<Position>>(cars_.size());
+    positions_ = std::vector<std::queue<Position>>(2);
   }
 
   physics::World world_;
   std::vector<std::queue<Position>> positions_;
-  std::vector<Car::Parameters> cars_;
+  //  std::vector<Car::Parameters> cars_;
+  CarsPopulationData cars_population_;
   std::mutex queue_mutex_;
   std::mutex car_mutex_;
   CarsEvolutionRoot *p_;
 };
 
-CarsEvolutionRoot::CarsEvolutionRoot() : o_(std::make_unique<Opaque>(this)) {}
+cer::CarsEvolutionRoot::CarsEvolutionRoot()
+    : o_(std::make_unique<Opaque>(this)) {}
 
-CarsEvolutionRoot::~CarsEvolutionRoot() = default;
+cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
-void CarsEvolutionRoot::runSimulation() {
+void cer::CarsEvolutionRoot::runSimulation() {
   for (int i = 0; i < 100; ++i) {
     // simulate computations
     logger::info() << "runSimulation" << i;
@@ -49,7 +54,7 @@ void CarsEvolutionRoot::runSimulation() {
   }
 }
 
-Position CarsEvolutionRoot::getPosition(int car_num) {
+cer::Position cer::CarsEvolutionRoot::getPosition(int car_num) {
   std::lock_guard<std::mutex> lock(o_->queue_mutex_);
   logger::info() << "size: " << o_->positions_.size();
   if (o_->positions_.size() < car_num + 1) {
@@ -63,7 +68,6 @@ Position CarsEvolutionRoot::getPosition(int car_num) {
   return position;
 }
 
-std::vector<Car::Parameters> CarsEvolutionRoot::getCars() const {
-  std::lock_guard<std::mutex> lock(o_->car_mutex_);
-  return o_->cars_;
+cer::CarsPopulationData *cer::CarsEvolutionRoot::carsPopulation() const {
+  return &o_->cars_population_;
 }

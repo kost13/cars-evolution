@@ -27,8 +27,8 @@ Rectangle {
 
     function loadCars(){
         clearCars()
-        var cars = AppInterface.getCars()
         var car_component = Qt.createComponent("Car.qml");
+        var cars = AppInterface.getCars()
         for(var i=0; i<cars.length; i++){
             var car = car_component.createObject(simulation_window);
             car.initialize(cars[i])

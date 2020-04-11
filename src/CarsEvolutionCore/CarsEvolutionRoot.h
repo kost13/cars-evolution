@@ -4,7 +4,11 @@
 #include <memory>
 #include <vector>
 
-#include "CarStructure.h"
+//#include "CarStructure.h"
+
+namespace cer {
+
+class CarsPopulationData;
 
 struct Position {
   Position(float xx, float yy, float thetaa) : x(xx), y(yy), theta(thetaa) {}
@@ -26,11 +30,13 @@ class CarsEvolutionRoot {
   void runSimulation();
   Position getPosition(int car_num);
 
-  std::vector<Car::Parameters> getCars() const;
+  //  std::vector<Car::Parameters> getCars() const;
+  CarsPopulationData *carsPopulation() const;
 
  private:
   struct Opaque;
   std::unique_ptr<Opaque> o_;
 };
+}  // namespace cer
 
 #endif  // CARSEVOLUTIONROOT_H

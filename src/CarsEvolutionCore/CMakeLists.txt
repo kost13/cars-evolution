@@ -7,6 +7,8 @@ set(SRC_CORE
     World.cc
     World.h
     CarStructure.h
+    CarsPopulationData.cc
+    CarsPopulationData.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

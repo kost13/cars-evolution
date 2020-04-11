@@ -22,21 +22,4 @@ QString FileIO::readFile(const QUrl &path) {
 
   QTextStream ts(&f);
   return ts.readAll();
-
-  //  QTextCodec *codec = QTextCodec::codecForHtml(data);
-  //  setText(codec->toUnicode(data));
-  //  if (m_doc) m_doc->setModified(false);
-  //  if (fileName.isEmpty())
-  //    m_documentTitle = QStringLiteral("untitled.txt");
-  //  else
-  //    m_documentTitle = QFileInfo(fileName).fileName();
-
-  //  emit textChanged();
-  //  emit documentTitleChanged();
-
-  //  reset();
-  //}
-  //}
-  // emit fileUrlChanged();
-  //}
 }

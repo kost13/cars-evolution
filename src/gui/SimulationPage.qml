@@ -12,7 +12,6 @@ Item {
         RowLayout {
             id: row_layout
             anchors.fill: parent
-//            anchors.margins:
             spacing: 10
 
             Layout.fillWidth: true;
@@ -22,56 +21,100 @@ Item {
                 anchors.top: parent.top
             }
 
-            SimulationWindow {
-                id: simulation_window
+            ColumnLayout {
 
-                Layout.fillWidth: true
-                Layout.preferredHeight: 500
+                SimulationWindow {
+                    id: simulation_window
 
-                anchors.top: parent.top
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 500
+
+                    anchors.top: parent.top
+                }
+
+                RowLayout {
+                    id: summary_layout
+                    width: simulation_window.width
+                    spacing: 6
+
+                    Text { text: "Generacja: 10" }
+                    Text { text: "Samochody: 10" }
+                    Text { text: "Dystans: 10"   }
+                }
             }
         }
 
-        ChartView {
-            id: chartView
-            title: "Cars position"
-            legend.visible: false
-            antialiasing: true
-            Layout.fillWidth: true
+        RowLayout {
+            id: simulationInfoLayout            
+            Layout.fillWidth: true;
             Layout.fillHeight: true
 
-            ValueAxis {
-                id: axisX
-                titleText: "X"
+            ListView {
+                width: 200
+                implicitHeight: 400
+
+                model: PopulationModel
+
+                delegate: RowLayout {
+                    width: parent.width
+
+                    Text { text: model.number }
+
+                    Rectangle {
+                        width: 30
+                        height: 30
+                        color: model.color
+                    }
+
+                    Button {
+                        Text { text: "Preview" }
+                    }
+                }
             }
 
-            ValueAxis {
-                id: axisY
-                titleText: "Y"
-            }
 
-            LineSeries {
-                id: s1
-                axisX: axisX
-                axisY: axisY
-            }
+            ChartView {
+                id: chartView
+                title: "Cars position"
+                legend.visible: false
+                antialiasing: true
 
-            LineSeries {
-                id: s2
-                axisX: axisX
-                axisY: axisY
-            }
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-            function updateChart(i, x, y){
-                console.log(i, x, y)
-                if(i === 0){
-                    s1.append(x,y)
-                    chartView.axisX(s1).max = x;
-                    chartView.axisY(s1).max = y;
-                } else if(i === 1){
-                    s2.append(x,y)
-                    chartView.axisX(s2).max = x;
-                    chartView.axisY(s2).max = y;
+                ValueAxis {
+                    id: axisX
+                    titleText: "X"
+                }
+
+                ValueAxis {
+                    id: axisY
+                    titleText: "Y"
+                }
+
+                LineSeries {
+                    id: s1
+                    axisX: axisX
+                    axisY: axisY
+                }
+
+                LineSeries {
+                    id: s2
+                    axisX: axisX
+                    axisY: axisY
+                }
+
+                function updateChart(i, x, y){
+                    console.log(i, x, y)
+                    if(i === 0){
+                        s1.append(x,y)
+                        chartView.axisX(s1).max = x;
+                        chartView.axisY(s1).max = y;
+                    } else if(i === 1){
+                        s2.append(x,y)
+                        chartView.axisX(s2).max = x;
+                        chartView.axisY(s2).max = y;
+                    }
                 }
             }
         }

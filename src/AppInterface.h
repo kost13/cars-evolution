@@ -6,12 +6,14 @@
 #include <QObject>
 #include <QVariant>
 
+namespace cer {
 class CarsEvolutionRoot;
+}
 
 class AppInterface : public QObject {
   Q_OBJECT
  public:
-  AppInterface(CarsEvolutionRoot *root);
+  AppInterface(cer::CarsEvolutionRoot *root);
   Q_INVOKABLE void startSimulation();
   Q_INVOKABLE QVariantList getPosition(int car_num);
   Q_INVOKABLE QVariantList getCars();
@@ -21,7 +23,7 @@ class AppInterface : public QObject {
   void simulationStarted();
 
  private:
-  CarsEvolutionRoot *root_;
+  cer::CarsEvolutionRoot *root_;
   cpputils::Worker worker_;
 };
 

@@ -1,36 +1,16 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
 
-#include <QQuickStyle>
-
-#include "CarsEvolutionCore/CarsEvolutionRoot.h"
-
-#include "AppInterface.h"
-#include "FileIO.h"
+#include "AppBuilder.h"
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
 
-  CarsEvolutionRoot root;
-
-  AppInterface interface(&root);
+  std::vector<char *> args(argv + 1, argv + argc);
 
   QQmlApplicationEngine engine;
-  qmlRegisterType<FileIO>("carsevolution", 1, 0, "FileIO");
-  engine.rootContext()->setContextProperty("AppInterface", &interface);
 
-  QQuickStyle::setStyle("Material");
-
-  const QUrl url(QStringLiteral("qrc:/gui/main.qml"));
-  QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app,
-                   [url](QObject *obj, const QUrl &objUrl) {
-                     if ((obj == nullptr) && url == objUrl) {
-                       QCoreApplication::exit(-1);
-                     }
-                   },
-                   Qt::QueuedConnection);
-  engine.load(url);
+  AppBuilder appBuilder(engine, args);
 
   return QApplication::exec();
 }
