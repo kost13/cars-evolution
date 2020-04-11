@@ -10,8 +10,8 @@
 #include <QDebug>
 
 namespace {
-const int MIN_COLOR = 26;
-const int COLOR_RANGE = 200;
+const int MIN_COLOR = 20;
+const int COLOR_RANGE = 210;
 }
 
 CarsPopulationModel::CarsPopulationModel(cer::CarsPopulationData *population,

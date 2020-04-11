@@ -49,32 +49,62 @@ Item {
             Layout.fillWidth: true;
             Layout.fillHeight: true
 
-            ListView {
+            GridView {
+                header: Text {
+                    text: "Populacja"
+                    height: 20
+                }
+
+                id: parametersGrid
                 width: 100
-                implicitHeight: 400
+                cellHeight: 35
+                Layout.fillHeight: true
 
                 model: PopulationModel
 
-                delegate: RowLayout {
+                delegate: Row {
+                    spacing: 5
                     width: parent.width
+                    height: parent.cellHeight
 
                     Text {
+                        width: 12
                         text: model.number
-                        width: 20
+                        anchors.verticalCenter: parent.verticalCenter
                     }
 
                     Rectangle {
                         width: 30
                         height: 30
                         color: model.color
+                         anchors.verticalCenter: parent.verticalCenter
                     }
 
                     Button {
-                        Text { text: "Preview" }
+                        text: ""
+                        width: 40
+                        height: 30
+
+                        background: Image {
+                            id: image
+                            source: "qrc:/gui/img/icon_preview.png"
+                            fillMode: Image.PreserveAspectFit
+                            anchors.centerIn: parent
+                            height: parent.height
+                            width:  parent.height
+                        }
+
+                        onHoveredChanged: hovered ? popup.open() : popup.close()
+
+                        CarDetailsPopup {
+                            id: popup
+                            x: 30
+                            y: 0
+                            car_num: model.number - 1
+                        }
                     }
                 }
             }
-
 
             ChartView {
                 id: chartView
