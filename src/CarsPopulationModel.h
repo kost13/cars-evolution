@@ -23,6 +23,9 @@ class CarsPopulationModel : public QAbstractListModel {
   QVariant data(const QModelIndex &index,
                 int role = Qt::DisplayRole) const override;
 
+  Q_INVOKABLE QVariantList parameters(int row) const;
+  Q_INVOKABLE QString color(int row) const;
+
   QHash<int, QByteArray> roleNames() const override;
 
   void updatePoplation();

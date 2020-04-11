@@ -50,7 +50,7 @@ Item {
             Layout.fillHeight: true
 
             ListView {
-                width: 200
+                width: 100
                 implicitHeight: 400
 
                 model: PopulationModel
@@ -58,7 +58,10 @@ Item {
                 delegate: RowLayout {
                     width: parent.width
 
-                    Text { text: model.number }
+                    Text {
+                        text: model.number
+                        width: 20
+                    }
 
                     Rectangle {
                         width: 30
@@ -105,7 +108,6 @@ Item {
                 }
 
                 function updateChart(i, x, y){
-                    console.log(i, x, y)
                     if(i === 0){
                         s1.append(x,y)
                         chartView.axisX(s1).max = x;

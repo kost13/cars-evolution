@@ -10,11 +10,14 @@ Item {
     property var rear_r: 30
     property var rear_x: 200
     property var rear_y: 160
-    property var polygon_points: [];
+    property var polygon_points: []
+    property var car_color: "#FF0000"
 
-    function initialize(parameters){
+    function initialize(color, parameters){
 
-        console.log('params: ' + parameters)
+        console.log('params: ' + parameters, 'color: ', color)
+
+        car_color = color
 
         rear_r = parameters[0]
         front_r = parameters[1]
@@ -72,7 +75,7 @@ Item {
             }
             ctx.lineTo(polygon_points[0]+50, height-polygon_points[1])
 
-            ctx.fillStyle = Qt.rgba(Math.random(), Math.random(), Math.random(), 1);
+            ctx.fillStyle = car_color
             ctx.fill()
             ctx.closePath()
         }

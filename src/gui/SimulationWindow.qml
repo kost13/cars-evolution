@@ -9,11 +9,12 @@ Rectangle {
     border.width: 2
 
     function updateCarPosition() {
+        console.log("updateCarPosition")
         for(var i=0; i<car_objects.length; i++){
             var pos = AppInterface.getPosition(i)
             if(pos[0] !== -1){
                 car_objects[i].move(pos)
-                chartView.updateChart(i, pos[0], pos[1])
+//                chartView.updateChart(i, pos[0], pos[1])
             }
         }
     }
@@ -30,8 +31,9 @@ Rectangle {
         var car_component = Qt.createComponent("Car.qml");
         for(var i=0; i<PopulationModel.rowCount(); i++){
             var car = car_component.createObject(simulation_window);            
-            var parameters = PopulationModel.data(PopulationModel.index(i,0), PopulationModel.parameters)
-            car.initialize(parameters)
+            var parameters = PopulationModel.parameters(i)
+            var color = PopulationModel.color(i)
+            car.initialize(color, parameters)
             car_objects.push(car)
         }
     }

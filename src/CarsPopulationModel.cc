@@ -53,6 +53,20 @@ QVariant CarsPopulationModel::data(const QModelIndex &index, int role) const {
   }
 }
 
+QVariantList CarsPopulationModel::parameters(int row) const {
+  if (row < 0 || row > cars_.size()) {
+    return {};
+  }
+  return structureToVariantList(cars_[row]);
+}
+
+QString CarsPopulationModel::color(int row) const {
+  if (row < 0 || row > cars_colors_.size()) {
+    return {};
+  }
+  return cars_colors_[row].name();
+}
+
 QHash<int, QByteArray> CarsPopulationModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[NumberRole] = "number";
