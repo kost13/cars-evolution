@@ -23,7 +23,7 @@ struct cer::CarsEvolutionRoot::Opaque {
     //    100,
     //                                                   80, 140, 60, 100});
 
-    positions_ = std::vector<std::queue<Position>>(2);
+    positions_ = std::vector<std::queue<Position>>(10);
   }
 
   physics::World world_;
@@ -45,11 +45,12 @@ void cer::CarsEvolutionRoot::runSimulation() {
     // simulate computations
     logger::info() << "runSimulation" << i;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds{40});
+    std::this_thread::sleep_for(std::chrono::milliseconds{10});
     {
       std::lock_guard<std::mutex> lock(o_->queue_mutex_);
-      o_->positions_[0].emplace(0.0f, 2.5f * i, 0.2f * i);
-      o_->positions_[1].emplace(0.5f * i, 2.0f * i, 0.6f * i);
+      for (size_t i = 0; i < 10; ++i) {
+        o_->positions_[i].emplace(0.0f, 2.5f * i, 0.2f * i);
+      }
     }
   }
 }

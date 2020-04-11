@@ -13,10 +13,9 @@ class CarsEvolutionRoot;
 class AppInterface : public QObject {
   Q_OBJECT
  public:
-  AppInterface(cer::CarsEvolutionRoot *root);
+  explicit AppInterface(cer::CarsEvolutionRoot *root);
   Q_INVOKABLE void startSimulation();
   Q_INVOKABLE QVariantList getPosition(int car_num);
-  Q_INVOKABLE QVariantList getCars();
 
  signals:
   void simulationEnded();

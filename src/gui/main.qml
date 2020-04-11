@@ -35,7 +35,7 @@ ApplicationWindow {
 
     AlgorithmPage {
         id: algorithmView
-    }
+    }   
 
     function setPage(page){
         if(stack.depth > 1){

@@ -23,6 +23,7 @@ AppBuilder::AppBuilder(QQmlApplicationEngine &engine,
   qmlRegisterType<FileIO>("carsevolution", 1, 0, "FileIO");
 
   engine.rootContext()->setContextProperty("AppInterface", &interface);
+
   engine.rootContext()->setContextProperty("PopulationModel",
                                            &population_model);
 

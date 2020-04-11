@@ -28,10 +28,10 @@ Rectangle {
     function loadCars(){
         clearCars()
         var car_component = Qt.createComponent("Car.qml");
-        var cars = AppInterface.getCars()
-        for(var i=0; i<cars.length; i++){
-            var car = car_component.createObject(simulation_window);
-            car.initialize(cars[i])
+        for(var i=0; i<PopulationModel.rowCount(); i++){
+            var car = car_component.createObject(simulation_window);            
+            var parameters = PopulationModel.data(PopulationModel.index(i,0), PopulationModel.parameters)
+            car.initialize(parameters)
             car_objects.push(car)
         }
     }
