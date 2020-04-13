@@ -1,5 +1,7 @@
 #include "CarsPopulationData.h"
 
+#include <iterator>
+
 cer::CarsPopulationData::CarsPopulationData() = default;
 
 std::vector<cer::CarParameters> cer::CarsPopulationData::cars() const {

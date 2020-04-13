@@ -10,9 +10,9 @@
 
 BOOST_AUTO_TEST_CASE(population_test) {
   using cer::CarParameters;
-  auto population =
-      std::vector<CarParameters>{CarParameters{1., 2., {3., 4., 5., 6.}},
-                                 CarParameters{7., 8., {9., 10., 11., 12.}}};
+  auto population = std::vector<CarParameters>{
+      CarParameters{1., 2., std::vector<double>{3., 4., 5., 6.}},
+      CarParameters{7., 8., std::vector<double>{9., 10., 11., 12.}}};
   cer::CarsPopulationData o;
   o.setCars(population);
 

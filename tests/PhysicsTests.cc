@@ -14,7 +14,8 @@ BOOST_AUTO_TEST_CASE(world_test) {
   using cer::Position;
 
   cer::CarsPopulationData pd;
-  pd.setCars({{1., 1., {1., 2., 3.}}, {4., 4., {5., 6., 7.}}});
+  pd.setCars({cer::CarParameters{1., 1., std::vector<double>{1., 2., 3.}},
+              cer::CarParameters{4., 4., std::vector<double>{5., 6., 7.}}});
 
   cer::SimulationData sd;
   BOOST_TEST(sd.carsNum() == 0);

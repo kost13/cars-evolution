@@ -7,6 +7,8 @@
 namespace cer {
 
 struct CarParameters {
+  CarParameters(double fw, double rw, const std::vector<double> &bp)
+      : front_wheel(fw), rear_wheel(rw), body_points(bp) {}
   double front_wheel{};             // front wheel diameter
   double rear_wheel{};              // rear wheel diameter
   std::vector<double> body_points;  // x and y coordiantes of the body polygon
