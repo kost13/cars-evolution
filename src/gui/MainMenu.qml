@@ -35,8 +35,7 @@ Item {
                 font.pixelSize: 20
                 anchors.centerIn: parent
             }
-            onClicked: {
-                simulation_window.loadCars()
+            onClicked: {                
                 simulationTimer.restart()
                 simulation_button.enabled = false
             }
@@ -68,4 +67,13 @@ Item {
             onClicked: simulationTimer.stop()
         }
     }
+
+    Connections {
+        target: PopulationModel
+        onModelReset: {
+            simulation_window.loadCars()
+        }
+
+    }
+
 }

@@ -10,8 +10,8 @@ class AppBuilder : public QObject {
   Q_OBJECT
 
  public:
-  explicit AppBuilder(QQmlApplicationEngine &engine,
-                      const std::vector<char *> &args);
+  explicit AppBuilder() = default;
+  int run(const std::vector<char *> &args);
 };
 
 #endif  // APPBUILDER_H

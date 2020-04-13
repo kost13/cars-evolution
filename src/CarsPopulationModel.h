@@ -14,7 +14,7 @@ class CarsPopulationModel : public QAbstractListModel {
  public:
   enum RoleNames { NumberRole = Qt::UserRole + 1, ColorRole, ParametersRole };
 
-  explicit CarsPopulationModel(cer::CarsPopulationData *populatuion,
+  explicit CarsPopulationModel(cer::CarsPopulationData *population,
                                QObject *parent = nullptr);
 
   int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -33,7 +33,7 @@ class CarsPopulationModel : public QAbstractListModel {
  private:
   void colorCars();
   QVariantList structureToVariantList(const cer::CarParameters &car) const;
-  cer::CarsPopulationData *population_;
+  const cer::CarsPopulationData *const population_;
   std::vector<cer::CarParameters> cars_;
   std::vector<QColor> cars_colors_;
 };

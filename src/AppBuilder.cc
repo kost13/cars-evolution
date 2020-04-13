@@ -11,14 +11,17 @@
 #include "CarsPopulationModel.h"
 #include "FileIO.h"
 
-AppBuilder::AppBuilder(QQmlApplicationEngine &engine,
-                       const std::vector<char *> & /*args*/) {
+int AppBuilder::run(const std::vector<char *> & /*args*/) {
+  QQmlApplicationEngine engine;
+
   cer::CarsEvolutionRoot root;
 
   AppInterface interface(&root);
 
-  CarsPopulationModel population_model(root.carsPopulation(), this);
-  population_model.updatePoplation();
+  CarsPopulationModel population_model(root.carsPopulation());
+
+  QObject::connect(&interface, &AppInterface::newPopulationGenerated,
+                   &population_model, &CarsPopulationModel::updatePoplation);
 
   qmlRegisterType<FileIO>("carsevolution", 1, 0, "FileIO");
 
@@ -30,7 +33,7 @@ AppBuilder::AppBuilder(QQmlApplicationEngine &engine,
   QQuickStyle::setStyle("Material");
 
   const QUrl url(QStringLiteral("qrc:/gui/main.qml"));
-  QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, this,
+  QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, qApp,
                    [url](QObject *obj, const QUrl &objUrl) {
                      if ((obj == nullptr) && url == objUrl) {
                        QCoreApplication::exit(-1);
@@ -38,4 +41,6 @@ AppBuilder::AppBuilder(QQmlApplicationEngine &engine,
                    },
                    Qt::QueuedConnection);
   engine.load(url);
+
+  return qApp->exec();
 }

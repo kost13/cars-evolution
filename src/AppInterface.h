@@ -20,6 +20,7 @@ class AppInterface : public QObject {
  signals:
   void simulationEnded();
   void simulationStarted();
+  void newPopulationGenerated();
 
  private:
   cer::CarsEvolutionRoot *root_;

@@ -4,16 +4,10 @@
 #include <memory>
 #include <vector>
 
-//#include "CarStructure.h"
-
 namespace cer {
 
 class CarsPopulationData;
-
-struct Position {
-  Position(float xx, float yy, float thetaa) : x(xx), y(yy), theta(thetaa) {}
-  float x, y, theta;
-};
+class SimulationData;
 
 class CarsEvolutionRoot {
  public:
@@ -27,10 +21,11 @@ class CarsEvolutionRoot {
 
   ~CarsEvolutionRoot();
 
-  void runSimulation();
-  Position getPosition(int car_num);
+  void generatePopulation();
 
-  //  std::vector<Car::Parameters> getCars() const;
+  void runSimulation();
+
+  SimulationData *simulationData() const;
   CarsPopulationData *carsPopulation() const;
 
  private:
