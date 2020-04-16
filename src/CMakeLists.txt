@@ -17,6 +17,8 @@ set(SRC
     FileIO.h
     CarsPopulationModel.cc
     CarsPopulationModel.h
+    JsonParser.cc
+    JsonParser.h
 )
 
 set(RESOURCES

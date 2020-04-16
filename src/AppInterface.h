@@ -10,12 +10,16 @@ namespace cer {
 class CarsEvolutionRoot;
 }
 
+class QUrl;
+
 class AppInterface : public QObject {
   Q_OBJECT
  public:
   explicit AppInterface(cer::CarsEvolutionRoot *root);
   Q_INVOKABLE void startSimulation();
   Q_INVOKABLE QVariantList getPosition(int car_num);
+  Q_INVOKABLE bool savePopulation(const QUrl &file);
+  Q_INVOKABLE bool loadPopulation(const QUrl &file);
 
  signals:
   void simulationEnded();

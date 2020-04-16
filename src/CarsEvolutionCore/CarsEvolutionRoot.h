@@ -26,6 +26,7 @@ class CarsEvolutionRoot {
   void runSimulation();
 
   SimulationData *simulationData() const;
+
   CarsPopulationData *carsPopulation() const;
 
  private:

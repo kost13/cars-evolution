@@ -29,15 +29,15 @@ include_directories(../src)
 
 set(CORE_TESTS_NAME core_tests)
 add_executable(${CORE_TESTS_NAME} CarsEvolutionCoreTests.cc)
-target_link_libraries(${CORE_TESTS_NAME} PUBLIC CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+target_link_libraries(${CORE_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set(PHYSICS_TESTS_NAME physics_tests)
 add_executable(${PHYSICS_TESTS_NAME} PhysicsTests.cc)
-target_link_libraries(${PHYSICS_TESTS_NAME} PUBLIC CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+target_link_libraries(${PHYSICS_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set(EVOLUTION_TESTS_NAME evolution_tests)
 add_executable(${EVOLUTION_TESTS_NAME} EvolutionTests.cc)
-target_link_libraries(${EVOLUTION_TESTS_NAME} PUBLIC CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+target_link_libraries(${EVOLUTION_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 
 

@@ -1,5 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
+import QtQuick.Dialogs 1.0
 
 Item {
     width: 100
@@ -66,6 +67,30 @@ Item {
             }
             onClicked: simulationTimer.stop()
         }
+
+        Button {
+            id: savePopulationButton
+            width: parent.width
+
+            Text {
+                text: "Save\npopulation"
+                font.pixelSize: 14
+                anchors.centerIn: parent
+            }
+            onClicked: saveFileDialog.open()
+        }
+
+        Button {
+            id: loadPopulationButton
+            width: parent.width
+
+            Text {
+                text: "Load\npopulation"
+                font.pixelSize: 14
+                anchors.centerIn: parent
+            }
+            onClicked: openFileDialog.open()
+        }
     }
 
     Connections {
@@ -75,5 +100,30 @@ Item {
         }
 
     }
+
+    FileDialog {
+        id: saveFileDialog
+        title: "Save Population Parameters"
+        folder: shortcuts.home
+        selectMultiple: false
+        selectExisting: false
+        nameFilters: [ "JSON files (*.json)", "Text files (*.txt)" ]
+        onAccepted: {
+            var status = AppInterface.savePopulation(saveFileDialog.fileUrl)
+        console.log("save file dialog", status)
+        }
+    }
+
+    FileDialog {
+        id: openFileDialog
+        title: "Open Population Parameters"
+        folder: shortcuts.home
+        selectMultiple: false
+        selectExisting: true
+        nameFilters: [ "JSON files (*.json)", "Text files (*.txt)" ]
+        onAccepted: AppInterface.loadPopulation(openFileDialog.fileUrl)
+//        Component.onCompleted: visible = true
+    }
+
 
 }
