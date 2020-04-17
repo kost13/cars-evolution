@@ -8,6 +8,8 @@ namespace cer {
 
 class CarsPopulationData;
 class SimulationData;
+struct CarParameters;
+struct Position;
 
 class CarsEvolutionRoot {
  public:
@@ -25,9 +27,11 @@ class CarsEvolutionRoot {
 
   void runSimulation();
 
-  SimulationData *simulationData() const;
+  std::vector<CarParameters> cars() const;
 
-  CarsPopulationData *carsPopulation() const;
+  void setCars(const std::vector<CarParameters> &cars);
+
+  Position popPosition(size_t car_index);
 
  private:
   struct Opaque;

@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 
+#include "CarsEvolutionCore/CarsEvolutionRoot.h"
 #include "CarsEvolutionCore/CarsPopulationData.h"
 
 #include "cpputils/logger.hpp"
@@ -11,9 +12,9 @@ const int MIN_COLOR = 20;
 const int COLOR_RANGE = 210;
 }
 
-CarsPopulationModel::CarsPopulationModel(
-    cer::CarsPopulationData *const population, QObject *parent)
-    : QAbstractListModel(parent), population_(population) {
+CarsPopulationModel::CarsPopulationModel(const cer::CarsEvolutionRoot &root,
+                                         QObject *parent)
+    : QAbstractListModel(parent), root_(root) {
   srand(time(nullptr));
 }
 
@@ -74,7 +75,7 @@ QHash<int, QByteArray> CarsPopulationModel::roleNames() const {
 
 void CarsPopulationModel::updatePoplation() {
   beginResetModel();
-  cars_ = population_->cars();
+  cars_ = root_.cars();
   colorCars();
   endResetModel();
 }

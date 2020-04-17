@@ -4,15 +4,15 @@
 #include <QString>
 
 namespace cer {
-class CarsPopulationData;
+class CarParameters;
 }
 
 namespace json_parser {
 
-bool readParameters(cer::CarsPopulationData *population,
-                    const QString &file_path);
+std::pair<std::vector<cer::CarParameters>, bool> readParameters(
+    const QString &file_path);
 
-bool writeParameters(const cer::CarsPopulationData *population,
+bool writeParameters(const std::vector<cer::CarParameters> &parameters,
                      const QString &file_path);
 }
 

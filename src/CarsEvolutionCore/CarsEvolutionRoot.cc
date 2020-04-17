@@ -39,10 +39,15 @@ cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
 void cer::CarsEvolutionRoot::runSimulation() { o_->world_.runSimulation(); }
 
-cer::SimulationData *cer::CarsEvolutionRoot::simulationData() const {
-  return &o_->simulation_data_;
+std::vector<cer::CarParameters> cer::CarsEvolutionRoot::cars() const {
+  return o_->cars_population_.cars();
 }
 
-cer::CarsPopulationData *cer::CarsEvolutionRoot::carsPopulation() const {
-  return &o_->cars_population_;
+void cer::CarsEvolutionRoot::setCars(
+    const std::vector<cer::CarParameters> &cars) {
+  o_->cars_population_.setCars(cars);
+}
+
+cer::Position cer::CarsEvolutionRoot::popPosition(size_t car_index) {
+  o_->simulation_data_.popPosition(car_index);
 }

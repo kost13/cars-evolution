@@ -4,7 +4,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 if(BUILD_GUI)
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_AUTORCC ON)
-    find_package(Qt5 COMPONENTS Core Widgets Charts Quick QuickControls2 REQUIRED)
+    find_package(Qt5 COMPONENTS Core Widgets Charts Quick QuickControls2 REQUIRED)    
 endif()
 
 set(SRC

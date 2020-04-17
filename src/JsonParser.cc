@@ -7,6 +7,7 @@
 
 #include <cpputils/logger.hpp>
 
+#include "CarsEvolutionCore/CarsEvolutionRoot.h"
 #include "CarsEvolutionCore/CarsPopulationData.h"
 
 namespace {
@@ -67,13 +68,13 @@ QJsonArray readFile(const QString &file_path) {
 
 }  // namespace
 
-bool json_parser::readParameters(cer::CarsPopulationData *population,
-                                 const QString &file_path) {
+std::pair<std::vector<cer::CarParameters>, bool> json_parser::readParameters(
+    const QString &file_path) {
   auto parameters = readFile(file_path);
   if (parameters.empty()) {
     cpputils::log::critical() << "Cannot read parameters from file "
                               << file_path.toStdString();
-    return false;
+    return {{}, false};
   }
 
   std::vector<cer::CarParameters> cars;
@@ -84,15 +85,14 @@ bool json_parser::readParameters(cer::CarsPopulationData *population,
     cars.push_back(carParametersFromJson(o));
   }
 
-  population->setCars(cars);
-
-  return true;
+  return {cars, true};
 }
 
-bool json_parser::writeParameters(const cer::CarsPopulationData *population,
-                                  const QString &file_path) {
+bool json_parser::writeParameters(
+    const std::vector<cer::CarParameters> &parameters,
+    const QString &file_path) {
   QJsonArray array;
-  for (const auto &car : population->cars()) {
+  for (const auto &car : parameters) {
     array.append(carParametersToJson(car));
   }
 

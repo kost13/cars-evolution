@@ -18,7 +18,7 @@ int AppBuilder::run(const std::vector<char *> & /*args*/) {
 
   AppInterface interface(&root);
 
-  CarsPopulationModel population_model(root.carsPopulation());
+  CarsPopulationModel population_model(root);
 
   QObject::connect(&interface, &AppInterface::newPopulationGenerated,
                    &population_model, &CarsPopulationModel::updatePoplation);
