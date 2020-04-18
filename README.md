@@ -43,10 +43,10 @@ git submodule update --init
 ### budowanie 
 ```
 mkdir build && cd build
-cmake <FLAGI> ..
+cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<QT_PATH>
 ```
 
-flagi:
+dodatkowe opcja, obie sa true:
 - BUILD_TESTS
 - BUILD_GUI
 
@@ -61,11 +61,19 @@ cmake --build . --target all
 ```
 budowanie windows
 ```
-cmake --build . --target BUILD_ALL #windows
+cmake --build . --target BUILD_ALL
 ```
-instalacja
+
+### uruchomienie
 ```
-cmake --build . --target install
+./build/src/CarsEvolution
+```
+
+### testy
+```
+./build/tests/core_tests
+./build/tests/evolution_tests
+./build/tests/physics_tests
 ```
 
 ## Zarzadzanie kodem
