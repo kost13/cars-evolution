@@ -30,7 +30,7 @@ void cer::CarsPopulationData::setCars(
   cars_ = cars;
 }
 
-cer::CarParameters cer::CarsPopulationData::car(size_t ind) {
+cer::CarParameters cer::CarsPopulationData::car(size_t ind) const {
   std::unique_lock<std::mutex> lock(mutex_);
-  return cars_[ind];
+  return cars_.at(ind);
 }

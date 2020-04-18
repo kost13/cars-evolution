@@ -6,8 +6,6 @@
 
 namespace cer {
 
-class CarsPopulationData;
-class SimulationData;
 struct CarParameters;
 struct Position;
 

@@ -29,7 +29,7 @@ class CarsPopulationData {
 
   void setCars(const std::vector<CarParameters> &cars);
 
-  CarParameters car(size_t ind);
+  CarParameters car(size_t ind) const;
 
  private:
   std::vector<CarParameters> cars_;

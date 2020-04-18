@@ -14,9 +14,6 @@ Item {
     property var car_color: "#FF0000"
 
     function initialize(color, parameters){
-
-        console.log('params: ' + parameters, 'color: ', color)
-
         car_color = color
 
         rear_r = parameters[0]

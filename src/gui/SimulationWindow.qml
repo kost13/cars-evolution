@@ -8,8 +8,7 @@ Rectangle {
     border.color: "#000000"
     border.width: 2
 
-    function updateCarPosition() {
-        console.log("updateCarPosition")
+    function updateCarPosition() {        
         for(var i=0; i<car_objects.length; i++){
             var pos = AppInterface.getPosition(i)
             if(pos[0] !== -1){

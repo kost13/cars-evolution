@@ -1,13 +1,9 @@
 #include "CarsEvolutionRoot.h"
 
-#include <mutex>
-#include <queue>
-
-#include "cpputils/logger.hpp"
-
-#include "Physics/World.h"
+#include <cpputils/logger.hpp>
 
 #include "Evolution/Evolution.h"
+#include "Physics/World.h"
 
 #include "CarsPopulationData.h"
 #include "SimulationData.h"
@@ -25,7 +21,6 @@ struct cer::CarsEvolutionRoot::Opaque {
   SimulationData simulation_data_;
   evolution::Evolution evolution_;
   physics::World world_;
-  std::mutex queue_mutex_;
 };
 
 cer::CarsEvolutionRoot::CarsEvolutionRoot()
@@ -49,5 +44,5 @@ void cer::CarsEvolutionRoot::setCars(
 }
 
 cer::Position cer::CarsEvolutionRoot::popPosition(size_t car_index) {
-  o_->simulation_data_.popPosition(car_index);
+  return o_->simulation_data_.popPosition(car_index);
 }

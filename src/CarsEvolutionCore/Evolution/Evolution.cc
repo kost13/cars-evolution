@@ -23,7 +23,7 @@ std::vector<cer::CarParameters> dummyPopulation() {
       p += rand() % 20 - 10;
     }
 
-    cars_.push_back(CarParameters{front, rear, points});
+    cars_.emplace_back(front, rear, points);
   }
 
   return cars_;

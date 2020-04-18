@@ -22,7 +22,7 @@ bool cer::physics::World::runSimulation() {
   }
   for (int j = 0; j < 100; ++j) {
     // simulate computations
-    logger::info() << "runSimulation" << j;
+    //    logger::info() << "runSimulation" << j;
     {
       for (size_t i = 0; i < cars_num; ++i) {
         simulation_data_->pushPosition(
