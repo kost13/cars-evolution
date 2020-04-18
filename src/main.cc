@@ -1,36 +1,12 @@
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QQmlContext>
+#include <QApplication>
 
-#include "CarsEvolutionCore/CarsEvolutionRoot.h"
-
-#include "cpputils/worker.h"
-
-#include "AppInterface.h"
+#include "AppBuilder.h"
 
 int main(int argc, char *argv[]) {
-  QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-  QGuiApplication app(argc, argv);
+  QApplication app(argc, argv);
 
-  CarsEvolutionRoot root;
+  std::vector<char *> args(argv + 1, argv + argc);
 
-  cpputils::Worker worker;
-  worker.start();
-
-  AppInterface interface(&root, &worker);
-
-  QQmlApplicationEngine engine;
-  engine.rootContext()->setContextProperty("AppInterface", &interface);
-
-  const QUrl url(QStringLiteral("qrc:/gui/main.qml"));
-  QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app,
-                   [url](QObject *obj, const QUrl &objUrl) {
-                     if ((obj == nullptr) && url == objUrl) {
-                       QCoreApplication::exit(-1);
-                     }
-                   },
-                   Qt::QueuedConnection);
-  engine.load(url);
-
-  return QGuiApplication::exec();
+  AppBuilder appBuilder;
+  return appBuilder.run(args);
 }

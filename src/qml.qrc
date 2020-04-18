@@ -1,7 +1,19 @@
 <RCC>
     <qresource prefix="/">
-        <file>gui/main.qml</file>
         <file>gui/qtquickcontrols2.conf</file>
+        <file>gui/main.qml</file>
         <file>gui/Car.qml</file>
+        <file>gui/SimulationWindow.qml</file>
+        <file>gui/MainMenu.qml</file>
+        <file>gui/Footer.qml</file>
+        <file>gui/img/icon_loading.png</file>
+        <file>gui/ToolbarButton.qml</file>
+        <file>gui/HeaderToolbar.qml</file>
+        <file>gui/SimulationPage.qml</file>
+        <file>gui/SettingsPage.qml</file>
+        <file>gui/AlgorithmPage.qml</file>
+        <file alias="docs/algorithm_overview.html">../docs/algorithm_overview.html</file>
+        <file>gui/img/icon_preview.png</file>
+        <file>gui/CarDetailsPopup.qml</file>
     </qresource>
 </RCC>

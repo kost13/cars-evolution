@@ -3,7 +3,17 @@ set(LIB_NAME CarsEvolutionCore)
 
 set(SRC_CORE
     CarsEvolutionRoot.cc
-    World.cc
+    CarsEvolutionRoot.h
+    CarsPopulationData.cc
+    CarsPopulationData.h
+    SimulationData.cc
+    SimulationData.h
+
+    Physics/World.cc
+    Physics/World.h
+
+    Evolution/Evolution.cc
+    Evolution/Evolution.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

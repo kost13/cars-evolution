@@ -1,76 +1,57 @@
 import QtQuick 2.9
-import QtQuick.Controls 1.2
+import QtQuick.Controls 2.2
 
 ApplicationWindow {
     id: window
     visible: true
-    width: 640
-    height: 480
+    width: 1400
+    height: 1000
     title: qsTr("Ewolucja Pojazdow")
 
-    Rectangle {
+    header : HeaderToolbar {
+        id: headerToolbar
+        Component.onCompleted: {
+            headerToolbar.pageSelected.connect(setPage)
+        }
+    }
+
+    footer: Footer {
+        id: footerBar
+    }
+
+    StackView {
+        id: stack
+        initialItem: simulationView
         anchors.fill: parent
-
-        Button {
-            anchors.left: parent.left
-            anchors.top: parent.top
-            id: run
-            width: 100
-            height: 50
-            onClicked:{
-                AppInterface.startSimulation()          
-            }
-            Text { text: "Simulate" }
-        }
-
-        Button {
-            anchors.left: parent.left
-            anchors.top: run.bottom
-            id: simulation_button
-            width: 100
-            height: 50
-            onClicked:{
-                timer_.restart()
-            }
-            Text { text: "Fall" }
-        }
-        Button {
-            anchors.left: parent.left
-            anchors.top: simulation_button.bottom
-            id: stop
-            width: 100
-            height: 50
-            onClicked:{
-                timer_.stop()
-            }
-            Text { text: "Stop" }
-        }
-
-        Timer {
-            id: timer_
-             interval: 50
-             running: false
-             repeat: true
-             onTriggered: updateCarPosition()
-         }
-
-        Car {
-            id:car
-            x: parent.width/2 - width/2
-            y: 100
-            antialiasing: true
-            transform: Rotation { id: car_rotation; origin.x: car.horizontalCenter; origin.y: car.verticalCenter; angle: 0}
-        }
     }
 
-    function updateCarPosition() {
-        var pos = AppInterface.getPosition()
-        console.log(pos)
-        if(pos[0] !== -1){
-            car.y = pos[1]
-            car_rotation.angle = pos[2]
-
-        }
+    SimulationPage {
+        id: simulationView
     }
 
+    SettingsPage {
+        id: settingsView
+    }
+
+    AlgorithmPage {
+        id: algorithmView
+    }   
+
+    function setPage(page){
+        if(stack.depth > 1){
+            if(page === "simulation"){
+                stack.pop()
+            } else if(page === "settings"){
+                stack.replace(settingsView)
+            } else if(page === "algorithm"){
+                stack.replace(algorithmView)
+            }
+        } else {
+            if(page === "settings"){
+                stack.push(settingsView)
+            } else if(page === "algorithm"){
+                stack.push(algorithmView)
+            }
+        }
+    }
 }

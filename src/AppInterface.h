@@ -1,25 +1,34 @@
 #ifndef APPINTERFACE_H
 #define APPINTERFACE_H
 
+#include <cpputils/worker.h>
+
 #include <QObject>
 #include <QVariant>
 
+namespace cer {
 class CarsEvolutionRoot;
-
-namespace cpputils {
-class Worker;
 }
+
+class QUrl;
 
 class AppInterface : public QObject {
   Q_OBJECT
  public:
-  AppInterface(CarsEvolutionRoot *root, cpputils::Worker *worker);
+  explicit AppInterface(cer::CarsEvolutionRoot *root);
   Q_INVOKABLE void startSimulation();
-  Q_INVOKABLE QVariantList getPosition();
+  Q_INVOKABLE QVariantList getPosition(int car_num);
+  Q_INVOKABLE bool savePopulation(const QUrl &file);
+  Q_INVOKABLE bool loadPopulation(const QUrl &file);
+
+ signals:
+  void simulationEnded();
+  void simulationStarted();
+  void newPopulationGenerated();
 
  private:
-  CarsEvolutionRoot *root_;
-  cpputils::Worker *worker_;
+  cer::CarsEvolutionRoot *root_;
+  cpputils::Worker worker_;
 };
 
 #endif  // APPINTERFACE_H

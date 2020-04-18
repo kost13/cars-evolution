@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(TESTS_NAME CarsEvolutionTests)
-
 if(WIN32)
         if(NOT BOOST_DIR)
             message(FATAL_ERROR " Set BOOST_DIR wit path to boost root dir e.g. C:/boost")
@@ -27,12 +25,19 @@ endif()
 
 include_directories(${Boost_INCLUDE_DIRS})
 
-set(SRC
-    main.cc
-)
-
 include_directories(../src)
 
-add_executable(${TESTS_NAME} ${SRC})
-target_link_libraries(${TESTS_NAME} PUBLIC CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+set(CORE_TESTS_NAME core_tests)
+add_executable(${CORE_TESTS_NAME} CarsEvolutionCoreTests.cc)
+target_link_libraries(${CORE_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+set(PHYSICS_TESTS_NAME physics_tests)
+add_executable(${PHYSICS_TESTS_NAME} PhysicsTests.cc)
+target_link_libraries(${PHYSICS_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+set(EVOLUTION_TESTS_NAME evolution_tests)
+add_executable(${EVOLUTION_TESTS_NAME} EvolutionTests.cc)
+target_link_libraries(${EVOLUTION_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+
 
