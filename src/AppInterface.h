@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QVariant>
 
+class QUrl;
+
 namespace cer {
 class CarsEvolutionRoot;
 }

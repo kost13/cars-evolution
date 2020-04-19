@@ -19,8 +19,8 @@ struct cer::CarsEvolutionRoot::Opaque {
   CarsEvolutionRoot *p_;
   CarsPopulationData cars_population_;
   SimulationData simulation_data_;
-  evolution::Evolution evolution_;
   physics::World world_;
+  evolution::Evolution evolution_;
 };
 
 cer::CarsEvolutionRoot::CarsEvolutionRoot()

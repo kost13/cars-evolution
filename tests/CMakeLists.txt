@@ -26,6 +26,7 @@ endif()
 include_directories(${Boost_INCLUDE_DIRS})
 
 include_directories(../src)
+add_definitions(-DBOOST_TEST_DYN_LINK)
 
 set(CORE_TESTS_NAME core_tests)
 add_executable(${CORE_TESTS_NAME} CarsEvolutionCoreTests.cc)

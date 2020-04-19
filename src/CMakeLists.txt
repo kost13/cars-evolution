@@ -34,3 +34,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE CarsEvolutionCore CppUtils)
 if(BUILD_GUI)
         target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Core Qt5::Widgets Qt5::Quick Qt5::QuickControls2 Qt5::Charts)
 endif()
+
+if (CMAKE_COMPILER_IS_GNUCXX)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+endif()

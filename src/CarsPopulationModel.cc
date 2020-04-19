@@ -33,8 +33,9 @@ int CarsPopulationModel::columnCount(const QModelIndex &parent) const {
 }
 
 QVariant CarsPopulationModel::data(const QModelIndex &index, int role) const {
-  if (!index.isValid() || index.row() >= cars_colors_.size() ||
-      index.row() >= cars_.size()) {
+  if (!index.isValid() ||
+      static_cast<size_t>(index.row()) >= cars_colors_.size() ||
+      static_cast<size_t>(index.row()) >= cars_.size()) {
     return {};
   }
 
@@ -52,14 +53,14 @@ QVariant CarsPopulationModel::data(const QModelIndex &index, int role) const {
 }
 
 QVariantList CarsPopulationModel::parameters(int row) const {
-  if (row < 0 || row > cars_.size()) {
+  if (row < 0 || static_cast<size_t>(row) > cars_.size()) {
     return {};
   }
   return structureToVariantList(cars_[row]);
 }
 
 QString CarsPopulationModel::color(int row) const {
-  if (row < 0 || row > cars_colors_.size()) {
+  if (row < 0 || static_cast<size_t>(row) > cars_colors_.size()) {
     return {};
   }
   return cars_colors_[row].name();
