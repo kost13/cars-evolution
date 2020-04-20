@@ -1,6 +1,7 @@
 #include "Evolution.h"
 
 #include <cstdlib>
+#include <random>
 #include <vector>
 
 #include "CarsPopulationData.h"
@@ -32,7 +33,12 @@ std::vector<cer::CarParameters> dummyPopulation() {
 
 cer::evolution::Evolution::Evolution(cer::CarsPopulationData *population)
     : population_(population) {
-  srand(time(nullptr));
+  std::srand(std::time(nullptr));
+}
+
+void cer::evolution::Evolution::setPopulationFitness(
+    const std::vector<double> &fitness) {
+  population_fitness_ = fitness;
 }
 
 void cer::evolution::Evolution::generatePopulation() {

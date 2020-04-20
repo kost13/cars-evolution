@@ -17,6 +17,7 @@ struct CarParameters {
   std::vector<double> body_points;  // x and y coordiantes of the body polygon
                                     // order: x_1, y_1, ..., x_n, y_n
   static const int BODY_POINTS_NUM = 8;
+  static const int CAR_PARAMETERS_COUNT = 2 + 2 * BODY_POINTS_NUM;
 };
 
 class CarsPopulationData {

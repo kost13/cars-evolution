@@ -85,7 +85,7 @@ std::pair<std::vector<cer::CarParameters>, bool> json_parser::readParameters(
     cars.push_back(carParametersFromJson(o));
   }
 
-  return {cars, true};
+  return {std::move(cars), true};
 }
 
 bool json_parser::writeParameters(

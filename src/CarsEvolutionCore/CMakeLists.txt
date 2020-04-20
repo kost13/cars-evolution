@@ -14,6 +14,8 @@ set(SRC_CORE
 
     Evolution/Evolution.cc
     Evolution/Evolution.h
+    Evolution/MathUtils.cc
+    Evolution/MathUtils.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
