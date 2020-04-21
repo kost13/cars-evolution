@@ -37,4 +37,6 @@ endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+elseif(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W3)
 endif()

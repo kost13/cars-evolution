@@ -10,7 +10,7 @@
 namespace {
 const int MIN_COLOR = 20;
 const int COLOR_RANGE = 210;
-}
+}  // namespace
 
 CarsPopulationModel::CarsPopulationModel(const cer::CarsEvolutionRoot &root,
                                          QObject *parent)
@@ -22,7 +22,7 @@ int CarsPopulationModel::rowCount(const QModelIndex &parent) const {
   if (parent.isValid()) {
     return 0;
   }
-  return cars_.size();
+  return static_cast<int>(cars_.size());
 }
 
 int CarsPopulationModel::columnCount(const QModelIndex &parent) const {

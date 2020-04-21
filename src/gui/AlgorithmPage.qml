@@ -5,7 +5,7 @@ import carsevolution 1.0
 Component {
     ScrollView {
         id: scrollView
-        width: parent.width
+//        width: parent.width
 
         TextArea {
             Accessible.name: "Documentation"
