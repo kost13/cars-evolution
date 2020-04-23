@@ -31,6 +31,7 @@ bool cer::physics::World::runSimulation() {
       }
     }
   }
+  return true;
 }
 
 float cer::physics::World::vecNorm() const { return vec_.Length(); }

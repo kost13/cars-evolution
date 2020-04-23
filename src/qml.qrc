@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>gui/qtquickcontrols2.conf</file>
         <file>gui/main.qml</file>
         <file>gui/Car.qml</file>
         <file>gui/SimulationWindow.qml</file>

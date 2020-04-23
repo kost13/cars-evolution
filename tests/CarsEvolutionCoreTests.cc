@@ -1,5 +1,4 @@
-#define BOOST_TEST_MODULE population_test
-#define BOOST_TEST_MODULE simulation_data_test
+#define BOOST_TEST_MODULE core_test
 #include <boost/test/unit_test.hpp>
 
 #include <stdexcept>

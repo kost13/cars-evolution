@@ -25,6 +25,6 @@ BOOST_AUTO_TEST_CASE(world_test) {
 
   BOOST_TEST(sd.carsNum() == 2);
 
-  BOOST_TEST(sd.popPosition(0).x != -1);
-  BOOST_TEST(sd.popPosition(1).y != -1);
+  BOOST_TEST(sd.popPosition(0).x != -1.);
+  BOOST_TEST(sd.popPosition(1).y != -1.);
 }
