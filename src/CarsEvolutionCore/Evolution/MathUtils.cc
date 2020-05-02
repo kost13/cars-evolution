@@ -1,5 +1,6 @@
 #include "MathUtils.h"
 
+#include <algorithm>
 #include <random>
 
 namespace {
@@ -35,4 +36,21 @@ void cer::evolution::mutate(iterator first, iterator last,
   for (; first != last; ++first) {
     *first = rg(*first);
   }
+}
+
+std::vector<size_t> cer::evolution::tournamentSelection(
+    const std::vector<double> &fitness, size_t n, size_t tournament_size) {
+  std::vector<size_t> res;
+  std::vector<size_t> tournament(tournament_size);
+  auto pop_size = fitness.size();
+  for (; n > 0; --n) {
+    for (size_t i = 0; i < tournament_size; ++i) {
+      tournament[i] = std::rand() % pop_size;
+      auto selected = std::max_element(
+          tournament.begin(), tournament.end(),
+          [&](size_t a, size_t b) { return fitness.at(a) < fitness.at(b); });
+      res.push_back(*selected);
+    }
+  }
+  return res;
 }

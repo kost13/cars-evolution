@@ -24,6 +24,9 @@ std::vector<double> crossover(iterator p1_first, iterator p1_last,
 
 void mutate(iterator first, iterator last, const RandomGenerator &rg);
 
+std::vector<size_t> tournamentSelection(const std::vector<double> &fitness,
+                                        size_t n, size_t tournament_size = 3);
+
 }  // namespace evolution
 }  // namespace cer
 
