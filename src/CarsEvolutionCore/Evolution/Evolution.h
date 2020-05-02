@@ -12,7 +12,7 @@ class CarsPopulationData;
 namespace evolution {
 class Evolution {
  public:
-  explicit Evolution(CarsPopulationData *population);
+  explicit Evolution(CarsPopulationData *population, bool time_seed = true);
   void setPopulationFitness(const std::vector<double> &fitness);
   void generatePopulation();
 

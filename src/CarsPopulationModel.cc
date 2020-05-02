@@ -7,6 +7,8 @@
 
 #include "cpputils/logger.hpp"
 
+#include <qdebug.h>
+
 namespace {
 const int MIN_COLOR = 20;
 const int COLOR_RANGE = 210;
@@ -22,7 +24,7 @@ int CarsPopulationModel::rowCount(const QModelIndex &parent) const {
   if (parent.isValid()) {
     return 0;
   }
-  return static_cast<int>(cars_.size());
+  return static_cast<int>(cars_.carsNum());
 }
 
 int CarsPopulationModel::columnCount(const QModelIndex &parent) const {
@@ -35,7 +37,7 @@ int CarsPopulationModel::columnCount(const QModelIndex &parent) const {
 QVariant CarsPopulationModel::data(const QModelIndex &index, int role) const {
   if (!index.isValid() ||
       static_cast<size_t>(index.row()) >= cars_colors_.size() ||
-      static_cast<size_t>(index.row()) >= cars_.size()) {
+      static_cast<size_t>(index.row()) >= cars_.carsNum()) {
     return {};
   }
 
@@ -45,18 +47,20 @@ QVariant CarsPopulationModel::data(const QModelIndex &index, int role) const {
       return QString::number(index.row() + 1);
     case ColorRole:
       return cars_colors_[index.row()];
-    case ParametersRole:
-      return structureToVariantList(cars_[index.row()]);
+    case ParametersRole: {
+      auto row = index.row();
+      return toVariantList(cars_.cbegin(row), cars_.cend(row));
+    }
     default:
       return {};
   }
 }
 
 QVariantList CarsPopulationModel::parameters(int row) const {
-  if (row < 0 || static_cast<size_t>(row) > cars_.size()) {
+  if (row < 0 || static_cast<size_t>(row) > cars_.carsNum()) {
     return {};
   }
-  return structureToVariantList(cars_[row]);
+  return toVariantList(cars_.cbegin(row), cars_.cend(row));
 }
 
 QString CarsPopulationModel::color(int row) const {
@@ -83,10 +87,10 @@ void CarsPopulationModel::updatePoplation() {
 
 void CarsPopulationModel::colorCars() {
   cars_colors_.clear();
-  cars_colors_.reserve(cars_.size());
+  cars_colors_.reserve(cars_.carsNum());
 
   int color[3];
-  for (size_t i = 0; i < cars_.size(); ++i) {
+  for (size_t i = 0; i < cars_.carsNum(); ++i) {
     for (auto &c : color) {
       c = rand() % COLOR_RANGE + MIN_COLOR;
     }
@@ -94,15 +98,12 @@ void CarsPopulationModel::colorCars() {
   }
 }
 
-QVariantList CarsPopulationModel::structureToVariantList(
-    const cer::CarParameters &car) const {
-  QVariantList params;
-
-  params.reserve(cer::CarParameters::BODY_POINTS_NUM * 2 + 2);
-  params.push_back(car.front_wheel);
-  params.push_back(car.rear_wheel);
-  for (auto p : car.body_points) {
-    params.push_back(p);
+QVariantList CarsPopulationModel::toVariantList(
+    cer::ParametersMatrix::citer begin,
+    cer::ParametersMatrix::citer end) const {
+  QVariantList l;
+  for (; begin != end; ++begin) {
+    l.push_back(*begin);
   }
-  return params;
+  return l;
 }

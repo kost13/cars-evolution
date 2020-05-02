@@ -11,30 +11,37 @@
 #include "CarsEvolutionCore/CarsPopulationData.h"
 
 namespace {
-QJsonObject carParametersToJson(const cer::CarParameters &car) {
-  QJsonObject params{{"front_wheel", car.front_wheel},
-                     {"rear_wheel", car.rear_wheel}};
-  QJsonArray points;
-  for (auto p : car.body_points) {
-    points.append(p);
+QJsonArray carParametersToJson(const cer::ParametersMatrix &parameters) {
+  QJsonArray array;
+  for (size_t i = 0; i < parameters.carsNum(); ++i) {
+    auto it = parameters.cbegin(i);
+    auto end = parameters.cend(i);
+
+    QJsonObject params{{"front_wheel", *it}, {"rear_wheel", *(++it)}};
+    QJsonArray points;
+    for (; it != end; ++it) {
+      points.append(*it);
+    }
+    params.insert("body_points", points);
+    array.append(params);
   }
-  params.insert("body_points", points);
-  return params;
+  return array;
 }
 
-cer::CarParameters carParametersFromJson(const QJsonObject &car) {
-  cer::CarParameters params;
-  params.front_wheel = car.value("front_wheel").toDouble();
-  params.front_wheel = car.value("rear_wheel").toDouble();
+cer::ParametersMatrix carParametersFromJson(const QJsonArray &parameters) {
+  std::vector<double> params;
 
-  auto points = car.value("body_points").toArray();
-  std::vector<double> body_points;
-  body_points.reserve(points.size());
-  for (const auto &p : points) {
-    body_points.push_back(p.toDouble());
+  for (const auto &par : parameters) {
+    auto o = par.toObject();
+    params.push_back(o.value("front_wheel").toDouble());
+    params.push_back(o.value("rear_wheel").toDouble());
+
+    auto points = o.value("body_points").toArray();
+    for (const auto &p : points) {
+      params.push_back(p.toDouble());
+    }
   }
-  params.body_points = body_points;
-  return params;
+  return cer::ParametersMatrix{params};
 }
 
 bool saveFile(const QString &file_path, const QByteArray &data) {
@@ -68,7 +75,7 @@ QJsonArray readFile(const QString &file_path) {
 
 }  // namespace
 
-std::pair<std::vector<cer::CarParameters>, bool> json_parser::readParameters(
+std::pair<cer::ParametersMatrix, bool> json_parser::readParameters(
     const QString &file_path) {
   auto parameters = readFile(file_path);
   if (parameters.empty()) {
@@ -77,25 +84,12 @@ std::pair<std::vector<cer::CarParameters>, bool> json_parser::readParameters(
     return {{}, false};
   }
 
-  std::vector<cer::CarParameters> cars;
-  cars.reserve(parameters.size());
-
-  for (const auto &p : parameters) {
-    auto o = p.toObject();
-    cars.push_back(carParametersFromJson(o));
-  }
-
-  return {std::move(cars), true};
+  return {carParametersFromJson(parameters), true};
 }
 
-bool json_parser::writeParameters(
-    const std::vector<cer::CarParameters> &parameters,
-    const QString &file_path) {
-  QJsonArray array;
-  for (const auto &car : parameters) {
-    array.append(carParametersToJson(car));
-  }
-
+bool json_parser::writeParameters(const cer::ParametersMatrix &parameters,
+                                  const QString &file_path) {
+  QJsonArray array = carParametersToJson(parameters);
   QJsonDocument doc(QJsonObject{{"parameters", array}});
 
   return saveFile(file_path, doc.toJson());

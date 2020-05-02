@@ -8,6 +8,8 @@ set(SRC_CORE
     CarsPopulationData.h
     SimulationData.cc
     SimulationData.h
+    ParametersMatrix.cc
+    ParametersMatrix.h
 
     Physics/World.cc
     Physics/World.h
