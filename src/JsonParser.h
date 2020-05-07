@@ -9,10 +9,9 @@
 
 namespace json_parser {
 
-std::pair<std::vector<cer::CarParameters>, bool> readParameters(
-    const QString &file_path);
+std::pair<cer::ParametersMatrix, bool> readParameters(const QString &file_path);
 
-bool writeParameters(const std::vector<cer::CarParameters> &parameters,
+bool writeParameters(const cer::ParametersMatrix &parameters,
                      const QString &file_path);
 }  // namespace json_parser
 

@@ -36,9 +36,10 @@ class CarsPopulationModel : public QAbstractListModel {
 
  private:
   void colorCars();
-  QVariantList structureToVariantList(const cer::CarParameters &car) const;
+  QVariantList toVariantList(cer::ParametersMatrix::citer begin,
+                             cer::ParametersMatrix::citer end) const;
   const cer::CarsEvolutionRoot &root_;
-  std::vector<cer::CarParameters> cars_;
+  cer::ParametersMatrix cars_;
   std::vector<QColor> cars_colors_;
 };
 

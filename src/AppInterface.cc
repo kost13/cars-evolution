@@ -46,11 +46,11 @@ bool AppInterface::savePopulation(const QUrl &file) {
 }
 
 bool AppInterface::loadPopulation(const QUrl &file) {
-  std::vector<cer::CarParameters> cars;
+  cer::ParametersMatrix params;
   bool status;
-  std::tie(cars, status) = json_parser::readParameters(file.toLocalFile());
+  std::tie(params, status) = json_parser::readParameters(file.toLocalFile());
   if (status) {
-    root_->setCars(cars);
+    root_->setCars(params);
     emit newPopulationGenerated();
     return true;
   }

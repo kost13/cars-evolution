@@ -178,7 +178,7 @@ void cer::physics::World::generateCars(const cer::CarsPopulationData &population
 
 
 bool cer::physics::World::runSimulation() {
-  auto cars_num = population_.cars().size();
+  auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
 
 

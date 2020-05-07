@@ -8,12 +8,16 @@ set(SRC_CORE
     CarsPopulationData.h
     SimulationData.cc
     SimulationData.h
+    ParametersMatrix.cc
+    ParametersMatrix.h
 
     Physics/World.cc
     Physics/World.h
 
     Evolution/Evolution.cc
     Evolution/Evolution.h
+    Evolution/MathUtils.cc
+    Evolution/MathUtils.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

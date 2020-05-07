@@ -6,7 +6,7 @@
 
 namespace cer {
 
-struct CarParameters;
+struct ParametersMatrix;
 struct Position;
 
 class CarsEvolutionRoot {
@@ -25,9 +25,9 @@ class CarsEvolutionRoot {
 
   void runSimulation();
 
-  std::vector<CarParameters> cars() const;
+  ParametersMatrix cars() const;
 
-  void setCars(const std::vector<CarParameters> &cars);
+  void setCars(const ParametersMatrix &cars);
 
   Position popPosition(size_t car_index);
 

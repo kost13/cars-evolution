@@ -34,12 +34,11 @@ cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
 void cer::CarsEvolutionRoot::runSimulation() { o_->world_.runSimulation(); }
 
-std::vector<cer::CarParameters> cer::CarsEvolutionRoot::cars() const {
+cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {
   return o_->cars_population_.cars();
 }
 
-void cer::CarsEvolutionRoot::setCars(
-    const std::vector<cer::CarParameters> &cars) {
+void cer::CarsEvolutionRoot::setCars(const cer::ParametersMatrix &cars) {
   o_->cars_population_.setCars(cars);
 }
 
