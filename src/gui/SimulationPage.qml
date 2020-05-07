@@ -27,7 +27,7 @@ Item {
                     id: simulation_window
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 500
+                    Layout.preferredHeight: 300
 
                     anchors.top: parent.top
                 }

@@ -12,7 +12,7 @@ cer::physics::World::World(const cer::CarsPopulationData &population,
     : population_(population), simulation_data_(simulation_data), vec_{3, 4} {}
 
 bool cer::physics::World::runSimulation() {
-  auto cars_num = population_.cars().size();
+  auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
 
   // dummy simulation
