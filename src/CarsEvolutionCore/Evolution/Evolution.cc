@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <random>
 #include <vector>
+#include <ctime>
 
 #include "CarsPopulationData.h"
 
@@ -21,7 +22,7 @@ cer::ParametersMatrix dummyPopulation() {
     cars.push_back(static_cast<double>(rand() % 25 + 15));
 
     std::vector<double> points = std::vector<double>{
-        40, 40, 120, 40, 130, 60, 110, 80, 100, 100, 80, 110, 70, 105, 60, 100};
+        0.40, 0.40, 1.20, 0.40, 1.30, 0.60, 1.10, 0.80, 1.00, 1.00, 0.80, 1.10, 0.70, 1.05, 0.60, 1.00};
     for (auto &p : points) {
       cars.push_back(p + rand() % 20 - 10);
     }
@@ -35,7 +36,7 @@ cer::evolution::Evolution::Evolution(cer::CarsPopulationData *population,
                                      bool time_seed)
     : population_(population) {
   if (time_seed) {
-    std::srand(std::time(nullptr));
+    std::srand(time(nullptr));
   }
 }
 

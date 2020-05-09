@@ -42,61 +42,39 @@ inline float randomFloat(float lo, float hi)
 }
 
 
-
-const int32 k_maxContactPoints = 2048;
-static const int BODY_POINTS_NUM = 8;
+//##############################################################
 
 
-//      #########################
-struct ContactPoint
-{
-    b2Fixture* fixtureA;
-    b2Fixture* fixtureB;
-    b2Vec2 normal;
-    b2Vec2 position;
-    b2PointState state;
-    float normalImpulse;
-    float tangentImpulse;
-    float separation;
-};
-
-
-//##################
-
-
-
-//      #######################################
-struct Car {
-  Car() = default;
-
-  b2PolygonShape chassis;
-  b2Vec2 vertices[BODY_POINTS_NUM];
-  b2CircleShape circle_front;
-  b2CircleShape circle_rear;
-  b2BodyDef bd;
-  b2FixtureDef fd;
-  b2WheelJointDef jd;
-
-
-};
-
-
-//##################################
-
-
-
+//structure storing parameters for physics simulation
 struct Settings{
 
     //simualation and world
-    float m_hertz= 60.0f;
+    float m_hertz= 60.0f;     //simualtion time step every 1/60s
+    int sim_max_iter= 3600;  //1s = 60 iterations, 60s = 3600 iterations
     int m_velocityIterations=8;
     int m_positionIterations=3;
+    float minimumLength_of_vector=5;    /*if length of car position shift
+                                        vector is smaller than this
+                                        value, car is counted as
+                                        not moving*/
+
+    int max_car_iter=10000;              /*if car is not moving in
+                                        'max_car_iter' it is counted
+                                        as stopped -> flag 'stopped'
+                                        in 'Car' struture is changed to 1.
+                                        */
+
     bool m_enableWarmStarting=true;
     bool m_enableContinuous=true;
     bool m_enableSubStepping=false;
 
-
+    //######################################################
     //scene
+
+
+    float gravity_x=0.0f;
+    float gravity_y=-10.0f;
+
     float ground_friction=0.6f;
     float ground_density=0.0f; //recommended!
     int number_of_stages=20;   /* jak zdecydujemy się na jakiś sposób
@@ -105,9 +83,8 @@ struct Settings{
     float stage_width_x=10.0f;
 
 
-
+    //######################################################
     //cars
-
 
         //wheel1
         int wheel1_point_no=1; //to which point of body, wheel1 is attached
@@ -131,62 +108,56 @@ struct Settings{
         float motor2_frequencyHz=4.0f;
         float wheel2_dampingRatio=0.7f;
 
-
-
-
-
-
-
 };
 
+//jeżeli chcemy statycznie 'vertices', to nie ma jak tego inaczej zrobić
+//fajnie by to było mieć w parametrach
+static const int BODY_POINTS_NUM = 8;
+
+//#########################################################
+
+struct Car {
+  Car() = default;
+
+  b2PolygonShape chassis;
+  b2Vec2 vertices[BODY_POINTS_NUM];
+  b2CircleShape circle_front;
+  b2CircleShape circle_rear;
+  b2BodyDef bd;
+  b2FixtureDef fd;
+  b2WheelJointDef jd;
+  bool stopped;          //parameter for simulation management
+  int iter_stopped;     //parameter for simulation management
+};
+
+
 class World {
- public:
+  public:
   explicit World(const CarsPopulationData &population,
-                 SimulationData *simulation_data);
+                 SimulationData *simulation_data); 
   ~World()=default;
 
-  bool runSimulation(std::vector<cer::physics::Car> cars);
+  std::vector<cer::physics::Car> generateCars(const cer::CarsPopulationData &population);
+  bool runSimulation();
 
-  void Step(/*Settings& settings*/);
-  void ShiftOrigin(const b2Vec2& newOrigin);
-  std::vector<cer::physics::Car> generateCars(const cer::CarsPopulationData &population,
-                                         cer::SimulationData *simulation_data);
-
-
-
-  float vecNorm() const;  // temp
-
-
-
-
- private:
+  private:
   const CarsPopulationData &population_;
   SimulationData *simulation_data_;
-  b2Vec2 vec_;
+  Settings settings;
 
-  //        ###################################
-  b2Body* m_groundBody;
-  b2AABB m_worldAABB;
-  ContactPoint m_points[k_maxContactPoints];
-  int32 m_pointCount;
   std::unique_ptr<b2World> m_world;
-  int32 m_stepCount;
-  b2Profile m_maxProfile;
-  b2Profile m_totalProfile;
 
   b2Body* m_car;
   b2Body* m_wheel1;
   b2Body* m_wheel2;
-
-
   b2WheelJoint* m_spring1;
   b2WheelJoint* m_spring2;
 
-  Settings settings;
-  //###################################
-
+  b2Vec2 vec_; //nie wiem co to
 
 };
+
+
 }  // namespace physics
 }  // namespace cer
 
