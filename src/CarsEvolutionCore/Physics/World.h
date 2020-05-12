@@ -1,10 +1,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-//#include <box2d/b2_body.h>
 
-
-//dodałem biblioteczki, sprawdzic co to crt
 #include <algorithm>
 #include <stdio.h>
 #include <thread>
@@ -49,8 +46,8 @@ inline float randomFloat(float lo, float hi)
 struct Settings{
 
     //simualation and world
-    float m_hertz= 60.0f;     //simualtion time step every 1/60s
-    int sim_max_iter= 3600;  //1s = 60 iterations, 60s = 3600 iterations
+    float m_hertz= 60.0f;       //simualtion time step every 1/60s
+    int sim_max_iter= 3600*10;  //1s = 60 iterations, 60s = 3600 iterations, 10 cars
     int m_velocityIterations=8;
     int m_positionIterations=3;
     float minimumLength_of_vector=5;    /*if length of car position shift
@@ -58,7 +55,7 @@ struct Settings{
                                         value, car is counted as
                                         not moving*/
 
-    int max_car_iter=10000;              /*if car is not moving in
+    int max_car_iter=1000;              /*if car is not moving in
                                         'max_car_iter' it is counted
                                         as stopped -> flag 'stopped'
                                         in 'Car' struture is changed to 1.
@@ -119,12 +116,13 @@ static const int BODY_POINTS_NUM = 8;
 struct Car {
   Car() = default;
 
+  int car_num;
   b2PolygonShape chassis;
   b2Vec2 vertices[BODY_POINTS_NUM];
   b2CircleShape circle_front;
   b2CircleShape circle_rear;
   b2BodyDef bd;
-  b2FixtureDef fd;
+  b2FixtureDef fdc;
   b2WheelJointDef jd;
   bool stopped;          //parameter for simulation management
   int iter_stopped;     //parameter for simulation management
@@ -137,7 +135,6 @@ class World {
                  SimulationData *simulation_data); 
   ~World()=default;
 
-  std::vector<cer::physics::Car> generateCars(const cer::CarsPopulationData &population);
   bool runSimulation();
 
   private:
@@ -153,7 +150,7 @@ class World {
   b2WheelJoint* m_spring1;
   b2WheelJoint* m_spring2;
 
-  b2Vec2 vec_; //nie wiem co to
+  std::vector<cer::physics::Car> generateCars();
 
 };
 
