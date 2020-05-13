@@ -103,7 +103,7 @@ QVariantList CarsPopulationModel::toVariantList(
     cer::ParametersMatrix::citer end) const {
   QVariantList l;
   for (; begin != end; ++begin) {
-    l.push_back(*begin);
+    l.push_back((*begin) * 100);
   }
   return l;
 }

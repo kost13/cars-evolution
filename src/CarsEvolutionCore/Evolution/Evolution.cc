@@ -24,7 +24,7 @@ cer::ParametersMatrix dummyPopulation() {
     std::vector<double> points = std::vector<double>{
         0.40, 0.40, 1.20, 0.40, 1.30, 0.60, 1.10, 0.80, 1.00, 1.00, 0.80, 1.10, 0.70, 1.05, 0.60, 1.00};
     for (auto &p : points) {
-      cars.push_back((p + rand() % 20 - 10)/100.);
+      cars.push_back(p + (rand() % 20 - 10)/100.);
     }
   }
 

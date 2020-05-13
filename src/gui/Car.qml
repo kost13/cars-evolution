@@ -16,19 +16,19 @@ Item {
     function initialize(color, parameters){
         car_color = color
 
-        rear_r = parameters[0]*100
-        front_r = parameters[1]*100
+        rear_r = parameters[0]
+        front_r = parameters[1]
 
-        rear_x = parameters[2]*100
-        rear_y = parameters[3]*100
+        rear_x = parameters[2]
+        rear_y = parameters[3]
 
-        front_x = parameters[4]*100
-        front_y = parameters[5]*100
+        front_x = parameters[4]
+        front_y = parameters[5]
 
         polygon_points = []
 
         for(var i=2; i<parameters.length; i++){
-            polygon_points.push(parameters[i]*100)
+            polygon_points.push(parameters[i])
         }
 
         car_canvas.requestPaint()

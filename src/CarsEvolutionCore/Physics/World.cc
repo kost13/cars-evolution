@@ -175,8 +175,8 @@ std::vector<cer::physics::Car> cer::physics::World::generateCars(){
         car_t.jd.motorSpeed = settings.motor1_speed;
         car_t.jd.maxMotorTorque = settings.motor1_maxTorque;
         car_t.jd.enableMotor = settings.motor1_enable;
-        car_t.jd.frequencyHz = settings.motor1_frequencyHz;
-        car_t.jd.dampingRatio = settings.wheel1_dampingRatio;
+//        car_t.jd.frequencyHz = settings.motor1_frequencyHz;
+        car_t.jd.damping = settings.wheel1_dampingRatio;
         m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&car_t.jd);
 
 
@@ -195,8 +195,8 @@ std::vector<cer::physics::Car> cer::physics::World::generateCars(){
         car_t.jd.motorSpeed = settings.motor2_speed;
         car_t.jd.maxMotorTorque = settings.motor2_maxTorque;
         car_t.jd.enableMotor = settings.motor2_enable;
-        car_t.jd.frequencyHz = settings.motor2_frequencyHz;
-        car_t.jd.dampingRatio = settings.wheel2_dampingRatio;
+//        car_t.jd.frequencyHz = settings.motor2_frequencyHz;
+        car_t.jd.damping = settings.wheel2_dampingRatio;
         m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&car_t.jd);
 
 

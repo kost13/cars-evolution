@@ -33,7 +33,7 @@ void AppInterface::startSimulation() {
 QVariantList AppInterface::getPosition(int car_num) {
   try {
     auto pos = root_->popPosition(car_num);
-    return {pos.x, pos.y, pos.theta};
+    return {100 * pos.x, 100 * pos.y, pos.theta};
   } catch (const std::out_of_range &e) {
     cpputils::log::critical() << "Cannot get position for car " << car_num
                               << " " << e.what();
