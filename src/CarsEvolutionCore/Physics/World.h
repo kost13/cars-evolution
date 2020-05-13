@@ -136,6 +136,8 @@ class World {
   ~World()=default;
 
   bool runSimulation();
+  std::vector<std::pair<double, double>> getRoute();
+
 
   private:
   const CarsPopulationData &population_;
@@ -143,6 +145,7 @@ class World {
   Settings settings;
 
   std::unique_ptr<b2World> m_world;
+  std::vector<std::pair<double, double>> route;
 
   b2Body* m_car;
   b2Body* m_wheel1;

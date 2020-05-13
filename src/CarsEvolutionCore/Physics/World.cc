@@ -77,10 +77,31 @@ cer::physics::World::World(const cer::CarsPopulationData &population,
                     shape.Set(b2Vec2(x, 0.0f), b2Vec2(x, 2*dx));
                     ground->CreateFixture(&fd);
 
+                    route.emplace_back(-2*dx,0);
+                    route.emplace_back(2*dx,0);
+
+                    double x_=2*dx;
+                    double y_;
+                    //saving road
+                    for(int k=0;k<settings.number_of_stages;k++){
+                        x_+=dx;
+                        y_=hs[k];
+                        route.emplace_back(x_,y_);
+                    }
+
+                    x_+=dx;
+                    route.emplace_back(x_,2*dx);
+
+                    for(int k=0;k<23;k++){
+                        std::cout<<"x: "<<route[k].first<<std::endl<<"y: "<<route[k].second<<std::endl;
+                    }
+
+
+
             }
 }
 
-
+std::vector<std::pair<double, double>> cer::physics::World::getRoute(){return route;}
 
 std::vector<cer::physics::Car> cer::physics::World::generateCars(){
 
