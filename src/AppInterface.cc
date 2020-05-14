@@ -33,7 +33,7 @@ void AppInterface::startSimulation() {
 QVariantList AppInterface::getPosition(int car_num) {
   try {
     auto pos = root_->popPosition(car_num);
-    return {100 * pos.x, 100 * pos.y, pos.theta};
+    return {pos.x, pos.y, pos.theta};
   } catch (const std::out_of_range &e) {
     cpputils::log::critical() << "Cannot get position for car " << car_num
                               << " " << e.what();
@@ -55,4 +55,17 @@ bool AppInterface::loadPopulation(const QUrl &file) {
     return true;
   }
   return false;
+}
+
+QVariantList AppInterface::getRoute() {
+  auto route = root_->getRoute();
+
+  QVariantList route_list;
+
+  for (const auto &p : route) {
+    route_list.append(p.first);
+    route_list.append(p.second);
+  }
+
+  return route_list;
 }

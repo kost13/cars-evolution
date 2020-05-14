@@ -12,7 +12,7 @@ namespace {
 cer::ParametersMatrix dummyPopulation() {
   using cer::ParametersMatrix;
 
-  size_t n{1};
+  size_t n{10};
 
   std::vector<double> cars;
   cars.reserve(n * ParametersMatrix::parametersNum());
@@ -54,6 +54,7 @@ void cer::evolution::Evolution::generatePopulation() {
   auto params = population_->cars();
 
   RandomGenerator rg;
+  rg.setStd(0.04);
 
   for (size_t i = 0; i < params.carsNum(); ++i) {
     cer::evolution::mutate(params.begin(i), params.end(i), rg);

@@ -32,7 +32,7 @@ void cer::CarsEvolutionRoot::generatePopulation() {
 
 cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
-void cer::CarsEvolutionRoot::runSimulation() { o_->world_.runSimulation(); }
+void cer::CarsEvolutionRoot::runSimulation() { /*o_->world_.runSimulation();*/ o_->world_.runDummySimulation(); }
 
 cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {
   return o_->cars_population_.cars();
@@ -44,4 +44,8 @@ void cer::CarsEvolutionRoot::setCars(const cer::ParametersMatrix &cars) {
 
 cer::Position cer::CarsEvolutionRoot::popPosition(size_t car_index) {
   return o_->simulation_data_.popPosition(car_index);
+}
+
+std::vector<std::pair<double, double> > cer::CarsEvolutionRoot::getRoute() {
+  return o_->world_.getRoute();
 }

@@ -21,15 +21,21 @@ class CarsEvolutionRoot {
 
   ~CarsEvolutionRoot();
 
-  void generatePopulation();
+  // population
 
-  void runSimulation();
+  void generatePopulation();
 
   ParametersMatrix cars() const;
 
   void setCars(const ParametersMatrix &cars);
 
+  // simulation
+
+  void runSimulation();
+
   Position popPosition(size_t car_index);
+
+  std::vector<std::pair<double, double>> getRoute();
 
  private:
   struct Opaque;

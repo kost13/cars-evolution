@@ -305,9 +305,9 @@ _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
         position = it->bd.position;
         angle = it->bd.angle;
         Position position_={position.x,position.y,angle};
-        printf("%d\n",iter/10);
+//        printf("%d\n",iter/10);
 
-        printf("%d %4.2f %4.2f %4.2f\n",it->car_num, position_.x,position_.y,position_.theta);
+//        printf("%d %4.2f %4.2f %4.2f\n",it->car_num, position_.x,position_.y,position_.theta);
         simulation_data_->pushPosition(it->car_num, position_);
 
 
@@ -355,5 +355,26 @@ _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 
 
   return true;
+}
+
+bool cer::physics::World::runDummySimulation()
+{
+     auto cars_num = population_.cars().carsNum();
+     simulation_data_->reset(cars_num);
+
+     std::vector<float> speeds(cars_num);
+     for (auto &s : speeds) {
+       s = float(rand() % 10);
+     }
+     for (int j = 0; j < 200; ++j) {
+       {
+         for (size_t i = 0; i < cars_num; ++i) {
+           simulation_data_->pushPosition(
+               i, Position{(0.05f * speeds[i] + 1.0f) * j,
+                           0.5, speeds[i] * 0.1f * j});
+         }
+       }
+     }
+     return true;
 }
 

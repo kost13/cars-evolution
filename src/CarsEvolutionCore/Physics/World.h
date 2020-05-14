@@ -136,6 +136,10 @@ class World {
   ~World()=default;
 
   bool runSimulation();
+
+  //do testow animacji
+  bool runDummySimulation();
+
   std::vector<std::pair<double, double>> getRoute();
 
 
