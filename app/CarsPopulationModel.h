@@ -6,7 +6,7 @@
 #include <QAbstractListModel>
 #include <QColor>
 
-#include "CarsEvolutionCore/CarsPopulationData.h"
+#include "CarsPopulationData.h"
 
 namespace cer {
 class CarsEvolutionRoot;

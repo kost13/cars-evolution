@@ -5,9 +5,9 @@
 #include <cpputils/worker.h>
 #include <cpputils/logger.hpp>
 
-#include "CarsEvolutionCore/CarsEvolutionRoot.h"
-#include "CarsEvolutionCore/CarsPopulationData.h"
-#include "CarsEvolutionCore/SimulationData.h"
+#include "CarsEvolutionRoot.h"
+#include "CarsPopulationData.h"
+#include "SimulationData.h"
 
 #include "JsonParser.h"
 

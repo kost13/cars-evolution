@@ -7,8 +7,8 @@
 
 #include <cpputils/logger.hpp>
 
-#include "CarsEvolutionCore/CarsEvolutionRoot.h"
-#include "CarsEvolutionCore/CarsPopulationData.h"
+#include "CarsEvolutionRoot.h"
+#include "CarsPopulationData.h"
 
 namespace {
 QJsonArray carParametersToJson(const cer::ParametersMatrix &parameters) {
