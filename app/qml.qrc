@@ -14,5 +14,6 @@
         <file alias="docs/algorithm_overview.html">../docs/algorithm_overview.html</file>
         <file>gui/img/icon_preview.png</file>
         <file>gui/CarDetailsPopup.qml</file>
+        <file>gui/Route.qml</file>
     </qresource>
 </RCC>

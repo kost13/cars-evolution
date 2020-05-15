@@ -6,6 +6,8 @@
 
 namespace cer {
 namespace evolution {
+namespace math {
+
 class RandomGenerator {
  public:
   RandomGenerator() = default;
@@ -27,6 +29,7 @@ void mutate(iterator first, iterator last, const RandomGenerator &rg);
 std::vector<size_t> tournamentSelection(const std::vector<double> &fitness,
                                         size_t n, size_t tournament_size = 3);
 
+}  // namespace math
 }  // namespace evolution
 }  // namespace cer
 

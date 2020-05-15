@@ -5,7 +5,7 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 
-#include "CarsEvolutionCore/CarsEvolutionRoot.h"
+#include "CarsEvolutionRoot.h"
 
 #include "AppInterface.h"
 #include "CarsPopulationModel.h"

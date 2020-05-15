@@ -72,6 +72,7 @@ Item {
         target: PopulationModel
         onModelReset: {
             simulation_window.loadCars()
+            simulation_window.loadRoute()
         }
 
     }

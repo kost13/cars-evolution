@@ -1,42 +1,35 @@
 
+set(LIB_NAME CarsEvolutionCore)
+
+set(SRC_CORE
+    CarsEvolutionRoot.cc
+    CarsEvolutionRoot.h
+    CarsPopulationData.cc
+    CarsPopulationData.h
+    SimulationData.cc
+    SimulationData.h
+    ParametersMatrix.cc
+    ParametersMatrix.h
+
+    Physics/World.cc
+    Physics/World.h
+
+    Evolution/Evolution.cc
+    Evolution/Evolution.h
+    Evolution/MathUtils.cc
+    Evolution/MathUtils.h
+)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-if(BUILD_GUI)
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
-    find_package(Qt5 COMPONENTS Core Widgets Charts Quick QuickControls2 REQUIRED)    
-endif()
+add_library(${LIB_NAME} STATIC ${SRC_CORE})
+target_link_libraries(${LIB_NAME} PUBLIC box2d CppUtils)
+target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(SRC
-    main.cc
-    AppBuilder.cc
-    AppBuilder.h
-    AppInterface.cc
-    AppInterface.h
-    FileIO.cc
-    FileIO.h
-    CarsPopulationModel.cc
-    CarsPopulationModel.h
-    JsonParser.cc
-    JsonParser.h
-)
-
-set(RESOURCES
-    qml.qrc
-)
-
-add_subdirectory(CarsEvolutionCore)
-
-add_executable(${PROJECT_NAME} ${SRC} ${RESOURCES})
-
-target_link_libraries(${PROJECT_NAME} PRIVATE CarsEvolutionCore CppUtils)
-
-if(BUILD_GUI)
-        target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Core Qt5::Widgets Qt5::Quick Qt5::QuickControls2 Qt5::Charts)
-endif()
+set_target_properties(${LIB_NAME} PROPERTIES CXX_STANDARD 14)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+    target_compile_options(${LIB_NAME} PRIVATE -Wall -Wextra)
 elseif(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W3)
+    target_compile_options(${LIB_NAME} PRIVATE /W3)
 endif()

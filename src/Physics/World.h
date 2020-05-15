@@ -137,12 +137,19 @@ class World {
 
   bool runSimulation();
 
+  //do testow animacji
+  bool runDummySimulation();
+
+  std::vector<std::pair<double, double>> getRoute();
+
+
   private:
   const CarsPopulationData &population_;
   SimulationData *simulation_data_;
   Settings settings;
 
   std::unique_ptr<b2World> m_world;
+  std::vector<std::pair<double, double>> route;
 
   b2Body* m_car;
   b2Body* m_wheel1;

@@ -5,7 +5,7 @@
 
 #include <QString>
 
-#include "CarsEvolutionCore/CarsPopulationData.h"
+#include "CarsPopulationData.h"
 
 namespace json_parser {
 

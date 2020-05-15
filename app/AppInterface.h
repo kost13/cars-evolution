@@ -22,6 +22,7 @@ class AppInterface : public QObject {
   Q_INVOKABLE QVariantList getPosition(int car_num);
   Q_INVOKABLE bool savePopulation(const QUrl &file);
   Q_INVOKABLE bool loadPopulation(const QUrl &file);
+  Q_INVOKABLE QVariantList getRoute();
 
  signals:
   void simulationEnded();

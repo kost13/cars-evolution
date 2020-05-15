@@ -19,7 +19,7 @@ class Evolution {
  private:
   CarsPopulationData *population_;
   std::vector<double> population_fitness_;
-  RandomGenerator random_generator_{};
+  math::RandomGenerator random_generator_{};
 };
 
 }  // namespace evolution

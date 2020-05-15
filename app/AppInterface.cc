@@ -5,9 +5,9 @@
 #include <cpputils/worker.h>
 #include <cpputils/logger.hpp>
 
-#include "CarsEvolutionCore/CarsEvolutionRoot.h"
-#include "CarsEvolutionCore/CarsPopulationData.h"
-#include "CarsEvolutionCore/SimulationData.h"
+#include "CarsEvolutionRoot.h"
+#include "CarsPopulationData.h"
+#include "SimulationData.h"
 
 #include "JsonParser.h"
 
@@ -55,4 +55,17 @@ bool AppInterface::loadPopulation(const QUrl &file) {
     return true;
   }
   return false;
+}
+
+QVariantList AppInterface::getRoute() {
+  auto route = root_->getRoute();
+
+  QVariantList route_list;
+
+  for (const auto &p : route) {
+    route_list.append(p.first);
+    route_list.append(p.second);
+  }
+
+  return route_list;
 }
