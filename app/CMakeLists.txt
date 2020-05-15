@@ -25,8 +25,6 @@ set(RESOURCES
     qml.qrc
 )
 
-add_subdirectory(CarsEvolutionCore)
-
 add_executable(${PROJECT_NAME} ${SRC} ${RESOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE CarsEvolutionCore CppUtils)

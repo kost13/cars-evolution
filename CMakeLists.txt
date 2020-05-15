@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD 14)
 add_subdirectory(CppUtils)
 add_subdirectory(box2d/src)
 add_subdirectory(app)
+add_subdirectory(src)
 
 if(BUILD_TESTS)
     add_subdirectory(tests)
