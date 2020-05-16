@@ -3,27 +3,64 @@ import QtQuick.Controls 2.2
 
 Component {
 
-    ListView {
-//        anchors.fill: parent
-//        header: heading
-//        delegate: delegateChooser
-        model: model
-        delegate: Rectangle {
-            height: 25
-            width: 100
-            Text { text: name }
-        }
+    Rectangle {
+        width: 600
+        height: 600
 
-        ListModel {
-            id: model            
-            ListElement { type: "owner"; name: "Erik Larsson"; info: "Just a happy Qt hacker"; avatar: "avatar.jpg" }            
-            ListElement { type: "bool"; iconColor: "#00BCD4"; name: "Airplane mode"; valueBool: false }
-            ListElement { type: "bool"; iconColor: "#009688"; name: "WiFi"; valueBool: true }
-            ListElement { type: "bool"; iconColor: "#4CAF50"; name: "Bluetooth"; valueBool: true }            
-            ListElement { type: "string"; iconColor: "#8BC34A"; name: "IP"; valueString: "192.168.0.10" }
-            ListElement { type: "string"; iconColor: "#CDDC39"; name: "Netmask"; valueString: "255.255.255.0" }            
-            ListElement { type: "subsec"; iconColor: "#FFEB3B"; name: "Display settings"; }
-            ListElement { type: "subsec"; iconColor: "#FFC107"; name: "Privacy settings"; }
+
+        ListView {
+
+            anchors.fill: parent
+            anchors.margins: 10
+
+            header: Text {
+                text: "Ustawienia algorytmu ewolucyjnego"
+                font.pointSize: 20
+                anchors.margins: 10
+                anchors.bottomMargin: 30
+            }
+
+            model: model
+            delegate: settingsDelegate
+            interactive: false
+
+            Component {
+                   id: settingsDelegate
+                   Row {
+                       id: rowWrapper
+                       spacing: 10
+                       anchors.margins: 10
+                       height: 30
+
+                       Text {
+                           width: 260
+                           height: parent.height
+                           text: model.name
+                           font.pointSize: 12
+                       }
+
+                       TextInput {
+                           width: 50
+                           validator: DoubleValidator {bottom: 0.0; top: 10.0 }
+                           height: parent.height
+                           text: model.value
+                           font.pointSize: 12
+                       }
+
+                       Text {
+                           height: parent.height
+                           text: model.info
+                           font.pointSize: 10
+                       }
+                   }
+               }
+
+
+            ListModel {
+                id: model
+                ListElement { name: "odchylenie standardowe mutacji"; value: "0.05"; info: "opis parametru" }
+                ListElement { name: "liczebnosc potomstwa"; value: "1.0"; info: "opis parametru" }
+            }
         }
     }
 }

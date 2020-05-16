@@ -49,58 +49,73 @@ Item {
             Layout.fillWidth: true;
             Layout.fillHeight: true
 
-            GridView {
+            clip: true
+
+            ListView {                
+                id: parametersList
+
+                width: 120
+                Layout.fillHeight: true
+
+                interactive: false
+                ScrollBar.vertical: populationScrollBar
+
                 header: Text {
                     text: "Populacja"
                     height: 20
                 }
 
-                id: parametersGrid
-                width: 100
-                cellHeight: 35
-                Layout.fillHeight: true
-
                 model: PopulationModel
+                delegate: populatioDelegate
 
-                delegate: Row {
-                    spacing: 5
-                    width: parent.width
-                    height: parent.cellHeight
+                ScrollBar {
+                    id: populationScrollBar
+                    policy: ScrollBar.AsNeeded
+                }
 
-                    Text {
-                        width: 12
-                        text: model.number
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                Component {
+                    id: populatioDelegate
 
-                    Rectangle {
-                        width: 30
-                        height: 30
-                        color: model.color
-                         anchors.verticalCenter: parent.verticalCenter
-                    }
+                    Row {
+                        spacing: 5
+                        width: parent.width
+                        height: 35
 
-                    Button {
-                        text: ""
-                        width: 40
-                        height: 30
-
-                        background: Image {
-                            id: image
-                            source: "qrc:/gui/img/icon_preview.png"
-                            fillMode: Image.PreserveAspectFit
-                            anchors.centerIn: parent
-                            height: parent.height
-                            width:  parent.height
+                        Text {
+                            width: 12
+                            text: model.number
+                            anchors.verticalCenter: parent.verticalCenter
                         }
 
-                        onHoveredChanged: hovered ? popup.open() : popup.close()
+                        Rectangle {
+                            width: 30
+                            height: 30
+                            color: model.color
+                             anchors.verticalCenter: parent.verticalCenter
+                        }
 
-                        CarDetailsPopup {
-                            id: popup
-                            x: 30
-                            y: 0
-                            car_num: model.number - 1
+                        Button {
+                            text: ""
+                            width: 40
+                            height: 30
+
+                            background: Image {
+                                id: image
+                                source: "qrc:/gui/img/icon_preview.png"
+                                fillMode: Image.PreserveAspectFit
+                                anchors.centerIn: parent
+                                height: parent.height
+                                width:  parent.height
+                            }
+
+                            onHoveredChanged: hovered ? popup.open() : popup.close()
+
+                            CarDetailsPopup {
+                                id: popup
+                                x: 30
+                                y: 0
+                                car_num: model.number - 1
+                            }
                         }
                     }
                 }
