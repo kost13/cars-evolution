@@ -11,12 +11,15 @@ Rectangle {
     border.width: 2
     clip: true
 
+    signal newBestPosition(real xPosition)
+
     Route {
         id: route
     }
 
     function updateCarPosition() {
         var dx = 0
+        var best_position = 0
         for(var i=0; i<car_objects.length; i++){
             var pos = AppInterface.getPosition(i)
             if(pos[0] !== -1){
@@ -25,9 +28,14 @@ Rectangle {
                     dx = diff
                 }
                 car_objects[i].move(pos)
-//                chartView.updateChart(i, pos[0], pos[1])
+
+                if(pos[0] > best_position){
+                    best_position = pos[0]
+                }
             }
         }
+
+        simulation_window.newBestPosition(best_position)
 
         if(dx > 0){
             for(var i=0; i<car_objects.length; i++){

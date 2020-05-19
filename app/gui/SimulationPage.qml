@@ -30,6 +30,10 @@ Item {
                     Layout.preferredHeight: 300
 
                     anchors.top: parent.top
+
+                    onNewBestPosition: {
+                        cars_distance_summary.cars_distance = xPosition
+                    }
                 }
 
                 RowLayout {
@@ -37,9 +41,28 @@ Item {
                     width: simulation_window.width
                     spacing: 6
 
-                    Text { text: "Generacja: 10" }
-                    Text { text: "Samochody: 10" }
-                    Text { text: "Dystans: 10"   }
+                    Text {
+                        id: generation_summary
+                        property var generation_number: 0
+                        text: "Generacja: " + generation_number
+                    }
+                    Text {
+                        id: cars_number_summmary
+                        property var cars_number: 0
+                        text: "Samochody: " + cars_number
+                    }
+                    Text {
+                        id: cars_distance_summary
+                        property var cars_distance: 0
+                        text: "Dystans: " + cars_distance.toFixed(2)
+                    }
+                }
+
+                Connections {
+                    target: AppInterface
+                    onSimulationEnded: {
+                        generation_summary.generation_number += 1
+                    }
                 }
             }
         }
