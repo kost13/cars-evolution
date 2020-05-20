@@ -4,6 +4,7 @@
 #include <ctime>
 #include <random>
 #include <vector>
+#include <numeric>
 
 #include "CarsPopulationData.h"
 
@@ -12,20 +13,20 @@ namespace {
 cer::ParametersMatrix dummyPopulation() {
   using cer::ParametersMatrix;
 
-  size_t n{10};
+  size_t n{1};
 
   std::vector<double> cars;
   cars.reserve(n * ParametersMatrix::parametersNum());
 
   for (size_t i = 0; i < n; ++i) {
-    cars.push_back(static_cast<double>((rand() % 25 + 15) / 100.));
-    cars.push_back(static_cast<double>((rand() % 25 + 15) / 100.));
+    cars.push_back(static_cast<double>((rand() % 25 + 15) / 200.));
+    cars.push_back(static_cast<double>((rand() % 25 + 15) / 200.));
 
     std::vector<double> points =
         std::vector<double>{0.40, 0.40, 1.20, 0.40, 1.30, 0.60, 1.10, 0.80,
                             1.00, 1.00, 0.80, 1.10, 0.70, 1.05, 0.60, 1.00};
     for (auto &p : points) {
-      cars.push_back(p + (rand() % 20 - 10) / 100.);
+      cars.push_back(p + (rand() % 20 - 10) / 1000.);
     }
   }
 

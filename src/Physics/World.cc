@@ -39,12 +39,12 @@ cer::physics::World::World(const cer::CarsPopulationData &population,
 
                     const int size=20;  //settings.number_of_stages;
                     const float dx = settings.stage_width_x;
-
+/*
                     //start is at flat plate, size 4*dx, on the ground level
                     shape.Set(b2Vec2(-2*dx, 0.0f), b2Vec2(2*dx, 0.0f));
                     ground->CreateFixture(&fd);
-
-                    float x = 2*dx;
+*/
+                    float x = 1000;//2*dx;
                     float y1 = 0.0f;
 
 
@@ -129,6 +129,7 @@ std::vector<cer::physics::Car> cer::physics::World::generateCars(){
         car_t.circle_rear.m_radius = *it;
         it++;
 
+        std::cout<<"r1: "<<car_t.circle_front.m_radius<<"r2: "<<car_t.circle_rear.m_radius<<std::endl;
 
         //body point coordinates
         double x_;
@@ -147,11 +148,11 @@ std::vector<cer::physics::Car> cer::physics::World::generateCars(){
         int j;
         for(it=parametersMatrix.begin(i)+2,j=0;it!=parametersMatrix.end(i)-1 && j<BODY_POINTS_NUM;++it,++j){
 
-            x_=*it;
+            x_=*it+10.0f;
             ++it;
-            y_=*it;
+            y_=*it+25.0f;
             logger::info()<< x_ <<" "<< y_;
-
+            std::cout<<"x: "<<x_<<"y: "<<y_<<std::endl;
             car_t.vertices[j].Set(x_,y_);
 
 
@@ -176,37 +177,47 @@ std::vector<cer::physics::Car> cer::physics::World::generateCars(){
         //do wheel 2
 
         car_t.bd.type = b2_dynamicBody;
-        car_t.bd.position.Set(0.0f, 1.0f);
+        car_t.bd.position.Set(1.0f, 50.0f);
         m_car = m_world->CreateBody(&car_t.bd);
 
-        b2Vec2 axis(0.0f, 1.0f);
+
+        m_car->CreateFixture(&car_t.chassis, 1.0f);
+        car_t.fdc.filter.categoryBits = 0x0002; //jak przypisać maski itd.
+        car_t.fdc.filter.maskBits = 0x0001;
+
+
+        b2Vec2 axis(1.0f, 50.0f);
 
 
         //wheel 1
-        m_car->CreateFixture(&car_t.chassis, 1.0f);
+
         car_t.fdc.shape = &car_t.circle_front;
         car_t.fdc.density = settings.wheel1_density;
         car_t.fdc.friction = settings.wheel1_friction;
 
         car_t.bd.position.Set(wheel1_x, wheel1_y);  //wheel position
         m_wheel1 = m_world->CreateBody(&car_t.bd);
+        car_t.fdc.filter.categoryBits = 0x0002;
+        car_t.fdc.filter.maskBits = 0x0001;
         m_wheel1->CreateFixture(&car_t.fdc);
 
         car_t.jd.Initialize(m_car, m_wheel1, m_wheel1->GetPosition(), axis);
         car_t.jd.motorSpeed = settings.motor1_speed;
         car_t.jd.maxMotorTorque = settings.motor1_maxTorque;
         car_t.jd.enableMotor = settings.motor1_enable;
-//        car_t.jd.frequencyHz = settings.motor1_frequencyHz;
+ //       car_t.jd.frequencyHz = settings.motor1_frequencyHz;
         car_t.jd.damping = settings.wheel1_dampingRatio;
         m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&car_t.jd);
 
 
-
         //wheel 2
-        m_car->CreateFixture(&car_t.chassis, 1.0f);
+        //m_car->CreateFixture(&car_t.chassis, 1.0f);
         car_t.fdc.shape = &car_t.circle_rear;
         car_t.fdc.density = settings.wheel2_density;
         car_t.fdc.friction = settings.wheel2_friction;
+
+        car_t.fdc.filter.categoryBits = 0x0002;
+        car_t.fdc.filter.maskBits = 0x0001;
 
         car_t.bd.position.Set(wheel2_x, wheel2_y);    //wheel position
         m_wheel2 = m_world->CreateBody(&car_t.bd);
@@ -224,8 +235,6 @@ std::vector<cer::physics::Car> cer::physics::World::generateCars(){
         car_t.iter_stopped=0;   //simualtion management default parameter
         car_t.stopped=0;        //simualtion management default parameter
 
-        car_t.fdc.filter.categoryBits = 0x0002;
-        car_t.fdc.filter.maskBits = 0x0001;
 
 
         printf("%d \n",car_t.car_num);
@@ -241,6 +250,7 @@ std::vector<cer::physics::Car> cer::physics::World::generateCars(){
 
 
 bool cer::physics::World::runSimulation() {
+
 
     auto cars_num = population_.cars().carsNum();
     simulation_data_->reset(cars_num);
@@ -305,11 +315,10 @@ _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
         position = it->bd.position;
         angle = it->bd.angle;
         Position position_={position.x,position.y,angle};
-//        printf("%d\n",iter/10);
+        printf("%d\n",iter/10);
 
-//        printf("%d %4.2f %4.2f %4.2f\n",it->car_num, position_.x,position_.y,position_.theta);
+        printf("%d %4.2f %4.2f %4.2f\n",it->car_num, position_.x,position_.y,position_.theta);
         simulation_data_->pushPosition(it->car_num, position_);
-
 
 
         /* checks if car is moving in our definition and
