@@ -13,7 +13,7 @@ namespace {
 cer::ParametersMatrix dummyPopulation() {
   using cer::ParametersMatrix;
 
-  size_t n{10};
+  size_t n{1};
 
   std::vector<double> cars;
   cars.reserve(n * ParametersMatrix::parametersNum());

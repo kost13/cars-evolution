@@ -299,7 +299,7 @@ bool cer::physics::World::runSimulation() {
 
   b2Vec2 axis(settings.starting_position_x, settings.starting_position_y);
   for (it = cars.begin(), it2 = cars_struct.begin();
-       it != /*cars.begin()+1*/ cars.end(); ++it, ++it2) {
+       it != cars.begin() + 1 /*cars.end()*/; ++it, ++it2) {
     it2->mass_center = ((*it)->GetLocalCenter());
     printf("Nr: %d    (%4.2f, %4.2f)= (%4.2f, %4.2f)-(%4.2f, %4.2f)\n",
            it2->car_num, (it2->mass_center).x, (it2->mass_center).y,
@@ -317,7 +317,7 @@ bool cer::physics::World::runSimulation() {
 
     // pamietac, poprawic to +1 te powyzej
     for (it = cars.begin(), it2 = cars_struct.begin();
-         it != /*cars.begin()+1*/ cars.end(); ++it, ++it2) {
+         it != cars.begin() + 1 /*cars.end()*/; ++it, ++it2) {
       m_world->Step(timeStep, settings.m_velocityIterations,
                     settings.m_positionIterations);
 

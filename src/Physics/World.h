@@ -82,8 +82,8 @@ struct Settings {
   int wheel1_point_no = 0;  // to which point of body, wheel1 is attached
   float wheel1_density = 1.0f;
   float wheel1_friction = 0.9f;
-  float motor1_speed = 100.0f;
-  float motor1_maxTorque = 50000.0f;
+  float motor1_speed = 1000.0f;
+  float motor1_maxTorque = 10000.0f;
   bool motor1_enable = true;
   float motor1_frequencyHz = 4.0f;
   float wheel1_dampingRatio = 0.7f;
@@ -92,8 +92,8 @@ struct Settings {
   int wheel2_point_no = 3;  // to which point of body, wheel2 is attached
   float wheel2_density = 1.0f;
   float wheel2_friction = 0.9f;
-  float motor2_speed = 100.0f;
-  float motor2_maxTorque = 50000.0f;
+  float motor2_speed = 1000.0f;
+  float motor2_maxTorque = 10000.0f;
   bool motor2_enable = false;
   float motor2_frequencyHz = 4.0f;
   float wheel2_dampingRatio = 0.7f;
