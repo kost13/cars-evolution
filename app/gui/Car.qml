@@ -64,11 +64,11 @@ Item {
     }
 
     function transformX(x){
-        return 10 * x - animation_dx - car_rotation.origin.x
+        return -(10 * x - animation_dx - car_rotation.origin.x)
     }
 
     function transformY(y){
-        return y + 200 - car_rotation.origin.y
+        return -(y + 200 - car_rotation.origin.y)
     }
 
     function move(new_position){
