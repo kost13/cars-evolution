@@ -48,9 +48,9 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
     // można potem zamienić na wektor, jak zdecydujemy
     // gdzie to przechowujemy
 
-    float hs[size] = {1.0f, 3.0f,   4.0f,  -1.0f, -2.0f,  1.0f, 2.0f,
-                      5.0f, -1.25f, 0.0f,  1.0f,  1.0f,   4.0f, 0.0f,
-                      0.0f, -1.0f,  -2.0f, -5.0f, -5.25f, 0.0f};
+    float hs[size] = {1.0f, 0.3f,   0.4f,  -1.0f, -0.2f,  0.8f, 0.4f,
+                      0.5f, -0.25f, 0.0f,  0.1f,  -0.1f,  0.3f, 0.0f,
+                      0.0f, -0.1f,  -0.2f, -0.5f, -0.25f, 0.0f};
 
     // float hs[size];
 
@@ -248,18 +248,18 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
 bool cer::physics::World::runSimulation() {
   auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
-  /* for dummy simulation
-  auto cars_num = population_.cars().carsNum();
-  simulation_data_->reset(cars_num);
-  */
+/* for dummy simulation
+auto cars_num = population_.cars().carsNum();
+simulation_data_->reset(cars_num);
+*/
 
-  /*
-  // dummy simulation
-  std::vector<float> speeds(cars_num);
-  for (auto &s : speeds) {
-    s = float(rand() % 10);
-  }
-  */
+/*
+// dummy simulation
+std::vector<float> speeds(cars_num);
+for (auto &s : speeds) {
+  s = float(rand() % 10);
+}
+*/
 
 #if defined(_WIN32)
   // Enable memory-leak reports

@@ -70,7 +70,7 @@ struct Settings {
   int number_of_stages = 20;    /* jak zdecydujemy się na jakiś sposób
                                  przechowywania to zmienić w cpp przypisanie
                                  chwilowo jest stała macierz    */
-  float stage_width_x = 10.0f;
+  float stage_width_x = 2.0f;
 
   float starting_position_x = 0.5;
   float starting_position_y = 0.5;
