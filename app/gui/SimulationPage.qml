@@ -30,6 +30,10 @@ Item {
                     Layout.preferredHeight: 300
 
                     anchors.top: parent.top
+
+                    onNewBestPosition: {
+                        cars_distance_summary.cars_distance = xPosition
+                    }
                 }
 
                 RowLayout {
@@ -37,9 +41,28 @@ Item {
                     width: simulation_window.width
                     spacing: 6
 
-                    Text { text: "Generacja: 10" }
-                    Text { text: "Samochody: 10" }
-                    Text { text: "Dystans: 10"   }
+                    Text {
+                        id: generation_summary
+                        property var generation_number: 0
+                        text: "Generacja: " + generation_number
+                    }
+                    Text {
+                        id: cars_number_summmary
+                        property var cars_number: 0
+                        text: "Samochody: " + cars_number
+                    }
+                    Text {
+                        id: cars_distance_summary
+                        property var cars_distance: 0
+                        text: "Dystans: " + cars_distance.toFixed(2)
+                    }
+                }
+
+                Connections {
+                    target: AppInterface
+                    onSimulationEnded: {
+                        generation_summary.generation_number += 1
+                    }
                 }
             }
         }
@@ -49,58 +72,73 @@ Item {
             Layout.fillWidth: true;
             Layout.fillHeight: true
 
-            GridView {
+            clip: true
+
+            ListView {                
+                id: parametersList
+
+                width: 120
+                Layout.fillHeight: true
+
+                interactive: false
+                ScrollBar.vertical: populationScrollBar
+
                 header: Text {
                     text: "Populacja"
                     height: 20
                 }
 
-                id: parametersGrid
-                width: 100
-                cellHeight: 35
-                Layout.fillHeight: true
-
                 model: PopulationModel
+                delegate: populatioDelegate
 
-                delegate: Row {
-                    spacing: 5
-                    width: parent.width
-                    height: parent.cellHeight
+                ScrollBar {
+                    id: populationScrollBar
+                    policy: ScrollBar.AsNeeded
+                }
 
-                    Text {
-                        width: 12
-                        text: model.number
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                Component {
+                    id: populatioDelegate
 
-                    Rectangle {
-                        width: 30
-                        height: 30
-                        color: model.color
-                         anchors.verticalCenter: parent.verticalCenter
-                    }
+                    Row {
+                        spacing: 5
+                        width: parent.width
+                        height: 35
 
-                    Button {
-                        text: ""
-                        width: 40
-                        height: 30
-
-                        background: Image {
-                            id: image
-                            source: "qrc:/gui/img/icon_preview.png"
-                            fillMode: Image.PreserveAspectFit
-                            anchors.centerIn: parent
-                            height: parent.height
-                            width:  parent.height
+                        Text {
+                            width: 12
+                            text: model.number
+                            anchors.verticalCenter: parent.verticalCenter
                         }
 
-                        onHoveredChanged: hovered ? popup.open() : popup.close()
+                        Rectangle {
+                            width: 30
+                            height: 30
+                            color: model.color
+                             anchors.verticalCenter: parent.verticalCenter
+                        }
 
-                        CarDetailsPopup {
-                            id: popup
-                            x: 30
-                            y: 0
-                            car_num: model.number - 1
+                        Button {
+                            text: ""
+                            width: 40
+                            height: 30
+
+                            background: Image {
+                                id: image
+                                source: "qrc:/gui/img/icon_preview.png"
+                                fillMode: Image.PreserveAspectFit
+                                anchors.centerIn: parent
+                                height: parent.height
+                                width:  parent.height
+                            }
+
+                            onHoveredChanged: hovered ? popup.open() : popup.close()
+
+                            CarDetailsPopup {
+                                id: popup
+                                x: 30
+                                y: 0
+                                car_num: model.number - 1
+                            }
                         }
                     }
                 }
