@@ -35,6 +35,9 @@ Item {
 
         find_boundires()
 
+        car_rotation.origin.x = rear_x + 50
+        car_rotation.origin.y = car_canvas.height-rear_y-50
+
         car_canvas.requestPaint()
     }
 
@@ -58,22 +61,20 @@ Item {
         }
 
         car_canvas.width = 2 * (max_x - min_x + 50)
-        car_canvas.height = 2 * (max_y - min_y + 50)
-        car_rotation.origin.x = body.x + (max_x + min_x) / 2 + 50
-        car_rotation.origin.y = body.y + car_canvas.height - (max_y + min_y) / 2
+        car_canvas.height = 2 * (max_y - min_y + 50)  
     }
 
     function transformX(x){
-        return 10 * x - animation_dx - car_rotation.origin.x
+        return 100*x - animation_dx - car_rotation.origin.x
     }
 
     function transformY(y){
-        return -(y + 200 - car_rotation.origin.y)
+        return -100*y + parent.height * 0.6 - car_rotation.origin.y
     }
 
     function move(new_position){
         body.x = transformX(new_position[0])
-        body.y = transformY(new_position[1])
+        body.y = transformY(new_position[1])        
         car_rotation.angle = new_position[2]
     }
 
@@ -89,6 +90,9 @@ Item {
 
         onPaint: {
             var ctx = getContext("2d");
+
+//            ctx.fillStyle = Qt.rgba(1, 0, 0, 1);
+//            ctx.strokeRect(0, 0, width, height);
 
             // wheels
             ctx.beginPath()

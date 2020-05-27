@@ -48,9 +48,9 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
     // można potem zamienić na wektor, jak zdecydujemy
     // gdzie to przechowujemy
 
-    float hs[size] = {1.0f, 3.0f,   4.0f,  -1.0f, -2.0f,  1.0f, 2.0f,
-                      5.0f, -1.25f, 0.0f,  1.0f,  1.0f,   4.0f, 0.0f,
-                      0.0f, -1.0f,  -2.0f, -5.0f, -5.25f, 0.0f};
+    float hs[size] = {1.0f, 0.3f,   0.4f,  -1.0f, -0.2f,  0.8f, 0.4f,
+                      0.5f, -0.25f, 0.0f,  0.1f,  -0.1f,  0.3f, 0.0f,
+                      0.0f, -0.1f,  -0.2f, -0.5f, -0.25f, 0.0f};
 
     // float hs[size];
 
@@ -65,10 +65,11 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
 
     // wall at the end
     // remove if track could be extended
-    x += dx;
+
     shape.Set(b2Vec2(x, 0.0f), b2Vec2(x, 2 * dx));
     ground->CreateFixture(&fd);
 
+    route.emplace_back(-2 * dx, 2 * dx);
     route.emplace_back(-2 * dx, 0);
     route.emplace_back(2 * dx, 0);
 
@@ -82,9 +83,10 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
     }
 
     x_ += dx;
+    route.emplace_back(x_, 0);
     route.emplace_back(x_, 2 * dx);
 
-    for (int k = 0; k < 23; k++) {
+    for (int k = 0; k < 25; k++) {
       std::cout << "x: " << route[k].first << std::endl
                 << "y: " << route[k].second << std::endl;
     }
@@ -246,18 +248,18 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
 bool cer::physics::World::runSimulation() {
   auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
-  /* for dummy simulation
-  auto cars_num = population_.cars().carsNum();
-  simulation_data_->reset(cars_num);
-  */
+/* for dummy simulation
+auto cars_num = population_.cars().carsNum();
+simulation_data_->reset(cars_num);
+*/
 
-  /*
-  // dummy simulation
-  std::vector<float> speeds(cars_num);
-  for (auto &s : speeds) {
-    s = float(rand() % 10);
-  }
-  */
+/*
+// dummy simulation
+std::vector<float> speeds(cars_num);
+for (auto &s : speeds) {
+  s = float(rand() % 10);
+}
+*/
 
 #if defined(_WIN32)
   // Enable memory-leak reports
@@ -277,6 +279,7 @@ bool cer::physics::World::runSimulation() {
   std::vector<b2Body*> cars = generateCars();
   bool stop = 0;  // flag for simulation control
   int iter = 0;
+  int flag_stop = 0;
 
   std::vector<b2Body*>::iterator it;
 
@@ -327,12 +330,18 @@ bool cer::physics::World::runSimulation() {
       mass_y = (*it2).mass_center.y;
 
       Position position_ = {position.x - mass_x, position.y - mass_y, angle};
+      if (position_.x > 215 && position_.y > -5) {
+        std::cout << "dojechales kurwa do konca" << std::endl;
+        flag_stop = 1;
+        break;
+      }
+
       // printf("%d\n",iter/10);
       // if(iter==0){
       printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x, position_.y,
              position_.theta);
-      printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x + mass_x,
-             position_.y + mass_y, position_.theta);
+      // printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x + mass_x,
+      //      position_.y + mass_y, position_.theta);
       //}
 
       simulation_data_->pushPosition(it2->car_num, position_);
@@ -361,6 +370,8 @@ bool cer::physics::World::runSimulation() {
       iter++;
 
     }  // for each car
+
+    if (flag_stop) break;
 
     // Checks if any car is moving.
     // If not, 'stop' will be left with value 1 and simualtion stopped.

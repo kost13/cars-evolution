@@ -19,8 +19,8 @@ cer::ParametersMatrix dummyPopulation() {
   cars.reserve(n * ParametersMatrix::parametersNum());
 
   for (size_t i = 0; i < n; ++i) {
-    cars.push_back(static_cast<double>((rand() % 25 + 15) / 125.));
-    cars.push_back(static_cast<double>((rand() % 25 + 15) / 125.));
+    cars.push_back(static_cast<double>((rand() % 25 + 15) / 250.));
+    cars.push_back(static_cast<double>((rand() % 25 + 15) / 250.));
 
     std::vector<double> points =
         std::vector<double>{0.4,  0.4,  0.80, 0.50, 1.10, 0.60, 1.50, 0.60,
