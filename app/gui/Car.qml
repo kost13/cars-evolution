@@ -64,7 +64,7 @@ Item {
     }
 
     function transformX(x){
-        return -(10 * x - animation_dx - car_rotation.origin.x)
+        return 10 * x - animation_dx - car_rotation.origin.x
     }
 
     function transformY(y){
