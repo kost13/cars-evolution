@@ -20,6 +20,7 @@ Item {
 
     function draw_path(points) {
         path_points = points
+        route.width = 100*(points[points.length - 2] - points[0])
         route_canvas.requestPaint()
     }
 
@@ -29,11 +30,11 @@ Item {
     }
 
     function transformX(x){
-        return 10*x - animation_dx
+        return 100*x - animation_dx
     }
 
     function transformY(y){
-        return 8*y + 200;
+        return -100*y + parent.height * 0.6
     }
 
     function move(dx){
@@ -53,7 +54,6 @@ Item {
             }
 
             ctx.moveTo(transformX(path_points[0]), transformY(path_points[1]))
-
 
             for(var i=2; i<path_points.length; ++i){
                 ctx.lineTo(transformX(path_points[i]), transformY(path_points[++i]))
