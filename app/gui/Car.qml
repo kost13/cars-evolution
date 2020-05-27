@@ -68,7 +68,7 @@ Item {
     }
 
     function transformY(y){
-        return y + 200 - car_rotation.origin.y
+        return -(y + 200 - car_rotation.origin.y)
     }
 
     function move(new_position){

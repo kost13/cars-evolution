@@ -72,6 +72,7 @@ Item {
         target: PopulationModel
         onModelReset: {
             simulation_window.loadCars()
+            cars_number_summmary.cars_number = PopulationModel.rowCount()
             simulation_window.loadRoute()
         }
 
