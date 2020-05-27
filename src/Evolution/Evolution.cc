@@ -40,6 +40,7 @@ cer::evolution::Evolution::Evolution(cer::CarsPopulationData *population,
   if (time_seed) {
     std::srand(time(nullptr));
   }
+  initializeEvolutionParameters();
 }
 
 void cer::evolution::Evolution::setPopulationFitness(
@@ -59,7 +60,10 @@ void cer::evolution::Evolution::generatePopulation() {
   auto params = population_->cars();
 
   math::RandomGenerator rg;
-  rg.setStd(0.04);
+  {
+    std::lock_guard<std::mutex> locker(parameters_mutex_);
+    rg.setStd(parameters_["std"].value);
+  }
 
   std::vector<double> children;
   children.reserve(params.size());
@@ -74,4 +78,26 @@ void cer::evolution::Evolution::generatePopulation() {
   }
 
   population_->setCars(ParametersMatrix(children));
+}
+
+auto cer::evolution::Evolution::parameters() const
+    -> std::map<std::string, Parameter> {
+  std::lock_guard<std::mutex> locker(parameters_mutex_);
+  return parameters_;
+}
+
+void cer::evolution::Evolution::setParameterValue(const std::string &name,
+                                                  double val) {
+  std::lock_guard<std::mutex> locker(parameters_mutex_);
+  if (parameters_.find(name) != parameters_.end()) {
+    parameters_[name].value = val;
+  }
+}
+
+void cer::evolution::Evolution::initializeEvolutionParameters() {
+  std::lock_guard<std::mutex> locker(parameters_mutex_);
+  parameters_ = {
+      {"std", Parameter{"Odchylenie standardowe mutacji", 0.04, ""}},
+      {"potomstwo", Parameter{"Liczebność potomstwa", 1.0,
+                              "Liczebność potomstwa jako ułamek populacji"}}};
 }

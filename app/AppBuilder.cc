@@ -9,6 +9,7 @@
 
 #include "AppInterface.h"
 #include "CarsPopulationModel.h"
+#include "EvolutionSettingsModel.h"
 #include "FileIO.h"
 
 int AppBuilder::run(const std::vector<char *> & /*args*/) {
@@ -19,6 +20,7 @@ int AppBuilder::run(const std::vector<char *> & /*args*/) {
   AppInterface interface(&root);
 
   CarsPopulationModel population_model(root);
+  EvolutionSettingsModel evolution_settings_model(&root);
 
   QObject::connect(&interface, &AppInterface::newPopulationGenerated,
                    &population_model, &CarsPopulationModel::updatePoplation);
@@ -29,6 +31,9 @@ int AppBuilder::run(const std::vector<char *> & /*args*/) {
 
   engine.rootContext()->setContextProperty("PopulationModel",
                                            &population_model);
+
+  engine.rootContext()->setContextProperty("EvolutionSettingsModel",
+                                           &evolution_settings_model);
 
   QQuickStyle::setStyle("Material");
 
