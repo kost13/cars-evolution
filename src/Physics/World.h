@@ -41,7 +41,7 @@ struct Settings {
   // simualation and world
   float m_hertz = 10.0f;  // simualtion time step every 1/60s
   int sim_max_iter =
-      36000 * 10;  // 1s = 60 iterations, 60s = 3600 iterations, 10 cars
+      360 * 10;  // 1s = 60 iterations, 60s = 3600 iterations, 10 cars
   int m_velocityIterations = 8;      // 8
   int m_positionIterations = 3;      // 3
   float minimumLength_of_vector = 5; /*if length of car position shift
@@ -49,7 +49,7 @@ struct Settings {
                                      value, car is counted as
                                      not moving*/
 
-  int max_car_iter = 10000; /*if car is not moving in
+  int max_car_iter = 1000; /*if car is not moving in
                            'max_car_iter' it is counted
                            as stopped -> flag 'stopped'
                            in 'Car' struture is changed to 1.
@@ -78,22 +78,22 @@ struct Settings {
   //######################################################
   // cars
 
-  // wheel1
-  int wheel1_point_no = 0;  // to which point of body, wheel1 is attached
+  // front wheel
+  int wheel1_point_no = 3;  // to which point of body, wheel1 is attached
   float wheel1_density = 1.0f;
   float wheel1_friction = 0.9f;
-  float motor1_speed = 1000.0f;
-  float motor1_maxTorque = 10000.0f;
+  float motor1_speed = 200.0f;
+  float motor1_maxTorque = 2500.0f;
   bool motor1_enable = true;
   float motor1_frequencyHz = 4.0f;
   float wheel1_dampingRatio = 0.7f;
 
-  // wheel2
-  int wheel2_point_no = 3;  // to which point of body, wheel2 is attached
+  // rear wheel
+  int wheel2_point_no = 0;  // to which point of body, wheel2 is attached
   float wheel2_density = 1.0f;
   float wheel2_friction = 0.9f;
-  float motor2_speed = 1000.0f;
-  float motor2_maxTorque = 10000.0f;
+  float motor2_speed = -200.0f;
+  float motor2_maxTorque = -2500.0f;
   bool motor2_enable = false;
   float motor2_frequencyHz = 4.0f;
   float wheel2_dampingRatio = 0.7f;
