@@ -17,6 +17,9 @@ int AppBuilder::run(const std::vector<char *> & /*args*/) {
 
   cer::CarsEvolutionRoot root;
 
+  qApp->setOrganizationName("CarsEvolution");
+  qApp->setOrganizationDomain("CarsEvolution");
+
   AppInterface interface(&root);
 
   CarsPopulationModel population_model(root);

@@ -11,10 +11,11 @@ Item {
 
         RowLayout {
             id: row_layout
-            anchors.fill: parent
             spacing: 10
+            Layout.preferredHeight: parent.height * 0.5
+            Layout.alignment: Qt.AlignTop
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
             MainMenu {
                 id: main_menu
@@ -27,9 +28,8 @@ Item {
                     id: simulation_window
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: row_layout.height / 2
-
-                    anchors.top: parent.top
+                    Layout.preferredHeight: row_layout.height * 0.9
+                    Layout.alignment: Qt.AlignTop
 
                     onNewBestPosition: {
                         cars_distance_summary.cars_distance = xPosition
