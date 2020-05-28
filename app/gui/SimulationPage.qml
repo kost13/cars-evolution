@@ -34,6 +34,14 @@ Item {
                     onNewBestPosition: {
                         cars_distance_summary.cars_distance = xPosition
                     }
+
+                    onNewGlobalBestPosition: {
+                        cars_global_distance_summary.cars_distance = xPosition
+                    }
+
+                    onAnimationFinished: {
+                        newSimulationTimer.start()
+                    }
                 }
 
                 RowLayout {
@@ -55,6 +63,11 @@ Item {
                         id: cars_distance_summary
                         property var cars_distance: 0
                         text: "Dystans: " + cars_distance.toFixed(2)
+                    }
+                    Text {
+                        id: cars_global_distance_summary
+                        property var cars_distance: 0
+                        text: "Najlepszy dystans: " + cars_distance.toFixed(2)
                     }
                 }
 
@@ -192,9 +205,17 @@ Item {
 
     Timer {
         id: simulationTimer
-        interval: 50
+        interval: 100
         running: false
         repeat: true
         onTriggered: simulation_window.updateCarPosition()
+     }
+
+    Timer {
+        id: newSimulationTimer
+        interval: 1000
+        running: false
+        repeat: false
+        onTriggered: AppInterface.startSimulation()
      }
 }

@@ -13,6 +13,14 @@ Item {
     property var polygon_points: []
     property var car_color: "#FF0000"
     property var animation_dx: 0
+    readonly property int no_progress_max_count: 5
+    property int no_progress_count: no_progress_max_count
+    property var active: true
+
+    function setActive(active_flag){
+        active = active_flag
+        visible = false
+    }
 
     function initialize(color, parameters){
 
