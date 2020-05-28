@@ -29,6 +29,7 @@ class Evolution {
 
  private:
   void initializeEvolutionParameters();
+  cer::ParametersMatrix initialPopulation(size_t cars_num) const;
   CarsPopulationData *population_;
   std::vector<double> population_fitness_;
   math::RandomGenerator random_generator_{};
