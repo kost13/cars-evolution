@@ -97,7 +97,7 @@ void cer::evolution::Evolution::setParameterValue(const std::string &name,
 void cer::evolution::Evolution::initializeEvolutionParameters() {
   std::lock_guard<std::mutex> locker(parameters_mutex_);
   parameters_ = {
-      {"std", Parameter{"Odchylenie standardowe mutacji", 0.04, ""}},
+      {"std", Parameter{"Odchylenie standardowe mutacji", 0.03, ""}},
       {"potomstwo", Parameter{"Liczebność potomstwa", 1.0,
                               "Liczebność potomstwa jako ułamek populacji"}}};
 }
