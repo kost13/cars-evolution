@@ -42,7 +42,12 @@ Component {
 
                        TextInput {
                            width: 50
-                           validator: DoubleValidator {bottom: 0.0; top: 10.0; notation: DoubleValidator.StandardNotation; locale: "us"}
+                           validator: DoubleValidator {
+                               bottom: 0.0
+                               top: 10.0
+                               notation: DoubleValidator.StandardNotation
+                               locale: "us"
+                           }
                            height: parent.height
                            text: model.value
                            font.pointSize: 12

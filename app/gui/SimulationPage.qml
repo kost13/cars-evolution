@@ -27,7 +27,7 @@ Item {
                     id: simulation_window
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 300
+                    Layout.preferredHeight: row_layout.height / 2
 
                     anchors.top: parent.top
 
@@ -40,6 +40,7 @@ Item {
                     }
 
                     onAnimationFinished: {
+                        chartView.updateChart(bestCarIndex)
                         newSimulationTimer.start()
                     }
                 }
@@ -114,7 +115,7 @@ Item {
 
                     Row {
                         spacing: 5
-                        width: parent.width
+//                        width: parent.width
                         height: 35
 
                         Text {
@@ -159,8 +160,8 @@ Item {
 
             ChartView {
                 id: chartView
-                title: "Cars position"
-                legend.visible: false
+                title: "Parameters"
+
                 antialiasing: true
 
                 Layout.fillWidth: true
@@ -168,36 +169,35 @@ Item {
 
                 ValueAxis {
                     id: axisX
-                    titleText: "X"
+                    min: 1
+                    titleText: "Simulation number"
                 }
 
                 ValueAxis {
                     id: axisY
-                    titleText: "Y"
+                    titleText: "Parameter Values"
                 }
 
-                LineSeries {
-                    id: s1
+                ScatterSeries {
+                    id: car_rear_wheel_size
+                    axisX: axisX
+                    axisY: axisY                    
+                    name: "Rear wheel"
+                }
+
+                ScatterSeries {
+                    id: car_front_wheel_size
                     axisX: axisX
                     axisY: axisY
+                    name: "Front wheel"
                 }
 
-                LineSeries {
-                    id: s2
-                    axisX: axisX
-                    axisY: axisY
-                }
-
-                function updateChart(i, x, y){
-                    if(i === 0){
-                        s1.append(x,y)
-                        chartView.axisX(s1).max = x;
-                        chartView.axisY(s1).max = y;
-                    } else if(i === 1){
-                        s2.append(x,y)
-                        chartView.axisX(s2).max = x;
-                        chartView.axisY(s2).max = y;
-                    }
+                function updateChart(i){
+                   var parameters = PopulationModel.parameters(i)
+                   car_rear_wheel_size.append(generation_summary.generation_number, parameters[0])
+                   car_front_wheel_size.append(generation_summary.generation_number, parameters[1])
+                   axisX.max = generation_summary.generation_number + 1
+                   axisY.max = Math.max(axisY.max, parameters[0]*1.2, parameters[1]*1.2)
                 }
             }
         }

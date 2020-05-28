@@ -17,7 +17,7 @@ Rectangle {
 
     signal newBestPosition(real xPosition)
     signal newGlobalBestPosition(real xPosition)
-    signal animationFinished()
+    signal animationFinished(int bestCarIndex)
 
     Route {
         id: route
@@ -50,7 +50,7 @@ Rectangle {
                     active_cars_num -= 1
 
                     if(active_cars_num <= 0){
-                        simulation_window.animationFinished()
+                        simulation_window.animationFinished(i)
                     }
                 }
             }
