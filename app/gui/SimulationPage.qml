@@ -18,7 +18,7 @@ Item {
 
             MainMenu {
                 id: main_menu
-                anchors.top: parent.top
+                Layout.alignment: Qt.AlignTop
             }
 
             ColumnLayout {
@@ -103,7 +103,7 @@ Item {
                 }
 
                 model: PopulationModel
-                delegate: populatioDelegate
+                delegate: populationDelegate
 
                 ScrollBar {
                     id: populationScrollBar
@@ -111,11 +111,11 @@ Item {
                 }
 
                 Component {
-                    id: populatioDelegate
+                    id: populationDelegate
 
                     Row {
                         spacing: 5
-//                        width: parent.width
+                        width: parametersList.width
                         height: 35
 
                         Text {
@@ -150,7 +150,7 @@ Item {
                             CarDetailsPopup {
                                 id: popup
                                 x: 30
-                                y: 0
+                                y: -100
                                 car_num: model.number - 1
                             }
                         }
