@@ -21,7 +21,7 @@ struct Parameter {
 
 class Evolution {
  public:
-  explicit Evolution(CarsPopulationData *population, bool time_seed = true);
+  explicit Evolution(CarsPopulationData *population, int time_seed = -1);
   void setPopulationFitness(const std::vector<double> &fitness);
   void generatePopulation();
   std::map<std::string, Parameter> parameters() const;

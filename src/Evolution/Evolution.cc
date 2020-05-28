@@ -35,9 +35,9 @@ cer::ParametersMatrix dummyPopulation() {
 }  // namespace
 
 cer::evolution::Evolution::Evolution(cer::CarsPopulationData *population,
-                                     bool time_seed)
+                                     int time_seed)
     : population_(population) {
-  if (time_seed) {
+  if (time_seed == -1) {
     std::srand(time(nullptr));
   }
   initializeEvolutionParameters();
