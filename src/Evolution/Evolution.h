@@ -34,6 +34,7 @@ class Evolution {
   std::vector<double> population_fitness_;
   math::RandomGenerator random_generator_{};
   std::map<std::string, Parameter> parameters_;
+  bool first_run_{true};
   mutable std::mutex parameters_mutex_;
 };
 

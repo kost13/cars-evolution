@@ -49,8 +49,15 @@ void cer::evolution::Evolution::setPopulationFitness(
 }
 
 void cer::evolution::Evolution::generatePopulation() {
-  if (population_->empty()) {
+  if (population_->empty() && first_run_) {
     population_->setCars(dummyPopulation());
+    first_run_ = false;
+    return;
+  }
+
+  // population not empty so must have been loaded
+  if (first_run_) {
+    first_run_ = false;
     return;
   }
 
