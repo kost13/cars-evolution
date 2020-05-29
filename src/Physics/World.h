@@ -72,8 +72,8 @@ struct Settings {
                               chwilowo jest stała macierz    */
   float stage_width_x = 2.0f;
 
-  float starting_position_x = 0.5;
-  float starting_position_y = 0.5;
+  float starting_position_x = 0.0f;
+  float starting_position_y = 1.0f;
 
   //######################################################
   // cars
@@ -109,11 +109,11 @@ struct Car {
   Car() = default;
   Car(int car_num_) : car_num(car_num_) {}
 
-  b2Vec2 mass_center;  // relatively to rear_wheel
   int car_num;
   bool stopped = 0;      // parameter for simulation management
   int iter_stopped = 0;  // parameter for simulation management
   float maximal_distance_reached = 0;
+  b2Vec2 CoM_position;  // center of mass of car relatively to rear wheel
 };
 
 class World {
@@ -137,7 +137,7 @@ class World {
   // b2World *m_world;
   std::unique_ptr<b2World> m_world;
   std::vector<std::pair<double, double>> route;
-
+  std::vector<Car> cars_struct;
   std::vector<b2Body *> generateCars();
 };
 

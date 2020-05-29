@@ -293,6 +293,16 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
 
     // printf("%d \n", car_t.car_num);
 
+    // calculating Center of mass of each car relatively to rear wheel
+    b2Vec2 mass_center = (m_car->GetLocalCenter());
+    car_t.CoM_position.x = 0;
+    car_t.CoM_position.y = 0;
+    std::cout << -mass_center.x << std::endl;
+    std::cout << -mass_center.y << std::endl;
+    car_t.CoM_position.x = -mass_center.x - wheel1_x;
+    car_t.CoM_position.y = -mass_center.y - wheel1_y;
+
+    cars_struct.push_back(car_t);
     cars.push_back(m_car);
   }
 
@@ -302,18 +312,18 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
 bool cer::physics::World::runSimulation() {
   auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
-/* for dummy simulation
-auto cars_num = population_.cars().carsNum();
-simulation_data_->reset(cars_num);
-*/
+  /* for dummy simulation
+  auto cars_num = population_.cars().carsNum();
+  simulation_data_->reset(cars_num);
+  */
 
-/*
-// dummy simulation
-std::vector<float> speeds(cars_num);
-for (auto &s : speeds) {
-  s = float(rand() % 10);
-}
-*/
+  /*
+  // dummy simulation
+  std::vector<float> speeds(cars_num);
+  for (auto &s : speeds) {
+    s = float(rand() % 10);
+  }
+  */
 
 #if defined(_WIN32)
   // Enable memory-leak reports
@@ -344,10 +354,6 @@ for (auto &s : speeds) {
 
   last_position.SetZero();
   float angle;
-  float mass_x;
-  float mass_y;
-
-  std::vector<Car> cars_struct;
 
   for (size_t i = 0; i < cars.size(); i++) {
     Car car(i);
@@ -359,7 +365,6 @@ for (auto &s : speeds) {
   b2Vec2 axis(settings.starting_position_x, settings.starting_position_y);
   for (it = cars.begin(), it2 = cars_struct.begin();
        it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
-    it2->mass_center = ((*it)->GetLocalCenter());
     /*printf("Nr: %d    (%4.2f, %4.2f)= (%4.2f, %4.2f)-(%4.2f, %4.2f)\n",
            it2->car_num, (it2->mass_center).x, (it2->mass_center).y,
            ((*it)->GetLocalCenter()).x, ((*it)->GetLocalCenter()).y, axis.x,
@@ -370,25 +375,26 @@ for (auto &s : speeds) {
     // simulate computations
     //    logger::info() << "runSimulation" << j;
 
+    m_world->Step(timeStep, settings.m_velocityIterations,
+                  settings.m_positionIterations);
+
     /*for each car
      *jeżeli tak zdecydujemy, to można nie liczyć dla samochodów
      *które mają status zatrzymanych*/
     for (it = cars.begin(), it2 = cars_struct.begin();
          it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
-      m_world->Step(timeStep, settings.m_velocityIterations,
-                    settings.m_positionIterations);
-
       position = (*it)->GetPosition();
       angle = (*it)->GetAngle();
-      mass_x = (*it2).mass_center.x;
-      mass_y = (*it2).mass_center.y;
-
-      Position position_ = {position.x - mass_x, position.y - mass_y, angle};
+      std::cout << it2->CoM_position.x << std::endl;
+      std::cout << it2->CoM_position.y << std::endl;
+      Position position_ = {position.x + it2->CoM_position.x,
+                            position.y + it2->CoM_position.y, angle};
 
       // printf("%d\n",iter/10);
       // if(iter==0){
-      printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x, position_.y,
-             position_.theta);
+      // printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x,
+      // position_.y,
+      //             position_.theta);
 
       // printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x + mass_x,
       //      position_.y + mass_y, position_.theta);
@@ -497,6 +503,7 @@ bool cer::physics::World::runDummySimulation() {
       1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
       0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
 
+  double M_PI = 3.14159265358;  // sorka, ale u mnie na zaden sposób nie dziala
   for (unsigned int i = 0; i < size; ++i) {
     float y2 = hs[i];
     auto p = Position{x, y2, float(x * M_PI) / 180.0f};
