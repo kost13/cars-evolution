@@ -302,18 +302,18 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
 bool cer::physics::World::runSimulation() {
   auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
-  /* for dummy simulation
-  auto cars_num = population_.cars().carsNum();
-  simulation_data_->reset(cars_num);
-  */
+/* for dummy simulation
+auto cars_num = population_.cars().carsNum();
+simulation_data_->reset(cars_num);
+*/
 
-  /*
-  // dummy simulation
-  std::vector<float> speeds(cars_num);
-  for (auto &s : speeds) {
-    s = float(rand() % 10);
-  }
-  */
+/*
+// dummy simulation
+std::vector<float> speeds(cars_num);
+for (auto &s : speeds) {
+  s = float(rand() % 10);
+}
+*/
 
 #if defined(_WIN32)
   // Enable memory-leak reports
@@ -389,6 +389,7 @@ bool cer::physics::World::runSimulation() {
       // if(iter==0){
       printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x, position_.y,
              position_.theta);
+
       // printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x + mass_x,
       //      position_.y + mass_y, position_.theta);
       //}
@@ -450,25 +451,63 @@ bool cer::physics::World::runSimulation() {
   return true;
 }
 
+// bool cer::physics::World::runDummySimulation() {
+//  auto cars_num = population_.cars().carsNum();
+//  simulation_data_->reset(cars_num);
+
+//  std::vector<float> speeds(cars_num);
+//  for (auto& s : speeds) {
+//    s = float(rand() % 10);
+//  }
+//  for (int j = 0; j < 200; ++j) {
+//    {
+//      for (size_t i = 0; i < cars_num; ++i) {
+//        auto p =
+//            Position{(0.05f * speeds[i] + 1.0f) * j, 0.5, speeds[i] * 0.1f *
+//            j};
+//        if (i == 1) {
+//          std::cout << p.x << " " << p.y << std::endl;
+//        }
+//        simulation_data_->pushPosition(i, p);
+//      }
+//    }
+//  }
+//  return true;
+//}
+
 bool cer::physics::World::runDummySimulation() {
   auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
 
-  std::vector<float> speeds(cars_num);
-  for (auto& s : speeds) {
-    s = float(rand() % 10);
+  const int size = 100;  // settings.number_of_stages;
+  const float dx = settings.stage_width_x;
+
+  float x = 5 * dx;
+  float y1 = 0.0f;
+
+  float hs[size] = {
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
+
+  for (unsigned int i = 0; i < size; ++i) {
+    float y2 = hs[i];
+    auto p = Position{x, y2, float(x * M_PI) / 180.0f};
+    simulation_data_->pushPosition(1, p);
+
+    x += dx;
   }
-  for (int j = 0; j < 200; ++j) {
-    {
-      for (size_t i = 0; i < cars_num; ++i) {
-        simulation_data_->pushPosition(
-            i, Position{(0.05f * speeds[i] + 1.0f) * j, 0.5,
-                        speeds[i] * 0.1f * j});
-      }
-    }
-  }
+
   return true;
 }
+
 /*
 cer::physics::World::~World() {
   // By deleting the world, we delete the bomb, mouse joint, etc.

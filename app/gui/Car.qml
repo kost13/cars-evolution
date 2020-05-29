@@ -86,7 +86,7 @@ Item {
     function move(new_position){
         body.x = transformX(new_position[0])
         body.y = transformY(new_position[1])        
-        car_rotation.angle = new_position[2]
+        car_rotation.angle = new_position[2] * 180 / Math.PI
     }
 
     function shrinkToMinimumSize(){

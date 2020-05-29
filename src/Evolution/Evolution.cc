@@ -23,8 +23,8 @@ cer::ParametersMatrix dummyPopulation() {
     cars.push_back(static_cast<double>((rand() % 25 + 15) / 250.));
 
     std::vector<double> points =
-        std::vector<double>{0.4,  0.4,  0.80, 0.50, 1.10, 0.60, 1.50, 0.60,
-                            1.30, 0.80, 1.00, 0.90, 0.70, 0.90, 0.50, 0.60};
+        std::vector<double>{0.4,  0.4,  0.80, 0.50, 1.10, 0.60, 1.20, 0.80,
+                            1.21, 0.81, 1.00, 0.90, 0.70, 0.90, 0.50, 0.60};
     for (auto &p : points) {
       cars.push_back(p + (rand() % 25 - 15) / 1000.);
     }
@@ -50,7 +50,7 @@ void cer::evolution::Evolution::setPopulationFitness(
 
 void cer::evolution::Evolution::generatePopulation() {
   if (population_->empty()) {
-    population_->setCars(initialPopulation(20));
+    population_->setCars(dummyPopulation());
     return;
   }
 

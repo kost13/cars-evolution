@@ -32,8 +32,8 @@ void cer::CarsEvolutionRoot::generatePopulation() {
 cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
 void cer::CarsEvolutionRoot::runSimulation() {
-  o_->world_.runSimulation();
-  /*o_->world_.runDummySimulation();*/
+  //  o_->world_.runSimulation();
+  o_->world_.runDummySimulation();
 }
 
 cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {
