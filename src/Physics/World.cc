@@ -33,9 +33,6 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
     fd.shape = &shape;
     fd.density = settings.ground_density;
     fd.friction = settings.ground_friction;
-    /*fd.filter.categoryBits = 0x0001;
-    fd.filter.maskBits = 0x0002;
-    */
 
     const int size = 100;  // settings.number_of_stages;
     const float dx = settings.stage_width_x;
@@ -101,7 +98,7 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
     route.emplace_back(x_, 0);
     route.emplace_back(x_, 100 * dx);
 
-    for (int k = 0; k < 25; k++) {
+    for (int k = 0; k < size + 5; k++) {
       std::cout << "x: " << route[k].first << std::endl
                 << "y: " << route[k].second << std::endl;
     }
@@ -114,14 +111,21 @@ std::vector<std::pair<double, double>> cer::physics::World::getRoute() {
 
 std::vector<b2Body*> cer::physics::World::generateCars() {
   // number of cars in simulation
-  static const size_t car_No = 10;  // population_.cars().carsNum();
+  static const size_t car_No = population_.cars().carsNum();
+
+  // vertices need constant parameter and has problem with parameter taken form
+  // the other file
   // static const int BODY_POINTS_NUM =
   // (population_.cars().parametersNum()-2)/2;
+
   static const int BODY_POINTS_NUM = 8;
 
   std::cout << "Body points:" << BODY_POINTS_NUM << std::endl;
+
   // vector of cars
   std::vector<b2Body*> cars;
+
+  // loading parametersMatrix from evoultion module
   auto parametersMatrix = population_.cars();
 
   std::vector<double>::iterator it;
@@ -144,6 +148,8 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
 
     Car car_t;  // temporary object
 
+    // // // // inserting parameters
+
     car_t.car_num = i;
 
     // radiuses of wheels are saved
@@ -161,54 +167,71 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
     double y_;
 
     // coordinates of wheels are set later
-    double wheel1_x = 0;
-    double wheel1_y = 0;
+    float wheel1_x = 0;
+    float wheel1_y = 0;
 
-    double wheel2_x = 0;
-    double wheel2_y = 0;
+    float wheel2_x = 0;
+    float wheel2_y = 0;
 
     // shape of a car
 
     int j;
     for (it = parametersMatrix.begin(i) + 2, j = 0;
          it != parametersMatrix.end(i) - 1 && j < BODY_POINTS_NUM; ++it, ++j) {
-      x_ = *it;  //+10.0f;
+      x_ = *it;
       ++it;
-      y_ = *it;  //+25.0f;
+      y_ = *it;
+
       logger::info() << x_ << " " << y_;
-      std::cout << "x: " << x_ << "y: " << y_ << std::endl;
       vertices[j].Set(x_, y_);
 
       /*there is no method for getting coordinates from vertices
-      so it is better to save them*/
+      so it is better to save needed ones in later stages
+      (wheels coordinates)*/
+
       if (j == settings.wheel1_point_no) {
-        wheel1_x = x_;
-        wheel1_y = y_;
+        wheel1_x = static_cast<float>(x_);
+        wheel1_y = static_cast<float>(y_);
       }
 
       if (j == settings.wheel2_point_no) {
-        wheel2_x = x_;
-        wheel2_y = y_;
+        wheel2_x = static_cast<float>(x_);
+        wheel2_y = static_cast<float>(y_);
       }
     }
 
     chassis.Set(vertices, BODY_POINTS_NUM);
 
-    // jezeli koło nie bedzie sie krecic to ten blok skopiowac
-    // do wheel 2
-
     bd.type = b2_dynamicBody;
+    /*position where car is created
+     * - origin of a local coordinates system
+     * in which car is created - body points positions
+     */
+
     bd.position.Set(settings.starting_position_x, settings.starting_position_y);
     m_car = m_world->CreateBody(&bd);
 
     m_car->CreateFixture(&chassis, 1.0f);
-    fdc.filter.categoryBits = 0x0002;  // jak przypisać maski itd.
-    fdc.filter.maskBits = 0x0001;
+
+    /* filetring collisions allows to create cars which collide with
+     * track but not with each other. They all have categoryBits equal
+     * -belong to same category
+     */
+    fdc.filter.categoryBits = 0x0002;
+    // fdc.filter.maskBits = 0x0001; //not needed, they collide with everything
+    // else
 
     b2Vec2 axis(settings.starting_position_x, settings.starting_position_y);
 
-    // wheel 1
+    // parameters for springs, then take to settings
+    // it was added last time, as before the springs were working other way
+    float hertz = 4.0f;
+    float dampingRatio = 0.7f;
+    float omega = 2.0f * b2_pi * hertz;
 
+    // // //wheels creation
+
+    // wheel 1
     fdc.shape = &circle_front;
     fdc.density = settings.wheel1_density;
     fdc.friction = settings.wheel1_friction;
@@ -216,15 +239,22 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
     bd.position.Set(wheel1_x, wheel1_y);  // wheel position
     m_wheel1 = m_world->CreateBody(&bd);
     fdc.filter.categoryBits = 0x0002;
-    fdc.filter.maskBits = 0x0001;
+    // fdc.filter.maskBits = 0x0001;
     m_wheel1->CreateFixture(&fdc);
 
     jd.Initialize(m_car, m_wheel1, m_wheel1->GetPosition(), axis);
+    float mass1 = m_wheel1->GetMass();
     jd.motorSpeed = settings.motor1_speed;
     jd.maxMotorTorque = settings.motor1_maxTorque;
     jd.enableMotor = settings.motor1_enable;
     //       car_t.jd.frequencyHz = settings.motor1_frequencyHz;
     jd.damping = settings.wheel1_dampingRatio;
+    jd.stiffness = mass1 * omega * omega;
+    jd.damping = 2.0f * mass1 * dampingRatio * omega;
+    jd.lowerTranslation = -0.25f;
+    jd.upperTranslation = 0.25f;
+    jd.enableLimit = true;
+
     m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&jd);
 
     // wheel 2
@@ -234,25 +264,34 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
     fdc.friction = settings.wheel2_friction;
 
     fdc.filter.categoryBits = 0x0002;
-    fdc.filter.maskBits = 0x0001;
+    // fdc.filter.maskBits = 0x0001;
 
     bd.position.Set(wheel2_x, wheel2_y);  // wheel position
     m_wheel2 = m_world->CreateBody(&bd);
     m_wheel2->CreateFixture(&fdc);
 
     jd.Initialize(m_car, m_wheel2, m_wheel2->GetPosition(), axis);
+    float mass2 = m_wheel2->GetMass();
     jd.motorSpeed = settings.motor2_speed;
     jd.maxMotorTorque = settings.motor2_maxTorque;
     jd.enableMotor = settings.motor2_enable;
     //        car_t.jd.frequencyHz = settings.motor2_frequencyHz;
     jd.damping = settings.wheel2_dampingRatio;
+    jd.stiffness = mass2 * omega * omega;
+    jd.damping = 2.0f * mass2 * dampingRatio * omega;
+    jd.lowerTranslation = -0.25f;
+    jd.upperTranslation = 0.25f;
+    jd.enableLimit = true;
+
     m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&jd);
+
+    m_spring1->SetMotorSpeed(50);
+    // m_spring2->SetMotorSpeed(m_speed);
 
     car_t.iter_stopped = 0;  // simualtion management default parameter
     car_t.stopped = 0;       // simualtion management default parameter
-    // car_t.mass_center=
 
-    printf("%d \n", car_t.car_num);
+    // printf("%d \n", car_t.car_num);
 
     cars.push_back(m_car);
   }
@@ -292,20 +331,21 @@ bool cer::physics::World::runSimulation() {
   // creating physical car objects
   //'population_' was assigned in constructor
   std::vector<b2Body*> cars = generateCars();
+
   bool stop = 0;  // flag for simulation control
   int iter = 0;
-  int flag_stop = 0;
+  int flag_stop = 0;  // 1 if one of cars reached ending
 
   std::vector<b2Body*>::iterator it;
 
   b2Vec2 position;
   b2Vec2 last_position;
   b2Vec2 diff_position;  // for b2vec2 only -= operator is defined
+
   last_position.SetZero();
   float angle;
   float mass_x;
   float mass_y;
-  // int cars_not_moving;
 
   std::vector<Car> cars_struct;
 
@@ -313,16 +353,17 @@ bool cer::physics::World::runSimulation() {
     Car car(i);
     cars_struct.push_back(car);
   }
+
   std::vector<Car>::iterator it2;
 
   b2Vec2 axis(settings.starting_position_x, settings.starting_position_y);
   for (it = cars.begin(), it2 = cars_struct.begin();
        it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
     it2->mass_center = ((*it)->GetLocalCenter());
-    printf("Nr: %d    (%4.2f, %4.2f)= (%4.2f, %4.2f)-(%4.2f, %4.2f)\n",
+    /*printf("Nr: %d    (%4.2f, %4.2f)= (%4.2f, %4.2f)-(%4.2f, %4.2f)\n",
            it2->car_num, (it2->mass_center).x, (it2->mass_center).y,
            ((*it)->GetLocalCenter()).x, ((*it)->GetLocalCenter()).y, axis.x,
-           axis.y);
+           axis.y);*/
   }
 
   while (!stop && iter < settings.sim_max_iter) {
@@ -332,8 +373,6 @@ bool cer::physics::World::runSimulation() {
     /*for each car
      *jeżeli tak zdecydujemy, to można nie liczyć dla samochodów
      *które mają status zatrzymanych*/
-
-    // pamietac, poprawic to +1 te powyzej
     for (it = cars.begin(), it2 = cars_struct.begin();
          it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
       m_world->Step(timeStep, settings.m_velocityIterations,
@@ -345,11 +384,6 @@ bool cer::physics::World::runSimulation() {
       mass_y = (*it2).mass_center.y;
 
       Position position_ = {position.x - mass_x, position.y - mass_y, angle};
-      if (position_.x > 200 && position_.y > -5) {
-        std::cout << "dojechales do konca" << std::endl;
-        flag_stop = 1;
-        break;
-      }
 
       // printf("%d\n",iter/10);
       // if(iter==0){
@@ -360,6 +394,20 @@ bool cer::physics::World::runSimulation() {
       //}
 
       simulation_data_->pushPosition(it2->car_num, position_);
+
+      // maximal reached distance
+
+      if (position.x > it2->maximal_distance_reached)
+        it2->maximal_distance_reached = position.x;
+
+      // check if any car reached ending
+      // later parameters can be taken to the settings struct
+      if (position_.x > 200 && position_.y > -5) {
+        std::cout << "Car " << it2->car_num
+                  << "has reached the end of the track" << std::endl;
+        flag_stop = 1;
+        break;
+      }
 
       /* checks if car is moving in our definition and
        * if can be counted as stopped.
@@ -379,7 +427,7 @@ bool cer::physics::World::runSimulation() {
 
       position = last_position;
 
-      if (it2->iter_stopped > settings.max_car_iter)  // flaga up
+      if (it2->iter_stopped > settings.max_car_iter)  // flag up
         it2->stopped = 1;
 
       iter++;
@@ -390,7 +438,6 @@ bool cer::physics::World::runSimulation() {
 
     // Checks if any car is moving.
     // If not, 'stop' will be left with value 1 and simualtion stopped.
-
     stop = 1;
     for (it2 = cars_struct.begin(); it2 != cars_struct.end(); it2++)
       if (!it2->stopped) {

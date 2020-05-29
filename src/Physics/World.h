@@ -113,6 +113,7 @@ struct Car {
   int car_num;
   bool stopped = 0;      // parameter for simulation management
   int iter_stopped = 0;  // parameter for simulation management
+  float maximal_distance_reached = 0;
 };
 
 class World {
