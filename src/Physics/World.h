@@ -72,8 +72,8 @@ struct Settings {
                               chwilowo jest stała macierz    */
   float stage_width_x = 2.0f;
 
-  float starting_position_x = 0.0f;
-  float starting_position_y = 1.0f;
+  float starting_position_x = 2.0f;
+  float starting_position_y = 3.0f;
 
   //######################################################
   // cars
@@ -82,9 +82,9 @@ struct Settings {
   int wheel1_point_no = 3;  // to which point of body, wheel1 is attached
   float wheel1_density = 1.0f;
   float wheel1_friction = 0.9f;
-  float motor1_speed = -1.0f;
-  float motor1_maxTorque = -200.0f;
-  bool motor1_enable = true;
+  float motor1_speed = 0.0f;      //-1.0f;
+  float motor1_maxTorque = 0.0f;  //-200.0f;
+  bool motor1_enable = false;
   float motor1_frequencyHz = 4.0f;
   float wheel1_dampingRatio = 0.7f;
 
@@ -93,7 +93,7 @@ struct Settings {
   float wheel2_density = 1.0f;
   float wheel2_friction = 0.9f;
   float motor2_speed = -0.0f;
-  float motor2_maxTorque = -15.0f;
+  float motor2_maxTorque = 0.0f;  //-15.0f;
   bool motor2_enable = false;
   float motor2_frequencyHz = 4.0f;
   float wheel2_dampingRatio = 0.7f;
@@ -113,7 +113,8 @@ struct Car {
   bool stopped = 0;      // parameter for simulation management
   int iter_stopped = 0;  // parameter for simulation management
   float maximal_distance_reached = 0;
-  b2Vec2 CoM_position;  // center of mass of car relatively to rear wheel
+  // b2Vec2 CoM_position;  // center of mass of car relatively to rear wheel
+  b2Vec2 wheel2_pos;
 };
 
 class World {

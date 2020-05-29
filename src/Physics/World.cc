@@ -97,11 +97,11 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
     x_ += dx;
     route.emplace_back(x_, 0);
     route.emplace_back(x_, 100 * dx);
-
-    for (int k = 0; k < size + 5; k++) {
-      std::cout << "x: " << route[k].first << std::endl
-                << "y: " << route[k].second << std::endl;
-    }
+    /*
+        for (int k = 0; k < size + 5; k++) {
+          std::cout << "x: " << route[k].first << std::endl
+                    << "y: " << route[k].second << std::endl;
+        }*/
   }
 }
 
@@ -249,11 +249,11 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
     jd.enableMotor = settings.motor1_enable;
     //       car_t.jd.frequencyHz = settings.motor1_frequencyHz;
     jd.damping = settings.wheel1_dampingRatio;
-    jd.stiffness = mass1 * omega * omega;
-    jd.damping = 2.0f * mass1 * dampingRatio * omega;
-    jd.lowerTranslation = -0.25f;
-    jd.upperTranslation = 0.25f;
-    jd.enableLimit = true;
+    // jd.stiffness = mass1 * omega * omega;
+    // jd.damping = 2.0f * mass1 * dampingRatio * omega;
+    // jd.lowerTranslation = -0.25f;
+    // jd.upperTranslation = 0.25f;
+    // jd.enableLimit = true;
 
     m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&jd);
 
@@ -276,16 +276,16 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
     jd.maxMotorTorque = settings.motor2_maxTorque;
     jd.enableMotor = settings.motor2_enable;
     //        car_t.jd.frequencyHz = settings.motor2_frequencyHz;
-    jd.damping = settings.wheel2_dampingRatio;
-    jd.stiffness = mass2 * omega * omega;
-    jd.damping = 2.0f * mass2 * dampingRatio * omega;
-    jd.lowerTranslation = -0.25f;
-    jd.upperTranslation = 0.25f;
-    jd.enableLimit = true;
+    // jd.damping = settings.wheel2_dampingRatio;
+    // jd.stiffness = mass2 * omega * omega;
+    // jd.damping = 2.0f * mass2 * dampingRatio * omega;
+    // jd.lowerTranslation = -0.25f;
+    // jd.upperTranslation = 0.25f;
+    // jd.enableLimit = true;
 
     m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&jd);
 
-    m_spring1->SetMotorSpeed(50);
+    // m_spring1->SetMotorSpeed(50);
     // m_spring2->SetMotorSpeed(m_speed);
 
     car_t.iter_stopped = 0;  // simualtion management default parameter
@@ -294,7 +294,7 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
     // printf("%d \n", car_t.car_num);
 
     // calculating Center of mass of each car relatively to rear wheel
-    b2Vec2 mass_center = (m_car->GetLocalCenter());
+    /*b2Vec2 mass_center = (m_car->GetLocalCenter());
     car_t.CoM_position.x = 0;
     car_t.CoM_position.y = 0;
     std::cout << -mass_center.x << std::endl;
@@ -304,6 +304,10 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
 
     std::cout << car_t.CoM_position.x << std::endl;
     std::cout << car_t.CoM_position.y << std::endl;
+*/
+
+    car_t.wheel2_pos.x = wheel2_x;
+    car_t.wheel2_pos.y = wheel2_y;
 
     cars_struct.push_back(car_t);
     cars.push_back(m_car);
@@ -365,7 +369,7 @@ bool cer::physics::World::runSimulation() {
 
   std::vector<Car>::iterator it2;
 
-  b2Vec2 axis(settings.starting_position_x, settings.starting_position_y);
+  b2Vec2 axis(0.0f, 1.0f);
   for (it = cars.begin(), it2 = cars_struct.begin();
        it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
     /*printf("Nr: %d    (%4.2f, %4.2f)= (%4.2f, %4.2f)-(%4.2f, %4.2f)\n",
@@ -388,10 +392,31 @@ bool cer::physics::World::runSimulation() {
          it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
       position = (*it)->GetPosition();
       angle = (*it)->GetAngle();
-      // std::cout << it2->CoM_position.x << std::endl;
-      // std::cout << it2->CoM_position.y << std::endl;
-      Position position_ = {position.x + it2->CoM_position.x,
-                            position.y + it2->CoM_position.y, angle};
+
+      // calculating Center of mass of each car relatively to rear wheel
+      b2Vec2 mass_center = ((*it)->GetLocalCenter());
+      b2Vec2 LocCS_position;  // position of local CS in global CS
+      LocCS_position.x =
+          position.x - ((mass_center.x + it2->wheel2_pos.x) * cos(angle) -
+                        (mass_center.y + it2->wheel2_pos.y) * sin(angle));
+      LocCS_position.y =
+          position.y - ((mass_center.x + it2->wheel2_pos.x) * sin(angle) +
+                        (mass_center.y + it2->wheel2_pos.y) * cos(angle));
+      b2Vec2 rwheel_pos_GCS;  // rear wheel position in global coordiate system
+      rwheel_pos_GCS.x = LocCS_position.x + ((it2->wheel2_pos.x) * cos(angle) -
+                                             (it2->wheel2_pos.y) * sin(angle));
+      rwheel_pos_GCS.y = LocCS_position.y + ((it2->wheel2_pos.x) * sin(angle) +
+                                             (it2->wheel2_pos.y) * cos(angle));
+
+      // std::cout << -mass_center.x << std::endl;
+      // std::cout << -mass_center.y << std::endl;
+      // it2->CoM_position.x = -mass_center.x - it2->wheel2_pos.x;
+      // it2->CoM_position.y = -mass_center.y - it2->wheel2_pos.y;
+
+      // std::cout << rwheel_pos_GCS.x << std::endl;
+      // std::cout << rwheel_pos_GCS.y << std::endl;
+
+      Position position_ = {rwheel_pos_GCS.x, rwheel_pos_GCS.y, angle};
 
       // printf("%d\n",iter/10);
       // if(iter==0){
@@ -399,16 +424,16 @@ bool cer::physics::World::runSimulation() {
       // position_.y,
       //             position_.theta);
 
-      // printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x + mass_x,
-      //      position_.y + mass_y, position_.theta);
+      printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x, position_.y,
+             position_.theta);
       //}
 
       simulation_data_->pushPosition(it2->car_num, position_);
 
       // maximal reached distance
 
-      if (position.x > it2->maximal_distance_reached)
-        it2->maximal_distance_reached = position.x;
+      if (position_.x > it2->maximal_distance_reached)
+        it2->maximal_distance_reached = position_.x;
 
       // check if any car reached ending
       // later parameters can be taken to the settings struct
