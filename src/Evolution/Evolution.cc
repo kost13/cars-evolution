@@ -120,16 +120,16 @@ cer::ParametersMatrix cer::evolution::Evolution::initialPopulation(
   auto u = math::upperLimits(ParametersMatrix::parametersNum());
 
   for (size_t i = 0; i < cars_num; ++i) {
-    cars.push_back(static_cast<double>(10 * ((rand() % 50 + 1) / 100.)));
-    cars.push_back(static_cast<double>(10 * ((rand() % 50 + 1) / 100.)));
+    cars.push_back(static_cast<double>((rand() % 50 + 1) / 100.));
+    cars.push_back(static_cast<double>((rand() % 50 + 1) / 100.));
 
     int k{2};
     std::vector<double> points =
         std::vector<double>{0.4,  0.4,  0.80, 0.50, 1.10, 0.60, 1.50, 0.60,
                             1.30, 0.80, 1.00, 0.90, 0.70, 0.90, 0.50, 0.60};
     for (auto &p : points) {
-      cars.push_back(std::fmax(
-          l[k], std::fmin(u[k], 3 * (p + (rand() % 80 - 40) / 100.))));
+      cars.push_back(
+          std::fmax(l[k], std::fmin(u[k], p + (rand() % 80 - 40) / 100.)));
       ++k;
     }
   }

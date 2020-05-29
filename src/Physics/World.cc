@@ -299,8 +299,11 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
     car_t.CoM_position.y = 0;
     std::cout << -mass_center.x << std::endl;
     std::cout << -mass_center.y << std::endl;
-    car_t.CoM_position.x = -mass_center.x - wheel1_x;
-    car_t.CoM_position.y = -mass_center.y - wheel1_y;
+    car_t.CoM_position.x = -mass_center.x - wheel2_x;
+    car_t.CoM_position.y = -mass_center.y - wheel2_y;
+
+    std::cout << car_t.CoM_position.x << std::endl;
+    std::cout << car_t.CoM_position.y << std::endl;
 
     cars_struct.push_back(car_t);
     cars.push_back(m_car);
@@ -385,8 +388,8 @@ bool cer::physics::World::runSimulation() {
          it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
       position = (*it)->GetPosition();
       angle = (*it)->GetAngle();
-      std::cout << it2->CoM_position.x << std::endl;
-      std::cout << it2->CoM_position.y << std::endl;
+      // std::cout << it2->CoM_position.x << std::endl;
+      // std::cout << it2->CoM_position.y << std::endl;
       Position position_ = {position.x + it2->CoM_position.x,
                             position.y + it2->CoM_position.y, angle};
 
