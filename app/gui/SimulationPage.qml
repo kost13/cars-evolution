@@ -192,7 +192,7 @@ Item {
 
     Timer {
         id: simulationTimer
-        interval: 50
+        interval: 100
         running: false
         repeat: true
         onTriggered: simulation_window.updateCarPosition()

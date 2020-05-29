@@ -2,10 +2,9 @@
 
 #include <cpputils/logger.hpp>
 
+#include "CarsPopulationData.h"
 #include "Evolution/Evolution.h"
 #include "Physics/World.h"
-
-#include "CarsPopulationData.h"
 #include "SimulationData.h"
 
 struct cer::CarsEvolutionRoot::Opaque {
@@ -32,7 +31,10 @@ void cer::CarsEvolutionRoot::generatePopulation() {
 
 cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
-void cer::CarsEvolutionRoot::runSimulation() { o_->world_.runSimulation(); /*o_->world_.runDummySimulation();*/ }
+void cer::CarsEvolutionRoot::runSimulation() {
+  o_->world_.runSimulation();
+  /*o_->world_.runDummySimulation()*/;
+}
 
 cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {
   return o_->cars_population_.cars();

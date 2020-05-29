@@ -7,20 +7,22 @@
 
 namespace logger = cpputils::log;  // not used so far
 
-// constructor
+// constructor, here is initialized physics engine and created track.
 cer::physics::World::World(const cer::CarsPopulationData& population,
                            cer::SimulationData* simulation_data)
     : population_(population), simulation_data_(simulation_data) {
-  // the scene is initiated
+  // the scene is initiated with gravity vector
   b2Vec2 gravity;
   gravity.Set(settings.gravity_x, settings.gravity_y);
   m_world = std::make_unique<b2World>(gravity);
 
+  // m_world = new b2World(gravity);
   // b2BodyDef bodyDef;
   // m_groundBody = m_world->CreateBody(&bodyDef);
 
   b2Body* ground = nullptr;
   {
+    // track is created
     b2BodyDef bd;
     bd.type = b2_staticBody;
     ground = m_world->CreateBody(&bd);
@@ -35,22 +37,35 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
     fd.filter.maskBits = 0x0002;
     */
 
-    const int size = 20;  // settings.number_of_stages;
+    const int size = 100;  // settings.number_of_stages;
     const float dx = settings.stage_width_x;
 
-    // start is at flat plate, size 4*dx, on the ground level
-    shape.Set(b2Vec2(-2 * dx, 0.0f), b2Vec2(2 * dx, 0.0f));
+    // start is at flat plate, size 10*dx, on the ground level
+    shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(5 * dx, 0.0f));
     ground->CreateFixture(&fd);
 
-    float x = 2 * dx;
+    // create high wall at the left end of the track
+    shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(-5 * dx, 100 * dx));
+    ground->CreateFixture(&fd);
+
+    // on the right end of the starting plate
+    // a bumpy track is created, starting from (5dx,0) point
+    float x = 5 * dx;
     float y1 = 0.0f;
 
-    // można potem zamienić na wektor, jak zdecydujemy
-    // gdzie to przechowujemy
-
-    float hs[size] = {1.0f, 0.3f,   0.4f,  -1.0f, -0.2f,  0.8f, 0.4f,
-                      0.5f, -0.25f, 0.0f,  0.1f,  -0.1f,  0.3f, 0.0f,
-                      0.0f, -0.1f,  -0.2f, -0.5f, -0.25f, 0.0f};
+    // vector holding y positions of next points of the track
+    // x position change is constant step defined in the settings file
+    float hs[size] = {
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
 
     // float hs[size];
 
@@ -65,18 +80,18 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
 
     // wall at the end
     // remove if track could be extended
-
-    shape.Set(b2Vec2(x, 0.0f), b2Vec2(x, 2 * dx));
+    shape.Set(b2Vec2(x - dx, 0.0f), b2Vec2(x - dx, 100 * dx));
     ground->CreateFixture(&fd);
 
-    route.emplace_back(-2 * dx, 2 * dx);
-    route.emplace_back(-2 * dx, 0);
-    route.emplace_back(2 * dx, 0);
+    // loading points of track to send it to the visualisation module
+    route.emplace_back(-5 * dx, 5 * dx);  // wall at the left end
+    route.emplace_back(-5 * dx, 0);       // starting plate left end
+    route.emplace_back(5 * dx, 0);        // starting plate right end
 
-    double x_ = 2 * dx;
+    double x_ = 5 * dx;
     double y_;
-    // saving road
-    for (int k = 0; k < settings.number_of_stages; k++) {
+    // loading road
+    for (int k = 0; k < size /*settings.number_of_stages*/; k++) {
       x_ += dx;
       y_ = hs[k];
       route.emplace_back(x_, y_);
@@ -84,7 +99,7 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
 
     x_ += dx;
     route.emplace_back(x_, 0);
-    route.emplace_back(x_, 2 * dx);
+    route.emplace_back(x_, 100 * dx);
 
     for (int k = 0; k < 25; k++) {
       std::cout << "x: " << route[k].first << std::endl
@@ -99,7 +114,7 @@ std::vector<std::pair<double, double>> cer::physics::World::getRoute() {
 
 std::vector<b2Body*> cer::physics::World::generateCars() {
   // number of cars in simulation
-  static const size_t car_No = 1;  // population_.cars().carsNum();
+  static const size_t car_No = 10;  // population_.cars().carsNum();
   // static const int BODY_POINTS_NUM =
   // (population_.cars().parametersNum()-2)/2;
   static const int BODY_POINTS_NUM = 8;
@@ -248,18 +263,18 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
 bool cer::physics::World::runSimulation() {
   auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
-/* for dummy simulation
-auto cars_num = population_.cars().carsNum();
-simulation_data_->reset(cars_num);
-*/
+  /* for dummy simulation
+  auto cars_num = population_.cars().carsNum();
+  simulation_data_->reset(cars_num);
+  */
 
-/*
-// dummy simulation
-std::vector<float> speeds(cars_num);
-for (auto &s : speeds) {
-  s = float(rand() % 10);
-}
-*/
+  /*
+  // dummy simulation
+  std::vector<float> speeds(cars_num);
+  for (auto &s : speeds) {
+    s = float(rand() % 10);
+  }
+  */
 
 #if defined(_WIN32)
   // Enable memory-leak reports
@@ -302,7 +317,7 @@ for (auto &s : speeds) {
 
   b2Vec2 axis(settings.starting_position_x, settings.starting_position_y);
   for (it = cars.begin(), it2 = cars_struct.begin();
-       it != cars.begin() + 1 /*cars.end()*/; ++it, ++it2) {
+       it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
     it2->mass_center = ((*it)->GetLocalCenter());
     printf("Nr: %d    (%4.2f, %4.2f)= (%4.2f, %4.2f)-(%4.2f, %4.2f)\n",
            it2->car_num, (it2->mass_center).x, (it2->mass_center).y,
@@ -320,7 +335,7 @@ for (auto &s : speeds) {
 
     // pamietac, poprawic to +1 te powyzej
     for (it = cars.begin(), it2 = cars_struct.begin();
-         it != cars.begin() + 1 /*cars.end()*/; ++it, ++it2) {
+         it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
       m_world->Step(timeStep, settings.m_velocityIterations,
                     settings.m_positionIterations);
 
@@ -330,8 +345,8 @@ for (auto &s : speeds) {
       mass_y = (*it2).mass_center.y;
 
       Position position_ = {position.x - mass_x, position.y - mass_y, angle};
-      if (position_.x > 215 && position_.y > -5) {
-        std::cout << "dojechales kurwa do konca" << std::endl;
+      if (position_.x > 200 && position_.y > -5) {
+        std::cout << "dojechales do konca" << std::endl;
         flag_stop = 1;
         break;
       }
@@ -407,3 +422,9 @@ bool cer::physics::World::runDummySimulation() {
   }
   return true;
 }
+/*
+cer::physics::World::~World() {
+  // By deleting the world, we delete the bomb, mouse joint, etc.
+  delete m_world;
+  m_world = NULL;
+}*/
