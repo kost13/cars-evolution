@@ -35,11 +35,12 @@ cer::ParametersMatrix dummyPopulation() {
 }  // namespace
 
 cer::evolution::Evolution::Evolution(cer::CarsPopulationData *population,
-                                     bool time_seed)
+                                     int time_seed)
     : population_(population) {
-  if (time_seed) {
+  if (time_seed == -1) {
     std::srand(time(nullptr));
   }
+  initializeEvolutionParameters();
 }
 
 void cer::evolution::Evolution::setPopulationFitness(
@@ -49,7 +50,7 @@ void cer::evolution::Evolution::setPopulationFitness(
 
 void cer::evolution::Evolution::generatePopulation() {
   if (population_->empty()) {
-    population_->setCars(dummyPopulation());
+    population_->setCars(initialPopulation(20));
     return;
   }
 
@@ -59,7 +60,10 @@ void cer::evolution::Evolution::generatePopulation() {
   auto params = population_->cars();
 
   math::RandomGenerator rg;
-  rg.setStd(0.04);
+  {
+    std::lock_guard<std::mutex> locker(parameters_mutex_);
+    rg.setStd(parameters_["std"].value);
+  }
 
   std::vector<double> children;
   children.reserve(params.size());
@@ -74,4 +78,54 @@ void cer::evolution::Evolution::generatePopulation() {
   }
 
   population_->setCars(ParametersMatrix(children));
+}
+
+auto cer::evolution::Evolution::parameters() const
+    -> std::map<std::string, Parameter> {
+  std::lock_guard<std::mutex> locker(parameters_mutex_);
+  return parameters_;
+}
+
+void cer::evolution::Evolution::setParameterValue(const std::string &name,
+                                                  double val) {
+  std::lock_guard<std::mutex> locker(parameters_mutex_);
+  if (parameters_.find(name) != parameters_.end()) {
+    parameters_[name].value = val;
+  }
+}
+
+void cer::evolution::Evolution::initializeEvolutionParameters() {
+  std::lock_guard<std::mutex> locker(parameters_mutex_);
+  parameters_ = {
+      {"std", Parameter{"Odchylenie standardowe mutacji", 0.03, ""}},
+      {"potomstwo", Parameter{"Liczebność potomstwa", 1.0,
+                              "Liczebność potomstwa jako ułamek populacji"}}};
+}
+
+cer::ParametersMatrix cer::evolution::Evolution::initialPopulation(
+    size_t cars_num) const {
+  using cer::ParametersMatrix;
+
+  std::vector<double> cars;
+  cars.reserve(cars_num * ParametersMatrix::parametersNum());
+
+  auto l = math::lowerLimits(ParametersMatrix::parametersNum());
+  auto u = math::upperLimits(ParametersMatrix::parametersNum());
+
+  for (size_t i = 0; i < cars_num; ++i) {
+    cars.push_back(static_cast<double>((rand() % 50 + 1) / 100.));
+    cars.push_back(static_cast<double>((rand() % 50 + 1) / 100.));
+
+    int k{2};
+    std::vector<double> points =
+        std::vector<double>{0.4,  0.4,  0.80, 0.50, 1.10, 0.60, 1.50, 0.60,
+                            1.30, 0.80, 1.00, 0.90, 0.70, 0.90, 0.50, 0.60};
+    for (auto &p : points) {
+      cars.push_back(
+          std::max(l[k], std::min(u[k], p + (rand() % 80 - 40) / 100.)));
+      ++k;
+    }
+  }
+
+  return ParametersMatrix{cars};
 }

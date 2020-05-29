@@ -33,7 +33,7 @@ cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
 void cer::CarsEvolutionRoot::runSimulation() {
   o_->world_.runSimulation();
-  /*o_->world_.runDummySimulation()*/;
+  /*o_->world_.runDummySimulation();*/
 }
 
 cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {
@@ -42,6 +42,16 @@ cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {
 
 void cer::CarsEvolutionRoot::setCars(const cer::ParametersMatrix &cars) {
   o_->cars_population_.setCars(cars);
+}
+
+std::map<std::string, cer::evolution::Parameter>
+cer::CarsEvolutionRoot::parameters() const {
+  return o_->evolution_.parameters();
+}
+
+void cer::CarsEvolutionRoot::setParameterValue(const std::string &name,
+                                               double val) {
+  o_->evolution_.setParameterValue(name, val);
 }
 
 cer::Position cer::CarsEvolutionRoot::popPosition(size_t car_index) {

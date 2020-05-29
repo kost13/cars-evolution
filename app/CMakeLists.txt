@@ -19,6 +19,8 @@ set(SRC
     CarsPopulationModel.h
     JsonParser.cc
     JsonParser.h
+    EvolutionSettingsModel.cc
+    EvolutionSettingsModel.h
 )
 
 set(RESOURCES

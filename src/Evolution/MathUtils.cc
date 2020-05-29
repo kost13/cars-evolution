@@ -34,8 +34,12 @@ std::vector<double> cer::evolution::math::crossover(iterator p1_first,
 
 void cer::evolution::math::mutate(iterator first, iterator last,
                                   const RandomGenerator &rg) {
+  auto l = lowerLimits(std::distance(first, last));
+  auto u = upperLimits(std::distance(first, last));
+  int k{0};
   for (; first != last; ++first) {
-    *first = rg(*first);
+    *first = std::min(u[k], std::max(rg(*first), l[k]));
+    ++k;
   }
 }
 
@@ -54,4 +58,18 @@ std::vector<size_t> cer::evolution::math::tournamentSelection(
     res.push_back(*selected);
   }
   return res;
+}
+
+std::vector<double> cer::evolution::math::lowerLimits(
+    std::size_t params_count) {
+  auto v = std::vector<double>(params_count, 0.0);
+  if (params_count > 1) {
+    v[0] = v[1] = 0.01;
+  }
+  return v;
+}
+
+std::vector<double> cer::evolution::math::upperLimits(
+    std::size_t params_count) {
+  return std::vector<double>(params_count, 3.0);
 }

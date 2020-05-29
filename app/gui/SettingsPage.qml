@@ -5,8 +5,7 @@ Component {
 
     Rectangle {
         width: 600
-        height: 600
-
+        height: 600      
 
         ListView {
 
@@ -20,7 +19,7 @@ Component {
                 anchors.bottomMargin: 30
             }
 
-            model: model
+            model: EvolutionSettingsModel
             delegate: settingsDelegate
             interactive: false
 
@@ -32,6 +31,8 @@ Component {
                        anchors.margins: 10
                        height: 30
 
+
+
                        Text {
                            width: 260
                            height: parent.height
@@ -41,26 +42,25 @@ Component {
 
                        TextInput {
                            width: 50
-                           validator: DoubleValidator {bottom: 0.0; top: 10.0 }
+                           validator: DoubleValidator {
+                               bottom: 0.0
+                               top: 10.0
+                               notation: DoubleValidator.StandardNotation
+                               locale: "us"
+                           }
                            height: parent.height
                            text: model.value
                            font.pointSize: 12
+                           onAccepted: model.value = text
                        }
 
                        Text {
                            height: parent.height
-                           text: model.info
+                           text: model.description
                            font.pointSize: 10
                        }
                    }
                }
-
-
-            ListModel {
-                id: model
-                ListElement { name: "odchylenie standardowe mutacji"; value: "0.05"; info: "opis parametru" }
-                ListElement { name: "liczebnosc potomstwa"; value: "1.0"; info: "opis parametru" }
-            }
         }
     }
 }

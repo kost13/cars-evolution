@@ -42,7 +42,7 @@ ToolBar {
         }
 
         ToolbarButton {
-            anchors.right: parent.right
+            Layout.alignment: Qt.AlignRight
             text: qsTr("Zamknij")
             onClicked: Qt.quit()
         }

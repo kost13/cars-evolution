@@ -1,6 +1,7 @@
 #ifndef CARSEVOLUTIONROOT_H
 #define CARSEVOLUTIONROOT_H
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -8,6 +9,10 @@ namespace cer {
 
 struct ParametersMatrix;
 struct Position;
+
+namespace evolution {
+struct Parameter;
+}
 
 class CarsEvolutionRoot {
  public:
@@ -28,6 +33,12 @@ class CarsEvolutionRoot {
   ParametersMatrix cars() const;
 
   void setCars(const ParametersMatrix &cars);
+
+  // evolution parameters
+
+  std::map<std::string, evolution::Parameter> parameters() const;
+
+  void setParameterValue(const std::string &name, double val);
 
   // simulation
 
