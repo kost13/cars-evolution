@@ -33,9 +33,9 @@ cer::ParametersMatrix dummyPopulation(size_t n) {
 }  // namespace
 
 cer::evolution::Evolution::Evolution(cer::CarsPopulationData *population,
-                                     int time_seed)
+                                     int seed)
     : population_(population) {
-  if (time_seed == -1) {
+  if (seed == -1) {
     std::srand(time(nullptr));
   }
   initializeEvolutionParameters();
@@ -63,8 +63,6 @@ void cer::evolution::Evolution::generatePopulation() {
     population_fitness_ =
         std::vector<double>(population_->cars().carsNum(), 1.0);
   }
-
-  //  std::iota(population_fitness_.begin(), population_fitness_.end(), 1);
 
   auto params = population_->cars();
 
