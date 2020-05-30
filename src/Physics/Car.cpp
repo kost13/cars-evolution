@@ -24,11 +24,11 @@ cer::physics::Car::Car(b2World* world,
 
   // radiuses of wheels are saved
 
-  circle_front.m_radius = *it;
-  double FrontWheelRadius = *it;
-  it++;
   circle_rear.m_radius = *it;
   double RearWheelRadius_ = *it;
+  it++;
+  circle_front.m_radius = *it;
+  double FrontWheelRadius = *it;
   it++;
 
   // body point coordinates
@@ -120,7 +120,7 @@ cer::physics::Car::Car(b2World* world,
   jd.Initialize(car_, wheel_rear_, wheel_rear_->GetPosition(), axis);
   float mass1 = wheel_rear_->GetMass();
   jd.motorSpeed = -40.0f;
-  jd.maxMotorTorque = 20.0f;
+  jd.maxMotorTorque = 10.0f;
   jd.enableMotor = true;
   jd.stiffness = mass1 * omega * omega;
   jd.damping = 2.0f * mass1 * dampingRatio * omega;
