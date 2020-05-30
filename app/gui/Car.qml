@@ -13,6 +13,16 @@ Item {
     property var polygon_points: []
     property var car_color: "#FF0000"
     property var animation_dx: 0
+    readonly property int no_progress_max_count: 5
+    property int no_progress_count: no_progress_max_count
+    property var active: true
+    property var dx: 50
+    property var dy: 50
+
+    function setActive(active_flag){
+        active = active_flag
+        visible = false
+    }
 
     function initialize(color, parameters){
 
@@ -24,8 +34,8 @@ Item {
         rear_x = parameters[2]
         rear_y = parameters[3]
 
-        front_x = parameters[4]
-        front_y = parameters[5]
+        front_x = parameters[8]
+        front_y = parameters[9]
 
         polygon_points = []
 
@@ -33,10 +43,12 @@ Item {
             polygon_points.push(parameters[i])
         }
 
-        find_boundires()
+        var boundries = find_boundires()
+        car_canvas.width = 2 * (boundries[1] - boundries[0] + dx)
+        car_canvas.height = 2 * (boundries[3] - boundries[2] + dy)
 
-        car_rotation.origin.x = rear_x + 50
-        car_rotation.origin.y = car_canvas.height-rear_y-50
+        car_rotation.origin.x = rear_x + dx
+        car_rotation.origin.y = car_canvas.height-rear_y-dy
 
         car_canvas.requestPaint()
     }
@@ -60,8 +72,7 @@ Item {
             }
         }
 
-        car_canvas.width = 2 * (max_x - min_x + 50)
-        car_canvas.height = 2 * (max_y - min_y + 50)  
+        return [min_x, max_x, min_y, max_y]
     }
 
     function transformX(x){
@@ -75,7 +86,17 @@ Item {
     function move(new_position){
         body.x = transformX(new_position[0])
         body.y = transformY(new_position[1])        
-        car_rotation.angle = new_position[2]
+        car_rotation.angle = new_position[2] * 180 / Math.PI
+    }
+
+    function shrinkToMinimumSize(){
+        var boundries = find_boundires()
+        var width = boundries[1] - boundries[0] + rear_r + front_r + 50
+        var height = (boundries[3] - boundries[2]) + rear_r + front_r + 50
+        dx= Math.max(rear_r, front_r) + 10 - boundries[0]
+        dy= car_canvas.height - boundries[3] - Math.max(rear_r, front_r)
+        car_canvas.requestPaint()
+        return [width, height]
     }
 
     transform: Rotation {
@@ -96,19 +117,18 @@ Item {
 
             // wheels
             ctx.beginPath()
-            ctx.arc(front_x+50, height-front_y-50, front_r, 0, 2*Math.PI, false)
-            ctx.arc(rear_x+50, height-rear_y-50, rear_r, 0, 2*Math.PI, false)
+            ctx.arc(front_x+dx, height-front_y-dy, front_r, 0, 2*Math.PI, false)
+            ctx.arc(rear_x+dx, height-rear_y-dy, rear_r, 0, 2*Math.PI, false)
             ctx.fillStyle = Qt.rgba(0.25, 0.25, 0.25, 1);
             ctx.fill()
             ctx.closePath()
 
             //body
             ctx.beginPath()
-            ctx.moveTo(polygon_points[0]+50, height-polygon_points[1]-50)
+            ctx.moveTo(polygon_points[0]+dx, height-polygon_points[1]-dy)
             for(var i=2; i<polygon_points.length; i+=2){
-                ctx.lineTo(polygon_points[i]+50, height-polygon_points[i+1]-50)
+                ctx.lineTo(polygon_points[i]+dx, height-polygon_points[i+1]-dy)
             }
-            ctx.lineTo(polygon_points[0]+50, height-polygon_points[1]-50)
 
             ctx.fillStyle = car_color
             ctx.fill()

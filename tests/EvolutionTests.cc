@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE
 #include <boost/test/unit_test.hpp>
 
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 
@@ -54,8 +55,13 @@ BOOST_AUTO_TEST_CASE(evolution_math_test) {
   for (int i = 2; i < 7; ++i) {
     auto selected = math::tournamentSelection(fitness, i, i / 2 + 3);
     BOOST_TEST(selected.size() == i);
+    std::cout << "inidices selected in tournament, there should be mostly "
+                 "numbers close to 10: "
+              << std::endl;
     for (auto s : selected) {
+      std::cout << s << " ";
       BOOST_TEST(s < 10);
     }
+    std::cout << std::endl;
   }
 }

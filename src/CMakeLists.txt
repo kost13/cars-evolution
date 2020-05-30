@@ -13,6 +13,8 @@ set(SRC_CORE
 
     Physics/World.cc
     Physics/World.h
+    Physics/Car.h
+    Physics/Car.cpp
 
     Evolution/Evolution.cc
     Evolution/Evolution.h

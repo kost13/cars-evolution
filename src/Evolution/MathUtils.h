@@ -29,6 +29,10 @@ void mutate(iterator first, iterator last, const RandomGenerator &rg);
 std::vector<size_t> tournamentSelection(const std::vector<double> &fitness,
                                         size_t n, size_t tournament_size = 3);
 
+std::vector<double> lowerLimits(std::size_t params_count);
+
+std::vector<double> upperLimits(std::size_t params_count);
+
 }  // namespace math
 }  // namespace evolution
 }  // namespace cer
