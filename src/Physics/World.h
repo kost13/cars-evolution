@@ -15,6 +15,7 @@
 #include <crtdbg.h>
 #endif
 
+#include "Car.h"
 #include "ParametersMatrix.h"
 struct Settings;
 
@@ -73,7 +74,7 @@ struct Settings {
   float stage_width_x = 2.0f;
 
   float starting_position_x = 2.0f;
-  float starting_position_y = 3.0f;
+  float starting_position_y = 5.0f;
 
   //######################################################
   // cars
@@ -105,16 +106,15 @@ static const int BODY_POINTS_NUM = 8;
 
 //#########################################################
 
-struct Car {
-  Car() = default;
-  Car(int car_num_) : car_num(car_num_) {}
-
-  int car_num;
-  bool stopped = 0;      // parameter for simulation management
-  int iter_stopped = 0;  // parameter for simulation management
-  float maximal_distance_reached = 0;
-  // b2Vec2 CoM_position;  // center of mass of car relatively to rear wheel
-  b2Vec2 wheel2_pos;
+struct Car_parameters {
+  Car_parameters() = default;
+  Car_parameters(int car_num) : car_num_(car_num) {}
+  int car_num_;
+  bool stopped_ = 0;      // parameter for simulation management
+  int iter_stopped_ = 0;  // parameter for simulation management
+  float maximal_distance_reached_ = 0;
+  b2Vec2 CoM_position;  // center of mass of car relatively to rear wheel
+  b2Vec2 wheel2_pos_;
 };
 
 class World {
@@ -138,8 +138,8 @@ class World {
   // b2World *m_world;
   std::unique_ptr<b2World> m_world;
   std::vector<std::pair<double, double>> route;
-  std::vector<Car> cars_struct;
-  std::vector<b2Body *> generateCars();
+  std::vector<Car_parameters> cars_struct;
+  std::vector<Car *> generateCars();
 };
 
 }  // namespace physics

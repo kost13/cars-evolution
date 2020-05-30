@@ -2,6 +2,7 @@
 
 #include <cpputils/logger.hpp>
 
+#include "Car.h"
 #include "CarsPopulationData.h"
 #include "SimulationData.h"
 
@@ -109,7 +110,7 @@ std::vector<std::pair<double, double>> cer::physics::World::getRoute() {
   return route;
 }
 
-std::vector<b2Body*> cer::physics::World::generateCars() {
+std::vector<cer::physics::Car*> cer::physics::World::generateCars() {
   // number of cars in simulation
   static const size_t car_No = population_.cars().carsNum();
 
@@ -123,7 +124,7 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
   std::cout << "Body points:" << BODY_POINTS_NUM << std::endl;
 
   // vector of cars
-  std::vector<b2Body*> cars;
+  std::vector<Car*> cars;
 
   // loading parametersMatrix from evoultion module
   auto parametersMatrix = population_.cars();
@@ -132,185 +133,10 @@ std::vector<b2Body*> cer::physics::World::generateCars() {
 
   // for each car
   for (size_t i = 0; i < car_No; i++) {
-    b2Body* m_car;
-    b2Body* m_wheel1;
-    b2Body* m_wheel2;
-    b2WheelJoint* m_spring1;
-    b2WheelJoint* m_spring2;
-
-    b2PolygonShape chassis;
-    b2Vec2 vertices[BODY_POINTS_NUM];
-    b2CircleShape circle_front;
-    b2CircleShape circle_rear;
-    b2BodyDef bd;
-    b2FixtureDef fdc;
-    b2WheelJointDef jd;
-
-    Car car_t;  // temporary object
-
-    // // // // inserting parameters
-
-    car_t.car_num = i;
-
-    // radiuses of wheels are saved
-    it = parametersMatrix.begin(i);
-    circle_front.m_radius = *it;
-    it++;
-    circle_rear.m_radius = *it;
-    it++;
-
-    std::cout << "r1: " << circle_front.m_radius
-              << "r2: " << circle_rear.m_radius << std::endl;
-
-    // body point coordinates
-    double x_;
-    double y_;
-
-    // coordinates of wheels are set later
-    float wheel1_x = 0;
-    float wheel1_y = 0;
-
-    float wheel2_x = 0;
-    float wheel2_y = 0;
-
-    // shape of a car
-
-    int j;
-    for (it = parametersMatrix.begin(i) + 2, j = 0;
-         it != parametersMatrix.end(i) - 1 && j < BODY_POINTS_NUM; ++it, ++j) {
-      x_ = *it;
-      ++it;
-      y_ = *it;
-
-      logger::info() << x_ << " " << y_;
-      vertices[j].Set(x_, y_);
-
-      /*there is no method for getting coordinates from vertices
-      so it is better to save needed ones in later stages
-      (wheels coordinates)*/
-
-      if (j == settings.wheel1_point_no) {
-        wheel1_x = static_cast<float>(x_);
-        wheel1_y = static_cast<float>(y_);
-      }
-
-      if (j == settings.wheel2_point_no) {
-        wheel2_x = static_cast<float>(x_);
-        wheel2_y = static_cast<float>(y_);
-      }
-    }
-
-    chassis.Set(vertices, BODY_POINTS_NUM);
-
-    bd.type = b2_dynamicBody;
-    /*position where car is created
-     * - origin of a local coordinates system
-     * in which car is created - body points positions
-     */
-
-    bd.position.Set(settings.starting_position_x, settings.starting_position_y);
-    m_car = m_world->CreateBody(&bd);
-
-    m_car->CreateFixture(&chassis, 1.0f);
-
-    /* filetring collisions allows to create cars which collide with
-     * track but not with each other. They all have categoryBits equal
-     * -belong to same category
-     */
-    fdc.filter.categoryBits = 0x0002;
-    // fdc.filter.maskBits = 0x0001; //not needed, they collide with everything
-    // else
-
-    b2Vec2 axis(settings.starting_position_x, settings.starting_position_y);
-
-    // parameters for springs, then take to settings
-    // it was added last time, as before the springs were working other way
-    float hertz = 4.0f;
-    float dampingRatio = 0.7f;
-    float omega = 2.0f * b2_pi * hertz;
-
-    // // //wheels creation
-
-    // wheel 1
-    fdc.shape = &circle_front;
-    fdc.density = settings.wheel1_density;
-    fdc.friction = settings.wheel1_friction;
-
-    bd.position.Set(wheel1_x, wheel1_y);  // wheel position
-    m_wheel1 = m_world->CreateBody(&bd);
-    fdc.filter.categoryBits = 0x0002;
-    // fdc.filter.maskBits = 0x0001;
-    m_wheel1->CreateFixture(&fdc);
-
-    jd.Initialize(m_car, m_wheel1, m_wheel1->GetPosition(), axis);
-    float mass1 = m_wheel1->GetMass();
-    jd.motorSpeed = settings.motor1_speed;
-    jd.maxMotorTorque = settings.motor1_maxTorque;
-    jd.enableMotor = settings.motor1_enable;
-    //       car_t.jd.frequencyHz = settings.motor1_frequencyHz;
-    jd.damping = settings.wheel1_dampingRatio;
-    // jd.stiffness = mass1 * omega * omega;
-    // jd.damping = 2.0f * mass1 * dampingRatio * omega;
-    // jd.lowerTranslation = -0.25f;
-    // jd.upperTranslation = 0.25f;
-    // jd.enableLimit = true;
-
-    m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&jd);
-
-    // wheel 2
-    // m_car->CreateFixture(&car_t.chassis, 1.0f);
-    fdc.shape = &circle_rear;
-    fdc.density = settings.wheel2_density;
-    fdc.friction = settings.wheel2_friction;
-
-    fdc.filter.categoryBits = 0x0002;
-    // fdc.filter.maskBits = 0x0001;
-
-    bd.position.Set(wheel2_x, wheel2_y);  // wheel position
-    m_wheel2 = m_world->CreateBody(&bd);
-    m_wheel2->CreateFixture(&fdc);
-
-    jd.Initialize(m_car, m_wheel2, m_wheel2->GetPosition(), axis);
-    float mass2 = m_wheel2->GetMass();
-    jd.motorSpeed = settings.motor2_speed;
-    jd.maxMotorTorque = settings.motor2_maxTorque;
-    jd.enableMotor = settings.motor2_enable;
-    //        car_t.jd.frequencyHz = settings.motor2_frequencyHz;
-    // jd.damping = settings.wheel2_dampingRatio;
-    // jd.stiffness = mass2 * omega * omega;
-    // jd.damping = 2.0f * mass2 * dampingRatio * omega;
-    // jd.lowerTranslation = -0.25f;
-    // jd.upperTranslation = 0.25f;
-    // jd.enableLimit = true;
-
-    m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&jd);
-
-    // m_spring1->SetMotorSpeed(50);
-    // m_spring2->SetMotorSpeed(m_speed);
-
-    car_t.iter_stopped = 0;  // simualtion management default parameter
-    car_t.stopped = 0;       // simualtion management default parameter
-
-    // printf("%d \n", car_t.car_num);
-
-    // calculating Center of mass of each car relatively to rear wheel
-    /*b2Vec2 mass_center = (m_car->GetLocalCenter());
-    car_t.CoM_position.x = 0;
-    car_t.CoM_position.y = 0;
-    std::cout << -mass_center.x << std::endl;
-    std::cout << -mass_center.y << std::endl;
-    car_t.CoM_position.x = -mass_center.x - wheel2_x;
-    car_t.CoM_position.y = -mass_center.y - wheel2_y;
-
-    std::cout << car_t.CoM_position.x << std::endl;
-    std::cout << car_t.CoM_position.y << std::endl;
-*/
-
-    car_t.wheel2_pos.x = wheel2_x;
-    car_t.wheel2_pos.y = wheel2_y;
-
-    cars_struct.push_back(car_t);
-    cars.push_back(m_car);
+    std::vector<double> parametersVector(parametersMatrix.begin(i),
+                                         parametersMatrix.end(i));
+    Car* car = new Car(m_world, parametersVector, i);
+    cars.push_back(car);
   }
 
   return cars;
@@ -347,13 +173,13 @@ bool cer::physics::World::runSimulation() {
 
   // creating physical car objects
   //'population_' was assigned in constructor
-  std::vector<b2Body*> cars = generateCars();
+  std::vector<Car*> cars = generateCars();
 
   bool stop = 0;  // flag for simulation control
   int iter = 0;
   int flag_stop = 0;  // 1 if one of cars reached ending
 
-  std::vector<b2Body*>::iterator it;
+  std::vector<Car*>::iterator it;
 
   b2Vec2 position;
   b2Vec2 last_position;
@@ -363,15 +189,14 @@ bool cer::physics::World::runSimulation() {
   float angle;
 
   for (size_t i = 0; i < cars.size(); i++) {
-    Car car(i);
+    Car_parameters car(i);
     cars_struct.push_back(car);
   }
 
-  std::vector<Car>::iterator it2;
+  std::vector<Car_parameters>::iterator it2;
 
   b2Vec2 axis(0.0f, 1.0f);
-  for (it = cars.begin(), it2 = cars_struct.begin();
-       it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
+  for (it = cars.begin(); it != /*cars.begin() + 1*/ cars.end(); ++it) {
     /*printf("Nr: %d    (%4.2f, %4.2f)= (%4.2f, %4.2f)-(%4.2f, %4.2f)\n",
            it2->car_num, (it2->mass_center).x, (it2->mass_center).y,
            ((*it)->GetLocalCenter()).x, ((*it)->GetLocalCenter()).y, axis.x,
@@ -390,24 +215,26 @@ bool cer::physics::World::runSimulation() {
      *które mają status zatrzymanych*/
     for (it = cars.begin(), it2 = cars_struct.begin();
          it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
-      position = (*it)->GetPosition();
-      angle = (*it)->GetAngle();
-
+      b2Body* car_t = ((*it)->getCar());
+      position = (car_t)->GetPosition();
+      angle = (car_t)->GetAngle();
+      /*
       // calculating Center of mass of each car relatively to rear wheel
       b2Vec2 mass_center = ((*it)->GetLocalCenter());
       b2Vec2 LocCS_position;  // position of local CS in global CS
       LocCS_position.x =
-          position.x - ((mass_center.x + it2->wheel2_pos.x) * cos(angle) -
-                        (mass_center.y + it2->wheel2_pos.y) * sin(angle));
+          position.x - ((mass_center.x + it2->wheel2_pos_.x) * cos(angle) -
+                        (mass_center.y + it2->wheel2_pos_.y) * sin(angle));
       LocCS_position.y =
-          position.y - ((mass_center.x + it2->wheel2_pos.x) * sin(angle) +
-                        (mass_center.y + it2->wheel2_pos.y) * cos(angle));
+          position.y - ((mass_center.x + it2->wheel2_pos_.x) * sin(angle) +
+                        (mass_center.y + it2->wheel2_pos_.y) * cos(angle));
       b2Vec2 rwheel_pos_GCS;  // rear wheel position in global coordiate system
-      rwheel_pos_GCS.x = LocCS_position.x + ((it2->wheel2_pos.x) * cos(angle) -
-                                             (it2->wheel2_pos.y) * sin(angle));
-      rwheel_pos_GCS.y = LocCS_position.y + ((it2->wheel2_pos.x) * sin(angle) +
-                                             (it2->wheel2_pos.y) * cos(angle));
+      rwheel_pos_GCS.x = LocCS_position.x + ((it2->wheel2_pos_.x) * cos(angle) -
+                                             (it2->wheel2_pos_.y) * sin(angle));
+      rwheel_pos_GCS.y = LocCS_position.y + ((it2->wheel2_pos_.x) * sin(angle) +
+                                             (it2->wheel2_pos_.y) * cos(angle));
 
+*/
       // std::cout << -mass_center.x << std::endl;
       // std::cout << -mass_center.y << std::endl;
       // it2->CoM_position.x = -mass_center.x - it2->wheel2_pos.x;
@@ -416,7 +243,19 @@ bool cer::physics::World::runSimulation() {
       // std::cout << rwheel_pos_GCS.x << std::endl;
       // std::cout << rwheel_pos_GCS.y << std::endl;
 
-      Position position_ = {rwheel_pos_GCS.x, rwheel_pos_GCS.y, angle};
+      auto dx = (*it)->getRwheelPos().x;
+      auto dy = (*it)->getRwheelPos().y;
+
+      float dx_r = dx * cos(-angle) - dy * sin(-angle);
+      float dy_r = dx * sin(-angle) + dy * cos(-angle);
+      //      std::cout << angle << " " << dx_r << " " << dy_r << " " <<
+      //      position.x
+      //                << " " << position.y << " " << position.x + dx_r << " "
+      //                << position.y + dy_r << std::endl;
+      Position position_ = {position.x + dx_r, position.y + dy_r, -angle};
+      simulation_data_->pushPosition((*it)->getCarNum(), position_);
+
+      // Position position_ = {rwheel_pos_GCS.x, rwheel_pos_GCS.y, angle};
 
       // printf("%d\n",iter/10);
       // if(iter==0){
@@ -424,21 +263,21 @@ bool cer::physics::World::runSimulation() {
       // position_.y,
       //             position_.theta);
 
-      printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x, position_.y,
-             position_.theta);
+      printf("%d %4.2f %4.2f %4.2f\n", (*it)->getCarNum(), position_.x,
+             position_.y, position_.theta);
       //}
 
-      simulation_data_->pushPosition(it2->car_num, position_);
+      // simulation_data_->pushPosition(it2->car_num_, position_);
 
       // maximal reached distance
 
-      if (position_.x > it2->maximal_distance_reached)
-        it2->maximal_distance_reached = position_.x;
+      if (position_.x > (*it)->getMaximalDistanceReached())
+        (*it)->setMaximalDistanceReached(position_.x);
 
       // check if any car reached ending
       // later parameters can be taken to the settings struct
       if (position_.x > 200 && position_.y > -5) {
-        std::cout << "Car " << it2->car_num
+        std::cout << "Car " << (*it)->getCarNum()
                   << "has reached the end of the track" << std::endl;
         flag_stop = 1;
         break;
@@ -456,14 +295,14 @@ bool cer::physics::World::runSimulation() {
       diff_position -= last_position;  // for b2vec2 only -= operator is defined
 
       if (diff_position.Length() < settings.minimumLength_of_vector)
-        (it2->iter_stopped)++;
+        (it2->iter_stopped_)++;
       else
-        it2->iter_stopped = 0;
+        it2->iter_stopped_ = 0;
 
       position = last_position;
 
-      if (it2->iter_stopped > settings.max_car_iter)  // flag up
-        it2->stopped = 1;
+      if (it2->iter_stopped_ > settings.max_car_iter)  // flag up
+        it2->stopped_ = 1;
 
       iter++;
 
@@ -475,7 +314,7 @@ bool cer::physics::World::runSimulation() {
     // If not, 'stop' will be left with value 1 and simualtion stopped.
     stop = 1;
     for (it2 = cars_struct.begin(); it2 != cars_struct.end(); it2++)
-      if (!it2->stopped) {
+      if (!it2->stopped_) {
         stop = 0;
         break;
       }
