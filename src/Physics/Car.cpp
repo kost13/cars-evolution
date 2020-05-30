@@ -11,15 +11,15 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   static const int BODY_POINTS_NUM = 8;
 
   // front wheel
-  const int wheel1_point_no = 3;  // to which point of body, wheel1 is attached
+  const int wheel1_point_no = 0;  // to which point of body, wheel1 is attached
   const float wheel1_density = 1.0f;
   const float wheel1_friction = 0.9f;
-  const float motor1_speed = 0.0f;       //-1.0f;
-  const float motor1_maxTorque = -0.0f;  //-200.0f;
-  const bool motor1_enable = false;
+  const float motor1_speed = -50.0f;      //-1.0f;
+  const float motor1_maxTorque = -50.0f;  //-200.0f;
+  const bool motor1_enable = true;
 
   // rear wheel
-  const int wheel2_point_no = 0;  // to which point of body, wheel2 is attached
+  const int wheel2_point_no = 3;  // to which point of body, wheel2 is attached
   const float wheel2_density = 1.0f;
   const float wheel2_friction = 0.9f;
   const float motor2_speed = -0.0f;
@@ -76,12 +76,12 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   so it is better to save needed ones in later stages
   (wheels coordinates)*/
 
-    if (j == wheel1_point_no) {
+    if (j == 0) {
       wheel1_x = static_cast<float>(x_);
       wheel1_y = static_cast<float>(y_);
     }
 
-    if (j == wheel2_point_no) {
+    if (j == 3) {
       wheel2_x = static_cast<float>(x_);
       wheel2_y = static_cast<float>(y_);
     }
@@ -96,33 +96,29 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
    */
 
   bd.angle = 0;
-  b2Vec2 p_car = {2.0f, wheel2_y + circle_rear.m_radius + 0.5f};
+  b2Vec2 p_car = {2.0f, wheel1_y + circle_rear.m_radius + 0.5f};
   bd.position.Set(p_car.x, p_car.y);
   m_car = m_world->CreateBody(&bd);
 
-  fdc.shape = &chassis;
-  fdc.density = 1.0f;
-  fdc.filter.categoryBits = 0x0002;
-  fdc.filter.maskBits = 0x0001;
-  m_car->CreateFixture(&fdc);
+  // fdc.shape = &chassis;
+  // fdc.density = 1.0f;
 
   /* filetring collisions allows to create cars which collide with
    * track but not with each other. They all have categoryBits equal
    * -belong to same category
    */
 
-  //.filter.categoryBits = 0x0002;
-
-  // fdc.filter.maskBits = 0x0001; //not needed, they collide with everything
-  // else
+  // fdc.filter.categoryBits = 0x0002;
+  // fdc.filter.maskBits = 0x0001;
+  m_car->CreateFixture(&chassis, 1.0f);
 
   // // //wheels creation
 
   // wheel 1
   b2FixtureDef fd;
-  fd.shape = &circle_front;
-  fd.density = wheel1_density;
-  fd.friction = wheel1_friction;
+  fd.shape = &circle_rear;
+  fd.density = 1.0f;
+  fd.friction = 0.9f;
 
   bd.position.Set(p_car.x + wheel1_x, p_car.y + wheel1_y);
   auto m_wheel1 = m_world->CreateBody(&bd);
@@ -131,7 +127,7 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   m_wheel1->CreateFixture(&fd);
 
   b2WheelJointDef jd;
-  b2Vec2 axis(0, 1);
+  b2Vec2 axis(0.0f, 1.0f);
 
   // parameters for springs, then take to settings
   // it was added last time, as before the springs were working other way
@@ -144,8 +140,6 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   jd.motorSpeed = motor1_speed;
   jd.maxMotorTorque = motor1_maxTorque;
   jd.enableMotor = motor1_enable;
-  //       car_t.jd.frequencyHz = settings.motor1_frequencyHz;
-  // jd.damping = wheel1_dampingRatio;
   jd.stiffness = mass1 * omega * omega;
   jd.damping = 2.0f * mass1 * dampingRatio * omega;
   jd.lowerTranslation = -0.25f;
@@ -155,13 +149,12 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   auto m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&jd);
 
   // wheel 2
-  // m_car->CreateFixture(&car_t.chassis, 1.0f);
   fd.shape = &circle_rear;
   fd.density = wheel2_density;
   fd.friction = wheel2_friction;
 
   fd.filter.categoryBits = 0x0002;
-  fdc.filter.maskBits = 0x0001;
+  fd.filter.maskBits = 0x0001;
 
   bd.position.Set(p_car.x + wheel2_x, p_car.y + wheel2_y);
   auto m_wheel2 = m_world->CreateBody(&bd);
@@ -172,8 +165,6 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   jd.motorSpeed = motor2_speed;
   jd.maxMotorTorque = motor2_maxTorque;
   jd.enableMotor = motor2_enable;
-  //        car_t.jd.frequencyHz = settings.motor2_frequencyHz;
-  // jd.damping = settings.wheel2_dampingRatio;
   jd.stiffness = mass2 * omega * omega;
   jd.damping = 2.0f * mass2 * dampingRatio * omega;
   jd.lowerTranslation = -0.25f;
@@ -182,9 +173,6 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
 
   auto m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&jd);
 
-  // m_spring1->SetMotorSpeed(50);
-  // m_spring2->SetMotorSpeed(m_speed);
-
   iter_stopped_ = 0;  // simualtion management default parameter
   stopped_ = 0;       // simualtion management default parameter
 
@@ -192,23 +180,8 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   correctionAngle_ =
       tan((RearWheelRadius_ - FrontWheelRadius) / (wheel2_x - wheel1_x));
 
-  // printf("%d \n", car_t.car_num);
-
-  // calculating Center of mass of each car relatively to rear wheel
-  /*b2Vec2 mass_center = (m_car->GetLocalCenter());
-  car_t.CoM_position.x = 0;
-  car_t.CoM_position.y = 0;
-  std::cout << -mass_center.x << std::endl;
-  std::cout << -mass_center.y << std::endl;
-  car_t.CoM_position.x = -mass_center.x - wheel2_x;
-  car_t.CoM_position.y = -mass_center.y - wheel2_y;
-
-  std::cout << car_t.CoM_position.x << std::endl;
-  std::cout << car_t.CoM_position.y << std::endl;
-  */
-
-  wheel2_pos_.x = wheel2_x;
-  wheel2_pos_.y = wheel2_y;
+  wheel1_pos_.x = -wheel1_x;
+  wheel1_pos_.y = -wheel1_y;
 
   // auto p = m_car->GetPosition();
   // std::cout << "initial pos " << p.x << " " << p.y << std::endl;
@@ -217,7 +190,7 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
 }
 
 b2Body* cer::physics::Car::getCar() const { return m_car; }
-b2Vec2 cer::physics::Car::getRwheelPos() const { return wheel2_pos_; }
+b2Vec2 cer::physics::Car::getRwheelPos() const { return wheel1_pos_; }
 
 int cer::physics::Car::getCarNum() const { return car_num_; }
 bool cer::physics::Car::getStopped() const { return stopped_; }
