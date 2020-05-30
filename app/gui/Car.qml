@@ -34,8 +34,8 @@ Item {
         rear_x = parameters[2]
         rear_y = parameters[3]
 
-        front_x = parameters[4]
-        front_y = parameters[5]
+        front_x = parameters[8]
+        front_y = parameters[9]
 
         polygon_points = []
 

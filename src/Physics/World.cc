@@ -111,23 +111,17 @@ std::vector<cer::physics::Car*> cer::physics::World::generateCars() {
   // number of cars in simulation
   static const size_t car_No = population_.cars().carsNum();
 
-  static const int BODY_POINTS_NUM = 8;
-
-  std::cout << "Body points:" << BODY_POINTS_NUM << std::endl;
-
   // vector of cars
   std::vector<Car*> cars;
 
   // loading parametersMatrix from evoultion module
   auto parametersMatrix = population_.cars();
 
-  std::vector<double>::iterator it;
-
   // for each car
   for (size_t i = 0; i < car_No; i++) {
     std::vector<double> parametersVector(parametersMatrix.begin(i),
                                          parametersMatrix.end(i));
-    Car* car = new Car(m_world, parametersVector, i);
+    Car* car = new Car(m_world.get(), parametersVector, i);
     cars.push_back(car);
   }
 
@@ -150,9 +144,9 @@ bool cer::physics::World::runSimulation() {
 
   std::vector<Car*>::iterator it;
 
-  for (b2Body* b = m_world->GetBodyList(); b; b = b->GetNext()) {
-    std::cout << b->IsEnabled() << std::endl;
-  }
+  //  for (b2Body* b = m_world->GetBodyList(); b; b = b->GetNext()) {
+  //    std::cout << b->IsEnabled() << std::endl;
+  //  }
 
   // used for simualtion control
   b2Vec2 last_position;
@@ -174,7 +168,8 @@ bool cer::physics::World::runSimulation() {
       float dx_r = dx * cos(-angle) - dy * sin(-angle);
       float dy_r = dx * sin(-angle) + dy * cos(-angle);
 
-      Position position_ = {position.x + dx_r, position.y + dy_r, -angle};
+      Position position_ = {dx /*position.x + dx_r*/,
+                            dy /*position.y /* + dy_r*/, -angle};
       simulation_data_->pushPosition((*it)->getCarNum(), position_);
 
       // maximal reached distance

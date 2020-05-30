@@ -19,8 +19,8 @@ namespace physics {
 class Car {
  public:
   Car() = default;
-  explicit Car(std::unique_ptr<b2World>& m_world,
-               std::vector<double> car_parameters, int car_num);
+  explicit Car(b2World* m_world, const std::vector<double>& car_parameters,
+               int car_num);
   ~Car();
 
   b2Body* getCar() const;
@@ -37,6 +37,7 @@ class Car {
 
  private:
   b2Body* m_car;
+  b2Body* m_wheel1;
   std::vector<double> car_parameters_;
   int car_num_;
   bool stopped_ = 0;      // parameter for simulation management

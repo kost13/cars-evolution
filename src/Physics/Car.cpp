@@ -4,8 +4,8 @@
 
 namespace logger = cpputils::log;  // not used so far
 
-cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
-                       std::vector<double> car_parameters, int car_num)
+cer::physics::Car::Car(b2World* m_world,
+                       const std::vector<double>& car_parameters, int car_num)
     : car_parameters_(car_parameters), car_num_(car_num) {
   static const int BODY_POINTS_NUM = 8;
 
@@ -101,7 +101,7 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   fd.friction = 0.9f;
 
   bd.position.Set(p_car.x + wheel1_x, p_car.y + wheel1_y);
-  auto m_wheel1 = m_world->CreateBody(&bd);
+  m_wheel1 = m_world->CreateBody(&bd);
   fd.filter.categoryBits = 0x0002;
   fd.filter.maskBits = 0x0001;
   m_wheel1->CreateFixture(&fd);
@@ -117,7 +117,7 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   jd.Initialize(m_car, m_wheel1, m_wheel1->GetPosition(), axis);
   float mass1 = m_wheel1->GetMass();
   jd.motorSpeed = -50.0f;
-  jd.maxMotorTorque = -50.0f;
+  jd.maxMotorTorque = 50.0f;
   jd.enableMotor = true;
   jd.stiffness = mass1 * omega * omega;
   jd.damping = 2.0f * mass1 * dampingRatio * omega;
@@ -159,17 +159,14 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   correctionAngle_ =
       tan((RearWheelRadius_ - FrontWheelRadius) / (wheel2_x - wheel1_x));
 
-  wheel1_pos_.x = -wheel1_x;
-  wheel1_pos_.y = -wheel1_y;
-
-  // auto p = m_car->GetPosition();
-  // std::cout << "initial pos " << p.x << " " << p.y << std::endl;
-
   m_spring1->SetMotorSpeed(-50);
 }
 
 b2Body* cer::physics::Car::getCar() const { return m_car; }
-b2Vec2 cer::physics::Car::getRwheelPos() const { return wheel1_pos_; }
+
+b2Vec2 cer::physics::Car::getRwheelPos() const {
+  return m_wheel1->GetPosition();
+}
 
 int cer::physics::Car::getCarNum() const { return car_num_; }
 bool cer::physics::Car::getStopped() const { return stopped_; }
