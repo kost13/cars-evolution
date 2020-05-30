@@ -39,10 +39,13 @@ class World {
   bool runDummySimulation();
 
   std::vector<std::pair<double, double>> getRoute();
+  std::vector<float> max_distance_reached();
 
  private:
   const CarsPopulationData &population_;
   SimulationData *simulation_data_;
+  std::vector<float> max_distance_reached_;
+  std::vector<Car *> cars;
 
   std::unique_ptr<b2World> m_world;
   std::vector<std::pair<double, double>> route;

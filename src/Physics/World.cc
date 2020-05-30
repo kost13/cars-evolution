@@ -136,7 +136,7 @@ bool cer::physics::World::runSimulation() {
 
   // creating physical car objects
   //'population_' was assigned in constructor
-  std::vector<Car*> cars = generateCars();
+  cars = generateCars();
 
   bool stop = 0;  // flag for simulation control
   int iter = 0;
@@ -259,4 +259,12 @@ bool cer::physics::World::runDummySimulation() {
   }
 
   return true;
+}
+
+std::vector<float> cer::physics::World::max_distance_reached() {
+  std::vector<float> distance_reached;
+  for (auto car = cars.begin(); car != cars.end(); ++car)
+    distance_reached.push_back((*car)->getMaximalDistanceReached());
+
+  return distance_reached;
 }
