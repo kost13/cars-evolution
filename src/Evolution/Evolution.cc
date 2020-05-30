@@ -10,10 +10,8 @@
 
 namespace {
 
-cer::ParametersMatrix dummyPopulation() {
+cer::ParametersMatrix dummyPopulation(size_t n) {
   using cer::ParametersMatrix;
-
-  size_t n{10};
 
   std::vector<double> cars;
   cars.reserve(n * ParametersMatrix::parametersNum());
@@ -23,7 +21,7 @@ cer::ParametersMatrix dummyPopulation() {
     cars.push_back(static_cast<double>(2 * ((rand() % 25 + 15) / 250.)));
 
     std::vector<double> points =
-        std::vector<double>{0.4,  0.4,  0.80, 0.50, 1.10, 0.60, 1.20, 0.80,
+        std::vector<double>{0.4,  0.4,  0.80, 0.50, 1.10, 0.60, 1.20, 0.40,
                             1.21, 0.81, 1.00, 0.90, 0.70, 0.90, 0.50, 0.60};
     for (auto &p : points) {
       cars.push_back(2 * (p + (rand() % 25 - 15) / 1000.));
@@ -50,7 +48,7 @@ void cer::evolution::Evolution::setPopulationFitness(
 
 void cer::evolution::Evolution::generatePopulation() {
   if (population_->empty() && first_run_) {
-    population_->setCars(dummyPopulation());
+    population_->setCars(initialPopulation(10));
     first_run_ = false;
     return;
   }
@@ -61,8 +59,12 @@ void cer::evolution::Evolution::generatePopulation() {
     return;
   }
 
-  population_fitness_ = std::vector<double>(population_->cars().carsNum());
-  std::iota(population_fitness_.begin(), population_fitness_.end(), 1);
+  if (population_fitness_.empty()) {
+    population_fitness_ =
+        std::vector<double>(population_->cars().carsNum(), 1.0);
+  }
+
+  //  std::iota(population_fitness_.begin(), population_fitness_.end(), 1);
 
   auto params = population_->cars();
 
@@ -125,7 +127,7 @@ cer::ParametersMatrix cer::evolution::Evolution::initialPopulation(
 
     int k{2};
     std::vector<double> points =
-        std::vector<double>{0.4,  0.4,  0.80, 0.50, 1.10, 0.60, 1.50, 0.60,
+        std::vector<double>{0.41, 0.41, 0.80, 0.50, 1.10, 0.60, 1.50, 0.60,
                             1.30, 0.80, 1.00, 0.90, 0.70, 0.90, 0.50, 0.60};
     for (auto &p : points) {
       cars.push_back(

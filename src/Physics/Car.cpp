@@ -119,8 +119,8 @@ cer::physics::Car::Car(b2World* world,
 
   jd.Initialize(car_, wheel_rear_, wheel_rear_->GetPosition(), axis);
   float mass1 = wheel_rear_->GetMass();
-  jd.motorSpeed = -50.0f;
-  jd.maxMotorTorque = 50.0f;
+  jd.motorSpeed = -40.0f;
+  jd.maxMotorTorque = 20.0f;
   jd.enableMotor = true;
   jd.stiffness = mass1 * omega * omega;
   jd.damping = 2.0f * mass1 * dampingRatio * omega;
@@ -162,16 +162,14 @@ cer::physics::Car::Car(b2World* world,
   correctionAngle_ =
       tan((RearWheelRadius_ - FrontWheelRadius) / (wheel2_x - wheel1_x));
 
-  wheel_rear_joint_->SetMotorSpeed(-50);
+  wheel_rear_joint_->SetMotorSpeed(-40);
 }
 
 void cer::physics::Car::deleteFromWorld() {
   if (world_ != nullptr) {
     world_->DestroyBody(car_);
     world_->DestroyBody(wheel_rear_);
-    world_->DestroyBody(wheel_front_); /*
-     world_->DestroyJoint(wheel_rear_joint_);
-     world_->DestroyJoint(wheel_front_joint_);*/
+    world_->DestroyBody(wheel_front_);
   }
 }
 

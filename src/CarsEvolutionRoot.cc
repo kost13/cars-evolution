@@ -26,6 +26,11 @@ cer::CarsEvolutionRoot::CarsEvolutionRoot()
     : o_(std::make_unique<Opaque>(this)) {}
 
 void cer::CarsEvolutionRoot::generatePopulation() {
+  auto fitness = o_->world_.maxDistanceReached();
+
+  if (!fitness.empty()) {
+    o_->evolution_.setPopulationFitness(fitness);
+  }
   o_->evolution_.generatePopulation();
 }
 

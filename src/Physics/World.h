@@ -30,7 +30,7 @@ class World {
 
   std::vector<std::pair<double, double>> getRoute() const;
 
-  std::vector<float> maxDistanceReached() const;
+  std::vector<double> maxDistanceReached() const;
 
  private:
   void generateCars();

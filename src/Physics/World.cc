@@ -247,10 +247,10 @@ bool cer::physics::World::runDummySimulation() {
   return true;
 }
 
-std::vector<float> cer::physics::World::maxDistanceReached() const {
-  std::vector<float> distance_reached;
+std::vector<double> cer::physics::World::maxDistanceReached() const {
+  std::vector<double> distance_reached;
   for (auto car : cars_) {
-    distance_reached.push_back(car->getMaximalDistanceReached());
+    distance_reached.push_back(double(car->getMaximalDistanceReached()));
   }
 
   return distance_reached;
