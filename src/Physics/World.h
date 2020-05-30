@@ -44,7 +44,6 @@ class World {
   const CarsPopulationData &population_;
   SimulationData *simulation_data_;
 
-  // b2World *m_world;
   std::unique_ptr<b2World> m_world;
   std::vector<std::pair<double, double>> route;
   std::vector<Car *> generateCars();

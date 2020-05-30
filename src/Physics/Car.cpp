@@ -7,24 +7,7 @@ namespace logger = cpputils::log;  // not used so far
 cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
                        std::vector<double> car_parameters, int car_num)
     : car_parameters_(car_parameters), car_num_(car_num) {
-  // // // constant parameters for each car
   static const int BODY_POINTS_NUM = 8;
-
-  // front wheel
-  const int wheel1_point_no = 0;  // to which point of body, wheel1 is attached
-  const float wheel1_density = 1.0f;
-  const float wheel1_friction = 0.9f;
-  const float motor1_speed = -50.0f;      //-1.0f;
-  const float motor1_maxTorque = -50.0f;  //-200.0f;
-  const bool motor1_enable = true;
-
-  // rear wheel
-  const int wheel2_point_no = 3;  // to which point of body, wheel2 is attached
-  const float wheel2_density = 1.0f;
-  const float wheel2_friction = 0.9f;
-  const float motor2_speed = -0.0f;
-  const float motor2_maxTorque = -0.0f;  //-15.0f;
-  const bool motor2_enable = false;
 
   b2PolygonShape chassis;
   b2Vec2 vertices[BODY_POINTS_NUM];
@@ -44,10 +27,6 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   circle_rear.m_radius = *it;
   double RearWheelRadius_ = *it;
   it++;
-
-  // std::cout << "r1: " << circle_front.m_radius << "r2: " <<
-  // circle_rear.m_radius
-  //        << std::endl;
 
   // body point coordinates
   double x_;
@@ -90,27 +69,28 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   chassis.Set(vertices, BODY_POINTS_NUM);
 
   bd.type = b2_dynamicBody;
+  bd.angle = 0;
+
   /*position where car is created
    * - origin of a local coordinates system
    * in which car is created - body points positions
    */
 
-  bd.angle = 0;
   b2Vec2 p_car = {2.0f, wheel1_y + circle_rear.m_radius + 0.5f};
   bd.position.Set(p_car.x, p_car.y);
   m_car = m_world->CreateBody(&bd);
 
-  // fdc.shape = &chassis;
-  // fdc.density = 1.0f;
+  fdc.shape = &chassis;
+  fdc.density = 1.0f;
 
   /* filetring collisions allows to create cars which collide with
    * track but not with each other. They all have categoryBits equal
    * -belong to same category
    */
 
-  // fdc.filter.categoryBits = 0x0002;
-  // fdc.filter.maskBits = 0x0001;
-  m_car->CreateFixture(&chassis, 1.0f);
+  fdc.filter.categoryBits = 0x0002;
+  fdc.filter.maskBits = 0x0001;
+  m_car->CreateFixture(&fdc);
 
   // // //wheels creation
 
@@ -129,17 +109,16 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   b2WheelJointDef jd;
   b2Vec2 axis(0.0f, 1.0f);
 
-  // parameters for springs, then take to settings
-  // it was added last time, as before the springs were working other way
+  // parameters for springs
   float hertz = 4.0f;
   float dampingRatio = 0.7f;
   float omega = 2.0f * b2_pi * hertz;
 
   jd.Initialize(m_car, m_wheel1, m_wheel1->GetPosition(), axis);
   float mass1 = m_wheel1->GetMass();
-  jd.motorSpeed = motor1_speed;
-  jd.maxMotorTorque = motor1_maxTorque;
-  jd.enableMotor = motor1_enable;
+  jd.motorSpeed = -50.0f;
+  jd.maxMotorTorque = -50.0f;
+  jd.enableMotor = true;
   jd.stiffness = mass1 * omega * omega;
   jd.damping = 2.0f * mass1 * dampingRatio * omega;
   jd.lowerTranslation = -0.25f;
@@ -150,8 +129,8 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
 
   // wheel 2
   fd.shape = &circle_rear;
-  fd.density = wheel2_density;
-  fd.friction = wheel2_friction;
+  fd.density = 1.0f;
+  fd.friction = 0.0f;
 
   fd.filter.categoryBits = 0x0002;
   fd.filter.maskBits = 0x0001;
@@ -162,9 +141,9 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
 
   jd.Initialize(m_car, m_wheel2, m_wheel2->GetPosition(), axis);
   float mass2 = m_wheel2->GetMass();
-  jd.motorSpeed = motor2_speed;
-  jd.maxMotorTorque = motor2_maxTorque;
-  jd.enableMotor = motor2_enable;
+  jd.motorSpeed = 0.0f;
+  jd.maxMotorTorque = 0.0f;
+  jd.enableMotor = false;
   jd.stiffness = mass2 * omega * omega;
   jd.damping = 2.0f * mass2 * dampingRatio * omega;
   jd.lowerTranslation = -0.25f;

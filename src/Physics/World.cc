@@ -140,11 +140,6 @@ bool cer::physics::World::runSimulation() {
 
   float timeStep = 1.0f / 60;
 
-  // m_world->SetAllowSleeping(settings.m_enableSleep);
-  // m_world->SetWarmStarting(settings.m_enableWarmStarting);
-  // m_world->SetContinuousPhysics(settings.m_enableContinuous);
-  // m_world->SetSubStepping(settings.m_enableSubStepping);
-
   // creating physical car objects
   //'population_' was assigned in constructor
   std::vector<Car*> cars = generateCars();
@@ -159,44 +154,30 @@ bool cer::physics::World::runSimulation() {
     std::cout << b->IsEnabled() << std::endl;
   }
 
-  b2Vec2 position;
+  // used for simualtion control
   b2Vec2 last_position;
   b2Vec2 diff_position;  // for b2vec2 only -= operator is defined
-
   last_position.SetZero();
 
   while (!stop && iter < 30000) {
-    // simulate computations
-    //    logger::info() << "runSimulation" << j;
-
     m_world->Step(timeStep, 8, 3);
 
     // for each car
 
     for (it = cars.begin(); it != cars.end(); ++it) {
-      position = ((*it)->getCar())->GetPosition();
+      b2Vec2 position = ((*it)->getCar())->GetPosition();
       float angle = ((*it)->getCar())->GetAngle();
 
       auto dx = (*it)->getRwheelPos().x;
       auto dy = (*it)->getRwheelPos().y;
 
-      float correctionAngle = (*it)->getCorrectionAngle();
-
       float dx_r = dx * cos(-angle) - dy * sin(-angle);
       float dy_r = dx * sin(-angle) + dy * cos(-angle);
-
-      float correctionSection = ((*it)->getCorrectionSection());
 
       Position position_ = {position.x + dx_r, position.y + dy_r, -angle};
       simulation_data_->pushPosition((*it)->getCarNum(), position_);
 
-      if ((*it)->getCarNum() == 1) {
-        std::cout << position_.x << std::endl;
-        std::cout << position_.y << std::endl;
-      }
-
       // maximal reached distance
-
       if (position_.x > (*it)->getMaximalDistanceReached())
         (*it)->setMaximalDistanceReached(position_.x);
 
