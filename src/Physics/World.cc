@@ -34,6 +34,8 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
     fd.shape = &shape;
     fd.density = settings.ground_density;
     fd.friction = settings.ground_friction;
+    fd.filter.maskBits = 0x0002;
+    fd.filter.categoryBits = 0x0001;
 
     const int size = 100;  // settings.number_of_stages;
     const float dx = settings.stage_width_x;
@@ -214,7 +216,7 @@ bool cer::physics::World::runSimulation() {
      *jeżeli tak zdecydujemy, to można nie liczyć dla samochodów
      *które mają status zatrzymanych*/
     for (it = cars.begin(), it2 = cars_struct.begin();
-         it != /*cars.begin() + 1*/ cars.end(); ++it, ++it2) {
+         it != /*cars.begin() + 1*/ cars.end(); ++it) {
       b2Body* car_t = ((*it)->getCar());
       position = (car_t)->GetPosition();
       angle = (car_t)->GetAngle();
@@ -294,15 +296,17 @@ bool cer::physics::World::runSimulation() {
       diff_position = position;
       diff_position -= last_position;  // for b2vec2 only -= operator is defined
 
+      int pom = (*it)->GetIterStopped();
       if (diff_position.Length() < settings.minimumLength_of_vector)
-        (it2->iter_stopped_)++;
+        pom++;
       else
-        it2->iter_stopped_ = 0;
+        pom = 0;
+      (*it)->setIterStopped(pom);
 
       position = last_position;
 
-      if (it2->iter_stopped_ > settings.max_car_iter)  // flag up
-        it2->stopped_ = 1;
+      if ((*it)->GetIterStopped() > settings.max_car_iter)  // flag up
+        (*it)->setStopped(1);
 
       iter++;
 
@@ -313,8 +317,9 @@ bool cer::physics::World::runSimulation() {
     // Checks if any car is moving.
     // If not, 'stop' will be left with value 1 and simualtion stopped.
     stop = 1;
-    for (it2 = cars_struct.begin(); it2 != cars_struct.end(); it2++)
-      if (!it2->stopped_) {
+    for (it = cars.begin(), it2 = cars_struct.begin();
+         it != /*cars.begin() + 1*/ cars.end(); ++it)
+      if (!(*it)->getStopped()) {
         stop = 0;
         break;
       }

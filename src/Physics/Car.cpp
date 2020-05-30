@@ -100,7 +100,11 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   bd.position.Set(p_car.x, p_car.y);
   m_car = m_world->CreateBody(&bd);
 
-  m_car->CreateFixture(&chassis, 1.0f);
+  fdc.shape = &chassis;
+  fdc.density = 1.0f;
+  fdc.filter.categoryBits = 0x0002;
+  fdc.filter.maskBits = 0x0001;
+  m_car->CreateFixture(&fdc);
 
   /* filetring collisions allows to create cars which collide with
    * track but not with each other. They all have categoryBits equal
@@ -123,6 +127,7 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   bd.position.Set(p_car.x + wheel1_x, p_car.y + wheel1_y);
   auto m_wheel1 = m_world->CreateBody(&bd);
   fd.filter.categoryBits = 0x0002;
+  fd.filter.maskBits = 0x0001;
   m_wheel1->CreateFixture(&fd);
 
   b2WheelJointDef jd;
@@ -156,7 +161,7 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   fd.friction = wheel2_friction;
 
   fd.filter.categoryBits = 0x0002;
-  // fdc.filter.maskBits = 0x0001;
+  fdc.filter.maskBits = 0x0001;
 
   bd.position.Set(p_car.x + wheel2_x, p_car.y + wheel2_y);
   auto m_wheel2 = m_world->CreateBody(&bd);
