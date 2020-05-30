@@ -217,9 +217,12 @@ bool cer::physics::World::runSimulation() {
      *które mają status zatrzymanych*/
     for (it = cars.begin(), it2 = cars_struct.begin();
          it != /*cars.begin() + 1*/ cars.end(); ++it) {
-      b2Body* car_t = ((*it)->getCar());
-      position = (car_t)->GetPosition();
-      angle = (car_t)->GetAngle();
+      // b2Body* car_t = ((*it)->getCar());
+      position = ((*it)->getCar())->GetPosition();
+      angle = ((*it)->getCar())->GetAngle();
+      // std::cout << position.x << ", " << position.y << std::endl;
+      // std::cout << angle << std::endl;
+
       /*
       // calculating Center of mass of each car relatively to rear wheel
       b2Vec2 mass_center = ((*it)->GetLocalCenter());
@@ -247,15 +250,30 @@ bool cer::physics::World::runSimulation() {
 
       auto dx = (*it)->getRwheelPos().x;
       auto dy = (*it)->getRwheelPos().y;
-
-      float dx_r = dx * cos(-angle) - dy * sin(-angle);
-      float dy_r = dx * sin(-angle) + dy * cos(-angle);
+      if ((*it)->getCarNum() == 1) {
+        std::cout << (*it)->getRwheelPos().x << std::endl;
+        std::cout << (*it)->getRwheelPos().y << std::endl << std::endl;
+      }
+      float correctionAngle = (*it)->getCorrectionAngle();
+      const double pi2 = 3.14 / 2.;
+      float dx_r =
+          dx * cos(-angle + pi2) - dy * sin(-angle + pi2 - correctionAngle);
+      float dy_r =
+          dx * sin(-angle + pi2) + dy * cos(-angle + pi2 - correctionAngle);
       //      std::cout << angle << " " << dx_r << " " << dy_r << " " <<
       //      position.x
       //                << " " << position.y << " " << position.x + dx_r << " "
       //                << position.y + dy_r << std::endl;
-      Position position_ = {position.x + dx_r, position.y + dy_r, -angle};
+      float correctionSection = ((*it)->getCorrectionSection());
+
+      Position position_ = {position.x + dx_r, position.y + dy_r,
+                            -angle - correctionAngle};
       simulation_data_->pushPosition((*it)->getCarNum(), position_);
+
+      if ((*it)->getCarNum() == 1) {
+        std::cout << position_.x << std::endl;
+        std::cout << position_.y << std::endl;
+      }
 
       // Position position_ = {rwheel_pos_GCS.x, rwheel_pos_GCS.y, angle};
 
@@ -265,8 +283,8 @@ bool cer::physics::World::runSimulation() {
       // position_.y,
       //             position_.theta);
 
-      printf("%d %4.2f %4.2f %4.2f\n", (*it)->getCarNum(), position_.x,
-             position_.y, position_.theta);
+      // printf("%d %4.2f %4.2f %4.2f\n", (*it)->getCarNum(), position_.x,
+      //      position_.y, position_.theta);
       //}
 
       // simulation_data_->pushPosition(it2->car_num_, position_);

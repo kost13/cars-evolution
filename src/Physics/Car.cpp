@@ -11,22 +11,20 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   static const int BODY_POINTS_NUM = 8;
 
   // front wheel
-  int wheel1_point_no = 3;  // to which point of body, wheel1 is attached
-  float wheel1_density = 1.0f;
-  float wheel1_friction = 0.9f;
-  float motor1_speed = 0.0f;      //-1.0f;
-  float motor1_maxTorque = 0.0f;  //-200.0f;
-  bool motor1_enable = false;
-  float wheel1_dampingRatio = 0.7f;
+  const int wheel1_point_no = 3;  // to which point of body, wheel1 is attached
+  const float wheel1_density = 1.0f;
+  const float wheel1_friction = 0.9f;
+  const float motor1_speed = 0.0f;       //-1.0f;
+  const float motor1_maxTorque = -0.0f;  //-200.0f;
+  const bool motor1_enable = false;
 
   // rear wheel
-  int wheel2_point_no = 0;  // to which point of body, wheel2 is attached
-  float wheel2_density = 1.0f;
-  float wheel2_friction = 0.9f;
-  float motor2_speed = -0.0f;
-  float motor2_maxTorque = 0.0f;  //-15.0f;
-  bool motor2_enable = false;
-  float wheel2_dampingRatio = 0.7f;
+  const int wheel2_point_no = 0;  // to which point of body, wheel2 is attached
+  const float wheel2_density = 1.0f;
+  const float wheel2_friction = 0.9f;
+  const float motor2_speed = -0.0f;
+  const float motor2_maxTorque = -0.0f;  //-15.0f;
+  const bool motor2_enable = false;
 
   b2PolygonShape chassis;
   b2Vec2 vertices[BODY_POINTS_NUM];
@@ -41,8 +39,10 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   // radiuses of wheels are saved
 
   circle_front.m_radius = *it;
+  double FrontWheelRadius = *it;
   it++;
   circle_rear.m_radius = *it;
+  double RearWheelRadius_ = *it;
   it++;
 
   // std::cout << "r1: " << circle_front.m_radius << "r2: " <<
@@ -96,7 +96,7 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
    */
 
   bd.angle = 0;
-  b2Vec2 p_car = {2.0f, wheel1_y + circle_rear.m_radius + 0.5f};
+  b2Vec2 p_car = {2.0f, wheel2_y + circle_rear.m_radius + 0.5f};
   bd.position.Set(p_car.x, p_car.y);
   m_car = m_world->CreateBody(&bd);
 
@@ -188,6 +188,10 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   iter_stopped_ = 0;  // simualtion management default parameter
   stopped_ = 0;       // simualtion management default parameter
 
+  correctionSection_ = RearWheelRadius_ + p_car.y;
+  correctionAngle_ =
+      tan((RearWheelRadius_ - FrontWheelRadius) / (wheel2_x - wheel1_x));
+
   // printf("%d \n", car_t.car_num);
 
   // calculating Center of mass of each car relatively to rear wheel
@@ -203,16 +207,13 @@ cer::physics::Car::Car(std::unique_ptr<b2World>& m_world,
   std::cout << car_t.CoM_position.y << std::endl;
   */
 
-  CoM_position.x = -wheel1_x;
-  CoM_position.y = -wheel1_y;
-
   wheel2_pos_.x = wheel2_x;
   wheel2_pos_.y = wheel2_y;
 
   // auto p = m_car->GetPosition();
   // std::cout << "initial pos " << p.x << " " << p.y << std::endl;
 
-  m_spring1->SetMotorSpeed(-60);
+  m_spring1->SetMotorSpeed(-50);
 }
 
 b2Body* cer::physics::Car::getCar() const { return m_car; }
@@ -225,6 +226,9 @@ int cer::physics::Car::getMaximalDistanceReached() const {
   return maximal_distance_reached_;
 }
 
+double cer::physics::Car::getCorrectionSection() const {
+  return correctionSection_;
+}
 void cer::physics::Car::setStopped(bool stop) { stopped_ = stop; }
 void cer::physics::Car::setIterStopped(int iter_stopped) {
   iter_stopped_ = iter_stopped;
@@ -232,4 +236,8 @@ void cer::physics::Car::setIterStopped(int iter_stopped) {
 
 void cer::physics::Car::setMaximalDistanceReached(double distance) {
   maximal_distance_reached_ = distance;
+}
+
+double cer::physics::Car::getCorrectionAngle() const {
+  return correctionAngle_;
 }

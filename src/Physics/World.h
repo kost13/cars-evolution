@@ -113,7 +113,6 @@ struct Car_parameters {
   bool stopped_ = 0;      // parameter for simulation management
   int iter_stopped_ = 0;  // parameter for simulation management
   float maximal_distance_reached_ = 0;
-  b2Vec2 CoM_position;  // center of mass of car relatively to rear wheel
   b2Vec2 wheel2_pos_;
 };
 

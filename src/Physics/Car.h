@@ -32,6 +32,8 @@ class Car {
   void setStopped(bool stop);
   void setIterStopped(int iter_stopped);
   void setMaximalDistanceReached(double distance);
+  double getCorrectionSection() const;
+  double getCorrectionAngle() const;
 
  private:
   b2Body* m_car;
@@ -42,6 +44,8 @@ class Car {
   float maximal_distance_reached_ = 0;
   b2Vec2 CoM_position;  // center of mass of car relatively to rear wheel
   b2Vec2 wheel2_pos_;
+  double correctionSection_;
+  double correctionAngle_;
 };
 
 }  // namespace physics
