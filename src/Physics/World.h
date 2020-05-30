@@ -22,6 +22,8 @@ class World {
  public:
   explicit World(const CarsPopulationData &population,
                  SimulationData *simulation_data);
+  World(const World &) = delete;
+  World &operator=(const World &) = delete;
 
   bool runSimulation();
 
@@ -38,7 +40,7 @@ class World {
   const CarsPopulationData &population_;
   SimulationData *simulation_data_;
   std::vector<float> max_distance_reached_;
-  std::vector<Car *> cars_;
+  std::vector<std::unique_ptr<Car>> cars_;
   std::unique_ptr<b2World> world_;
   std::vector<std::pair<double, double>> route_;
 };

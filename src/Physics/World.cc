@@ -118,8 +118,7 @@ void cer::physics::World::generateCars() {
   for (size_t i = 0; i < car_No; i++) {
     std::vector<double> parametersVector(parametersMatrix.begin(i),
                                          parametersMatrix.end(i));
-    auto car = new Car(world_.get(), parametersVector, i);
-    cars_.push_back(car);
+    cars_.push_back(std::make_unique<Car>(world_.get(), parametersVector, i));
   }
 }
 
@@ -146,7 +145,7 @@ bool cer::physics::World::runSimulation() {
     world_->Step(timeStep, 8, 3);
 
     // for each car
-    for (const auto car : cars_) {
+    for (const auto& car : cars_) {
       b2Vec2 position = car->getRearWheelPos();
       float angle = car->getAngle();
 
@@ -203,7 +202,7 @@ bool cer::physics::World::runSimulation() {
     // Checks if any car is moving.
     // If not, 'stop' will be left with value 1 and simualtion stopped.
     stop = true;
-    for (const auto car : cars_) {
+    for (const auto& car : cars_) {
       if (!car->getStopped()) {
         stop = false;
         break;
@@ -249,7 +248,7 @@ bool cer::physics::World::runDummySimulation() {
 
 std::vector<double> cer::physics::World::maxDistanceReached() const {
   std::vector<double> distance_reached;
-  for (auto car : cars_) {
+  for (const auto& car : cars_) {
     distance_reached.push_back(double(car->getMaximalDistanceReached()));
   }
 

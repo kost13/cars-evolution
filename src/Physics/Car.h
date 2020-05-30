@@ -18,6 +18,12 @@ class Car {
   Car() = default;
   explicit Car(b2World* world, const std::vector<double>& car_parameters,
                int car_num);
+  Car(const Car&) = delete;
+  Car& operator=(const Car&) = delete;
+  Car(Car&&) = default;
+  Car& operator=(Car&&) = default;
+  ~Car() = default;
+
   void deleteFromWorld();
 
   float getAngle() const;
