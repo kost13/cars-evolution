@@ -1,9 +1,6 @@
 #ifndef CAR_H
 #define CAR_H
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <memory>
 #include <vector>
 
@@ -19,16 +16,16 @@ namespace physics {
 class Car {
  public:
   Car() = default;
-  explicit Car(b2World* m_world, const std::vector<double>& car_parameters,
+  explicit Car(b2World* world, const std::vector<double>& car_parameters,
                int car_num);
-  ~Car();
+  void deleteFromWorld();
 
-  b2Body* getCar() const;
-  b2Vec2 getRwheelPos() const;
+  float getAngle() const;
+  b2Vec2 getRearWheelPos() const;
   int getCarNum() const;
   bool getStopped() const;
   int GetIterStopped() const;
-  int getMaximalDistanceReached() const;
+  float getMaximalDistanceReached() const;
   void setStopped(bool stop);
   void setIterStopped(int iter_stopped);
   void setMaximalDistanceReached(double distance);
@@ -36,16 +33,18 @@ class Car {
   double getCorrectionAngle() const;
 
  private:
-  b2Body* m_car;
-  b2Body* m_wheel1;
-  std::vector<double> car_parameters_;
-  int car_num_;
-  bool stopped_ = 0;      // parameter for simulation management
+  b2World* world_;
+  b2Body* car_{nullptr};
+  b2Body* wheel_rear_{nullptr};
+  b2WheelJoint* wheel_rear_joint_{nullptr};
+  b2Body* wheel_front_{nullptr};
+  b2WheelJoint* wheel_front_joint_{nullptr};
+  int car_num_{};
+  bool stopped_ = false;  // parameter for simulation management
   int iter_stopped_ = 0;  // parameter for simulation management
   float maximal_distance_reached_ = 0;
-  b2Vec2 wheel1_pos_;
-  double correctionSection_;
-  double correctionAngle_;
+  double correctionSection_{};
+  double correctionAngle_{};
 };
 
 }  // namespace physics

@@ -1,12 +1,15 @@
 #include "Car.h"
 
+//#include <stdio.h>
+//#include <stdlib.h>
+
 #include <cpputils/logger.hpp>
 
 namespace logger = cpputils::log;  // not used so far
 
-cer::physics::Car::Car(b2World* m_world,
+cer::physics::Car::Car(b2World* world,
                        const std::vector<double>& car_parameters, int car_num)
-    : car_parameters_(car_parameters), car_num_(car_num) {
+    : world_(world), car_num_(car_num) {
   static const int BODY_POINTS_NUM = 8;
 
   b2PolygonShape chassis;
@@ -17,7 +20,7 @@ cer::physics::Car::Car(b2World* m_world,
   b2FixtureDef fdc;
 
   // // // // inserting parameters
-  auto it = car_parameters_.begin();
+  auto it = car_parameters.begin();
 
   // radiuses of wheels are saved
 
@@ -42,13 +45,13 @@ cer::physics::Car::Car(b2World* m_world,
   // shape of a car
 
   int j;
-  for (it = car_parameters_.begin() + 2, j = 0;
-       it != car_parameters_.end() - 1 && j < BODY_POINTS_NUM; ++it, ++j) {
+  for (it = car_parameters.begin() + 2, j = 0;
+       it != car_parameters.end() - 1 && j < BODY_POINTS_NUM; ++it, ++j) {
     x_ = *it;
     ++it;
     y_ = *it;
 
-    logger::info() << x_ << " " << y_;
+    //    logger::info() << x_ << " " << y_;
     vertices[j].Set(x_, y_);
 
     /*there is no method for getting coordinates from vertices
@@ -78,7 +81,7 @@ cer::physics::Car::Car(b2World* m_world,
 
   b2Vec2 p_car = {2.0f, wheel1_y + circle_rear.m_radius + 0.5f};
   bd.position.Set(p_car.x, p_car.y);
-  m_car = m_world->CreateBody(&bd);
+  car_ = world->CreateBody(&bd);
 
   fdc.shape = &chassis;
   fdc.density = 1.0f;
@@ -90,7 +93,7 @@ cer::physics::Car::Car(b2World* m_world,
 
   fdc.filter.categoryBits = 0x0002;
   fdc.filter.maskBits = 0x0001;
-  m_car->CreateFixture(&fdc);
+  car_->CreateFixture(&fdc);
 
   // // //wheels creation
 
@@ -101,10 +104,10 @@ cer::physics::Car::Car(b2World* m_world,
   fd.friction = 0.9f;
 
   bd.position.Set(p_car.x + wheel1_x, p_car.y + wheel1_y);
-  m_wheel1 = m_world->CreateBody(&bd);
+  wheel_rear_ = world->CreateBody(&bd);
   fd.filter.categoryBits = 0x0002;
   fd.filter.maskBits = 0x0001;
-  m_wheel1->CreateFixture(&fd);
+  wheel_rear_->CreateFixture(&fd);
 
   b2WheelJointDef jd;
   b2Vec2 axis(0.0f, 1.0f);
@@ -114,8 +117,8 @@ cer::physics::Car::Car(b2World* m_world,
   float dampingRatio = 0.7f;
   float omega = 2.0f * b2_pi * hertz;
 
-  jd.Initialize(m_car, m_wheel1, m_wheel1->GetPosition(), axis);
-  float mass1 = m_wheel1->GetMass();
+  jd.Initialize(car_, wheel_rear_, wheel_rear_->GetPosition(), axis);
+  float mass1 = wheel_rear_->GetMass();
   jd.motorSpeed = -50.0f;
   jd.maxMotorTorque = 50.0f;
   jd.enableMotor = true;
@@ -125,7 +128,7 @@ cer::physics::Car::Car(b2World* m_world,
   jd.upperTranslation = 0.25f;
   jd.enableLimit = true;
 
-  auto m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&jd);
+  wheel_rear_joint_ = static_cast<b2WheelJoint*>(world->CreateJoint(&jd));
 
   // wheel 2
   fd.shape = &circle_rear;
@@ -136,11 +139,11 @@ cer::physics::Car::Car(b2World* m_world,
   fd.filter.maskBits = 0x0001;
 
   bd.position.Set(p_car.x + wheel2_x, p_car.y + wheel2_y);
-  auto m_wheel2 = m_world->CreateBody(&bd);
-  m_wheel2->CreateFixture(&fd);
+  wheel_front_ = world->CreateBody(&bd);
+  wheel_front_->CreateFixture(&fd);
 
-  jd.Initialize(m_car, m_wheel2, m_wheel2->GetPosition(), axis);
-  float mass2 = m_wheel2->GetMass();
+  jd.Initialize(car_, wheel_front_, wheel_front_->GetPosition(), axis);
+  float mass2 = wheel_front_->GetMass();
   jd.motorSpeed = 0.0f;
   jd.maxMotorTorque = 0.0f;
   jd.enableMotor = false;
@@ -150,28 +153,41 @@ cer::physics::Car::Car(b2World* m_world,
   jd.upperTranslation = 0.25f;
   jd.enableLimit = true;
 
-  auto m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&jd);
+  wheel_front_joint_ = static_cast<b2WheelJoint*>(world->CreateJoint(&jd));
 
   iter_stopped_ = 0;  // simualtion management default parameter
-  stopped_ = 0;       // simualtion management default parameter
+  stopped_ = false;   // simualtion management default parameter
 
   correctionSection_ = RearWheelRadius_ + p_car.y;
   correctionAngle_ =
       tan((RearWheelRadius_ - FrontWheelRadius) / (wheel2_x - wheel1_x));
 
-  m_spring1->SetMotorSpeed(-50);
+  wheel_rear_joint_->SetMotorSpeed(-50);
 }
 
-b2Body* cer::physics::Car::getCar() const { return m_car; }
+void cer::physics::Car::deleteFromWorld() {
+  if (world_ != nullptr) {
+    world_->DestroyBody(car_);
+    world_->DestroyBody(wheel_rear_);
+    world_->DestroyBody(wheel_front_); /*
+     world_->DestroyJoint(wheel_rear_joint_);
+     world_->DestroyJoint(wheel_front_joint_);*/
+  }
+}
 
-b2Vec2 cer::physics::Car::getRwheelPos() const {
-  return m_wheel1->GetPosition();
+float cer::physics::Car::getAngle() const { return car_->GetAngle(); }
+
+b2Vec2 cer::physics::Car::getRearWheelPos() const {
+  return wheel_rear_->GetPosition();
 }
 
 int cer::physics::Car::getCarNum() const { return car_num_; }
+
 bool cer::physics::Car::getStopped() const { return stopped_; }
+
 int cer::physics::Car::GetIterStopped() const { return iter_stopped_; }
-int cer::physics::Car::getMaximalDistanceReached() const {
+
+float cer::physics::Car::getMaximalDistanceReached() const {
   return maximal_distance_reached_;
 }
 
@@ -179,6 +195,7 @@ double cer::physics::Car::getCorrectionSection() const {
   return correctionSection_;
 }
 void cer::physics::Car::setStopped(bool stop) { stopped_ = stop; }
+
 void cer::physics::Car::setIterStopped(int iter_stopped) {
   iter_stopped_ = iter_stopped;
 }
