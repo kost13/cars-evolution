@@ -1,3 +1,6 @@
+// module: Core.Physics
+// author: Marcin Gajewski
+
 #ifndef CAR_H
 #define CAR_H
 
@@ -16,6 +19,13 @@ namespace physics {
 class Car {
  public:
   Car() = default;
+
+  ///
+  /// \brief Car
+  /// \param world -pointer to the physical environment in which a car is
+  /// created \param car_parameters - parameters of the car created \param
+  /// car_num - number of the car Car class constructor creating physcical
+  /// object of a car
   explicit Car(b2World* world, const std::vector<double>& car_parameters,
                int car_num);
   Car(const Car&) = delete;
@@ -24,6 +34,9 @@ class Car {
   Car& operator=(Car&&) = default;
   ~Car() = default;
 
+  ///
+  /// \brief deleteFromWorld
+  /// deleting car body and wheels objects when they are no longer needed
   void deleteFromWorld();
 
   float getAngle() const;
@@ -39,7 +52,7 @@ class Car {
   double getCorrectionAngle() const;
 
  private:
-  b2World* world_;
+  b2World* world_{};
   b2Body* car_{nullptr};
   b2Body* wheel_rear_{nullptr};
   b2WheelJoint* wheel_rear_joint_{nullptr};

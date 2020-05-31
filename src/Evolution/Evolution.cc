@@ -1,10 +1,16 @@
+// module: Core.Evolution
+// author: Lukasz Kostrzewa
+
 #include "Evolution.h"
 
+#include <chrono>
 #include <cstdlib>
 #include <ctime>
 #include <numeric>
 #include <random>
 #include <vector>
+
+#include <cpputils/logger.hpp>
 
 #include "CarsPopulationData.h"
 
@@ -34,10 +40,11 @@ cer::ParametersMatrix dummyPopulation(size_t n) {
 
 cer::evolution::Evolution::Evolution(cer::CarsPopulationData *population,
                                      int seed)
-    : population_(population) {
+    : population_(population), seed_(seed) {
   if (seed == -1) {
-    std::srand(time(nullptr));
+    seed_ = std::chrono::system_clock::now().time_since_epoch().count();
   }
+  std::srand(seed_);
   initializeEvolutionParameters();
 }
 
@@ -66,7 +73,7 @@ void cer::evolution::Evolution::generatePopulation() {
 
   auto params = population_->cars();
 
-  math::RandomGenerator rg;
+  math::RandomGenerator rg(seed_);
   {
     std::lock_guard<std::mutex> locker(parameters_mutex_);
     rg.setStd(parameters_["std"].value);
@@ -77,9 +84,16 @@ void cer::evolution::Evolution::generatePopulation() {
 
   for (size_t i = 0; i < params.carsNum(); ++i) {
     auto parents = math::tournamentSelection(population_fitness_, 2);
-    auto child =
-        math::crossover(params.begin(parents.at(0)), params.end(parents.at(0)),
-                        params.begin(parents.at(1)), params.end(parents.at(1)));
+    std::vector<double> child;
+    try {
+      child = math::crossover(
+          params.begin(parents.at(0)), params.end(parents.at(0)),
+          params.begin(parents.at(1)), params.end(parents.at(1)));
+    } catch (std::invalid_argument &e) {
+      cpputils::log::critical() << "Evolution error. " << e.what();
+      return;
+    }
+
     math::mutate(child.begin(), child.end(), rg);
     children.insert(children.end(), child.begin(), child.end());
   }
@@ -104,9 +118,7 @@ void cer::evolution::Evolution::setParameterValue(const std::string &name,
 void cer::evolution::Evolution::initializeEvolutionParameters() {
   std::lock_guard<std::mutex> locker(parameters_mutex_);
   parameters_ = {
-      {"std", Parameter{"Odchylenie standardowe mutacji", 0.03, ""}},
-      {"potomstwo", Parameter{"Liczebność potomstwa", 1.0,
-                              "Liczebność potomstwa jako ułamek populacji"}}};
+      {"std", Parameter{"Odchylenie standardowe mutacji", 0.03, ""}}};
 }
 
 cer::ParametersMatrix cer::evolution::Evolution::initialPopulation(

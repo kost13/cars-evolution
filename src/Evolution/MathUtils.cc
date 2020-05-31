@@ -1,28 +1,35 @@
+// module: Core.Evolution
+// author: Lukasz Kostrzewa
+
 #include "MathUtils.h"
 
 #include <algorithm>
 #include <random>
-
-namespace {
-std::random_device rd{};
-std::mt19937 gen{rd()};
-}
+#include <stdexcept>
 
 using cer::evolution::math::iterator;
 
-cer::evolution::math::RandomGenerator::RandomGenerator(double std)
-    : std_(std) {}
+cer::evolution::math::RandomGenerator::RandomGenerator(int seed)
+    : seed_(seed) {}
+
+cer::evolution::math::RandomGenerator::RandomGenerator(double std, int seed)
+    : std_(std), seed_(seed) {}
 
 void cer::evolution::math::RandomGenerator::setStd(double std) { std_ = std; }
 
 double cer::evolution::math::RandomGenerator::operator()(double v) const {
-  return std::normal_distribution<double>{v, std_}(gen);
+  std::mt19937 generator(seed_);
+  return std::normal_distribution<double>{v, std_}(generator);
 }
 
 std::vector<double> cer::evolution::math::crossover(iterator p1_first,
                                                     iterator p1_last,
                                                     iterator p2_first,
                                                     iterator p2_last) {
+  if (std::distance(p1_first, p1_last) != std::distance(p2_first, p2_last)) {
+    throw std::invalid_argument("Crossover vectors sizes don't match");
+  }
+
   std::vector<double> child;
   child.reserve(std::distance(p1_first, p1_last));
   for (; p1_first != p1_last && p2_first != p2_last; ++p1_first, ++p2_first) {

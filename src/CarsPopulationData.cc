@@ -1,3 +1,6 @@
+// module: Core
+// author: Lukasz Kostrzewa
+
 #include "CarsPopulationData.h"
 
 #include <iterator>
