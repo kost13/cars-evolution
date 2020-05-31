@@ -71,9 +71,9 @@ class Evolution {
   cer::ParametersMatrix initialPopulation(size_t cars_num) const;
   CarsPopulationData *population_;
   std::vector<double> population_fitness_;
-  math::RandomGenerator random_generator_{};
   std::map<std::string, Parameter> parameters_;
   bool first_run_{true};
+  int seed_{};
   mutable std::mutex parameters_mutex_;
 };
 

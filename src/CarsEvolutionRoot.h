@@ -24,7 +24,11 @@ struct Parameter;
 ///
 class CarsEvolutionRoot {
  public:
-  explicit CarsEvolutionRoot();
+  ///
+  /// \brief CarsEvolutionRoot
+  /// \param seed - seed for random numbers generation, if -1 time is used
+  ///
+  explicit CarsEvolutionRoot(int seed = -1);
 
   CarsEvolutionRoot(const CarsEvolutionRoot &) = delete;
   CarsEvolutionRoot &operator=(const CarsEvolutionRoot &) = delete;
@@ -80,6 +84,12 @@ class CarsEvolutionRoot {
   /// parameters.
   ///
   void runSimulation();
+
+  ///
+  /// \brief getBestDistance
+  /// \return the best distance from the last simulation
+  ///
+  double getBestDistance();
 
   ///
   /// \brief popPosition

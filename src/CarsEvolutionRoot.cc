@@ -8,13 +8,13 @@
 #include "Physics/World.h"
 #include "SimulationData.h"
 
+#include <algorithm>
+
 struct cer::CarsEvolutionRoot::Opaque {
-  explicit Opaque(CarsEvolutionRoot *parent)
+  explicit Opaque(CarsEvolutionRoot *parent, int seed)
       : p_(parent),
         world_(cars_population_, &simulation_data_),
-        evolution_(&cars_population_) {
-    srand(time(nullptr));
-  }
+        evolution_(&cars_population_, seed) {}
 
   CarsEvolutionRoot *p_;
   CarsPopulationData cars_population_;
@@ -23,8 +23,8 @@ struct cer::CarsEvolutionRoot::Opaque {
   evolution::Evolution evolution_;
 };
 
-cer::CarsEvolutionRoot::CarsEvolutionRoot()
-    : o_(std::make_unique<Opaque>(this)) {}
+cer::CarsEvolutionRoot::CarsEvolutionRoot(int seed)
+    : o_(std::make_unique<Opaque>(this, seed)) {}
 
 void cer::CarsEvolutionRoot::generatePopulation() {
   auto fitness = o_->world_.maxDistanceReached();
@@ -40,6 +40,11 @@ cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 void cer::CarsEvolutionRoot::runSimulation() {
   o_->world_.runSimulation();
   // o_->world_.runDummySimulation();
+}
+
+double cer::CarsEvolutionRoot::getBestDistance() {
+  auto distances = o_->world_.maxDistanceReached();
+  return *std::max_element(distances.begin(), distances.end());
 }
 
 cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {

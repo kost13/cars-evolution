@@ -21,8 +21,8 @@ namespace math {
 ///
 class RandomGenerator {
  public:
-  RandomGenerator() = default;
-  explicit RandomGenerator(double std);
+  explicit RandomGenerator(int seed);
+  explicit RandomGenerator(double std, int seed);
   ///
   /// \brief setStd
   /// \param std - standard deviation of the gaussian distribution
@@ -38,6 +38,7 @@ class RandomGenerator {
 
  private:
   double std_{1.0};
+  int seed_{};
 };
 
 using iterator = std::vector<double>::iterator;

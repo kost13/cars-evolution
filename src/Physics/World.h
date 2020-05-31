@@ -50,7 +50,7 @@ class World {
 
   ///
   /// \brief maxDistanceReached
-  /// \return vecctor of maximal distances reached by each car
+  /// \return vector of maximal distances reached by each car
   ///
   std::vector<double> maxDistanceReached() const;
 

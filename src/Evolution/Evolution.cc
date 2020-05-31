@@ -3,6 +3,7 @@
 
 #include "Evolution.h"
 
+#include <chrono>
 #include <cstdlib>
 #include <ctime>
 #include <numeric>
@@ -39,10 +40,11 @@ cer::ParametersMatrix dummyPopulation(size_t n) {
 
 cer::evolution::Evolution::Evolution(cer::CarsPopulationData *population,
                                      int seed)
-    : population_(population) {
+    : population_(population), seed_(seed) {
   if (seed == -1) {
-    std::srand(time(nullptr));
+    seed_ = std::chrono::system_clock::now().time_since_epoch().count();
   }
+  std::srand(seed_);
   initializeEvolutionParameters();
 }
 
@@ -71,7 +73,7 @@ void cer::evolution::Evolution::generatePopulation() {
 
   auto params = population_->cars();
 
-  math::RandomGenerator rg;
+  math::RandomGenerator rg(seed_);
   {
     std::lock_guard<std::mutex> locker(parameters_mutex_);
     rg.setStd(parameters_["std"].value);
