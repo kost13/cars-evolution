@@ -1,7 +1,11 @@
+// module: Core.Evolution
+// author: Lukasz Kostrzewa
+
 #include "MathUtils.h"
 
 #include <algorithm>
 #include <random>
+#include <stdexcept>
 
 namespace {
 std::random_device rd{};
@@ -23,6 +27,10 @@ std::vector<double> cer::evolution::math::crossover(iterator p1_first,
                                                     iterator p1_last,
                                                     iterator p2_first,
                                                     iterator p2_last) {
+  if (std::distance(p1_first, p1_last) != std::distance(p2_first, p2_last)) {
+    throw std::invalid_argument("Crossover vectors sizes don't match");
+  }
+
   std::vector<double> child;
   child.reserve(std::distance(p1_first, p1_last));
   for (; p1_first != p1_last && p2_first != p2_last; ++p1_first, ++p2_first) {

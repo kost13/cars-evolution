@@ -1,6 +1,7 @@
-#include "CarsEvolutionRoot.h"
+// module: Core
+// author: Lukasz Kostrzewa, Marcin Gajewski
 
-#include <cpputils/logger.hpp>
+#include "CarsEvolutionRoot.h"
 
 #include "CarsPopulationData.h"
 #include "Evolution/Evolution.h"

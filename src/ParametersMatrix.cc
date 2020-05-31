@@ -1,3 +1,6 @@
+// module: Core
+// author: Lukasz Kostrzewa
+
 #include "ParametersMatrix.h"
 
 #include <stdexcept>

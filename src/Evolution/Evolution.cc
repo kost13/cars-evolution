@@ -1,3 +1,6 @@
+// module: Core.Evolution
+// author: Lukasz Kostrzewa
+
 #include "Evolution.h"
 
 #include <cstdlib>
@@ -5,6 +8,8 @@
 #include <numeric>
 #include <random>
 #include <vector>
+
+#include <cpputils/logger.hpp>
 
 #include "CarsPopulationData.h"
 
@@ -77,9 +82,16 @@ void cer::evolution::Evolution::generatePopulation() {
 
   for (size_t i = 0; i < params.carsNum(); ++i) {
     auto parents = math::tournamentSelection(population_fitness_, 2);
-    auto child =
-        math::crossover(params.begin(parents.at(0)), params.end(parents.at(0)),
-                        params.begin(parents.at(1)), params.end(parents.at(1)));
+    std::vector<double> child;
+    try {
+      child = math::crossover(
+          params.begin(parents.at(0)), params.end(parents.at(0)),
+          params.begin(parents.at(1)), params.end(parents.at(1)));
+    } catch (std::invalid_argument &e) {
+      cpputils::log::critical() << "Evolution error. " << e.what();
+      return;
+    }
+
     math::mutate(child.begin(), child.end(), rg);
     children.insert(children.end(), child.begin(), child.end());
   }
@@ -104,9 +116,7 @@ void cer::evolution::Evolution::setParameterValue(const std::string &name,
 void cer::evolution::Evolution::initializeEvolutionParameters() {
   std::lock_guard<std::mutex> locker(parameters_mutex_);
   parameters_ = {
-      {"std", Parameter{"Odchylenie standardowe mutacji", 0.03, ""}},
-      {"potomstwo", Parameter{"Liczebność potomstwa", 1.0,
-                              "Liczebność potomstwa jako ułamek populacji"}}};
+      {"std", Parameter{"Odchylenie standardowe mutacji", 0.03, ""}}};
 }
 
 cer::ParametersMatrix cer::evolution::Evolution::initialPopulation(
