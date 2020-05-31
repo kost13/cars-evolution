@@ -1,3 +1,6 @@
+// module: Core.Physics
+// author: Marcin Gajewski
+
 #ifndef WORLD_H
 #define WORLD_H
 
@@ -15,15 +18,13 @@ class SimulationData;
 
 namespace physics {
 
-//#########################################################
-
+///
+/// \brief World
+/// \param population - parameters of the cars
+/// \param simulation_data - calculated cars positions
+///
 class World {
  public:
-  ///
-  /// \brief World
-  /// \param population - parameters of the cars
-  /// \param simulation_data - calculated cars positions
-  ///
   explicit World(const CarsPopulationData &population,
                  SimulationData *simulation_data);
   World(const World &) = delete;
@@ -54,9 +55,6 @@ class World {
   std::vector<double> maxDistanceReached() const;
 
  private:
-  ///
-  /// \brief generateCars
-  /// method is creating 10 objects of the Car class
   void generateCars();
 
   const CarsPopulationData &population_;

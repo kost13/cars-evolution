@@ -1,3 +1,6 @@
+// module: Core.Physics
+// author: Marcin Gajewski
+
 #ifndef CAR_H
 #define CAR_H
 
@@ -49,7 +52,7 @@ class Car {
   double getCorrectionAngle() const;
 
  private:
-  b2World* world_;
+  b2World* world_{};
   b2Body* car_{nullptr};
   b2Body* wheel_rear_{nullptr};
   b2WheelJoint* wheel_rear_joint_{nullptr};

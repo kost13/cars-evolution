@@ -1,3 +1,6 @@
+// module: Core.Physics
+// author: Marcin Gajewski
+
 #include "World.h"
 
 #include <cpputils/logger.hpp>
@@ -6,7 +9,7 @@
 #include "CarsPopulationData.h"
 #include "SimulationData.h"
 
-namespace logger = cpputils::log;  // not used so far
+namespace logger = cpputils::log;
 
 // constructor, here is initialized physics engine and created track.
 cer::physics::World::World(const cer::CarsPopulationData& population,
@@ -145,7 +148,7 @@ bool cer::physics::World::runSimulation() {
       float correctionSection = (car->getCorrectionSection());
 
       Position position_ = {position.x, position.y,
-                            -angle + (correctionAngle / 2)};
+                            -angle /*+ (correctionAngle / 2)*/};
       simulation_data_->pushPosition(car->getCarNum(), position_);
 
       // maximal reached distance

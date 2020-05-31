@@ -1,11 +1,7 @@
+// module: Core.Physics
+// author: Marcin Gajewski
+
 #include "Car.h"
-
-//#include <stdio.h>
-//#include <stdlib.h>
-
-#include <cpputils/logger.hpp>
-
-namespace logger = cpputils::log;  // not used so far
 
 cer::physics::Car::Car(b2World* world,
                        const std::vector<double>& car_parameters, int car_num)
@@ -131,7 +127,7 @@ cer::physics::Car::Car(b2World* world,
   wheel_rear_joint_ = static_cast<b2WheelJoint*>(world->CreateJoint(&jd));
 
   // wheel 2
-  fd.shape = &circle_rear;
+  fd.shape = &circle_front;
   fd.density = 1.0f;
   fd.friction = 0.0f;
 
