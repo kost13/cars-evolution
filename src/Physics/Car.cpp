@@ -115,12 +115,12 @@ cer::physics::Car::Car(b2World* world,
   // parameters for springs
   float hertz = 4.0f;
   float dampingRatio = 0.7f;
-  float omega = 2.0f * b2_pi * hertz;
+  float omega = 2.0f * b2_pi * hertz;  // 2
 
   jd.Initialize(car_, wheel_rear_, wheel_rear_->GetPosition(), axis);
   float mass1 = wheel_rear_->GetMass();
-  jd.motorSpeed = -40.0f;
-  jd.maxMotorTorque = 10.0f;
+  jd.motorSpeed = -1.0f;
+  jd.maxMotorTorque = 5.0f;
   jd.enableMotor = true;
   jd.stiffness = mass1 * omega * omega;
   jd.damping = 2.0f * mass1 * dampingRatio * omega;
@@ -162,7 +162,7 @@ cer::physics::Car::Car(b2World* world,
   correctionAngle_ =
       tan((RearWheelRadius_ - FrontWheelRadius) / (wheel2_x - wheel1_x));
 
-  wheel_rear_joint_->SetMotorSpeed(-40);
+  wheel_rear_joint_->SetMotorSpeed(-10);
 }
 
 void cer::physics::Car::deleteFromWorld() {

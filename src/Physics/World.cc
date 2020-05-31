@@ -36,13 +36,17 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
     const int size = 100;  // settings.number_of_stages;
     const float dx = 2;
 
+    // create high wall at the left end of the track
+    shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(-5 * dx, 5 * dx));
+    ground->CreateFixture(&fd);
+    // loading points of track to send it to the visualisation module
+    route_.emplace_back(-5 * dx, 5 * dx);  // wall at the left end
+
     // start is at flat plate, size 10*dx, on the ground level
     shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(5 * dx, 0.0f));
     ground->CreateFixture(&fd);
-
-    // create high wall at the left end of the track
-    shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(-5 * dx, 100 * dx));
-    ground->CreateFixture(&fd);
+    route_.emplace_back(-5 * dx, 0);  // starting plate left end
+    route_.emplace_back(5 * dx, 0);   // starting plate right end
 
     // on the right end of the starting plate
     // a bumpy track is created, starting from (5dx,0) point
@@ -63,35 +67,24 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
         1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
         0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
 
-    for (float y2 : hs) {
+    // float hs[size];
+
+    for (unsigned int i = 0; i < size; ++i) {
+      // h[i]=RandomFloat(-5.0f,5.0f)
+      float y2 = hs[i];
       shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, y2));
       ground->CreateFixture(&fd);
       y1 = y2;
       x += dx;
+      route_.emplace_back(x, y1);  // loading road
     }
 
     // wall at the end
     // remove if track could be extended
     shape.Set(b2Vec2(x - dx, 0.0f), b2Vec2(x - dx, 100 * dx));
     ground->CreateFixture(&fd);
-
-    // loading points of track to send it to the visualisation module
-    route_.emplace_back(-5 * dx, 5 * dx);  // wall at the left end
-    route_.emplace_back(-5 * dx, 0);       // starting plate left end
-    route_.emplace_back(5 * dx, 0);        // starting plate right end
-
-    double x_ = 5 * dx;
-    double y_;
-    // loading road
-    for (float h : hs) {
-      x_ += dx;
-      y_ = h;
-      route_.emplace_back(x_, y_);
-    }
-
-    x_ += dx;
-    route_.emplace_back(x_, 0);
-    route_.emplace_back(x_, 100 * dx);
+    route_.emplace_back(x - dx, 0);
+    route_.emplace_back(x - dx, 100 * dx);
   }
 }
 
@@ -148,8 +141,11 @@ bool cer::physics::World::runSimulation() {
     for (const auto& car : cars_) {
       b2Vec2 position = car->getRearWheelPos();
       float angle = car->getAngle();
+      float correctionAngle = car->getCorrectionAngle();
+      float correctionSection = (car->getCorrectionSection());
 
-      Position position_ = {position.x, position.y, -angle};
+      Position position_ = {position.x, position.y,
+                            -angle + (correctionAngle / 2)};
       simulation_data_->pushPosition(car->getCarNum(), position_);
 
       // maximal reached distance
@@ -160,8 +156,8 @@ bool cer::physics::World::runSimulation() {
       // check if any car reached ending
       // later parameters can be taken to the settings struct
       if (position_.x > 200 && position_.y > -5) {
-        std::cout << "Car " << car->getCarNum()
-                  << "has reached the end of the track" << std::endl;
+        logger::info() << "Car " << car->getCarNum()
+                       << "has reached the end of the track" << std::endl;
         flag_stop = 1;
         break;
       }
