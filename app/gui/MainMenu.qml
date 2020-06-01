@@ -1,3 +1,6 @@
+// module: GUI
+// author: Lukasz Kostrzewa
+
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 
@@ -16,12 +19,13 @@ Item {
             width: parent.width
 
             Text {
-                text: "Simulate"
+                text: "Symulacja"
                 font.pixelSize: 20
                 anchors.centerIn: parent
             }
 
             onClicked: {
+                flush_best_car()
                 AppInterface.startSimulation()                
             }
         }
@@ -46,7 +50,7 @@ Item {
             width: parent.width
 
             Text {
-                text: "Resume"
+                text: "Wznów"
                 font.pixelSize: 20
                 anchors.centerIn: parent
             }

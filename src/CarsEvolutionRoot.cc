@@ -37,14 +37,12 @@ void cer::CarsEvolutionRoot::generatePopulation() {
 
 cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
-void cer::CarsEvolutionRoot::runSimulation() {
-  o_->world_.runSimulation();
-  // o_->world_.runDummySimulation();
-}
+void cer::CarsEvolutionRoot::runSimulation() { o_->world_.runSimulation(); }
 
-double cer::CarsEvolutionRoot::getBestDistance() {
+std::pair<int, double> cer::CarsEvolutionRoot::getBestCar() {
   auto distances = o_->world_.maxDistanceReached();
-  return *std::max_element(distances.begin(), distances.end());
+  auto max_iter = std::max_element(distances.begin(), distances.end());
+  return {std::distance(distances.begin(), max_iter), *max_iter};
 }
 
 cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {

@@ -1,3 +1,6 @@
+// module: App
+// author: Lukasz Kostrzewa
+
 #ifndef CARSPOPULATIONMODEL_H
 #define CARSPOPULATIONMODEL_H
 
@@ -12,6 +15,9 @@ namespace cer {
 class CarsEvolutionRoot;
 }
 
+///
+/// \brief The CarsPopulationModel class stores cars parameters and colors
+///
 class CarsPopulationModel : public QAbstractListModel {
   Q_OBJECT
 
@@ -27,11 +33,24 @@ class CarsPopulationModel : public QAbstractListModel {
   QVariant data(const QModelIndex &index,
                 int role = Qt::DisplayRole) const override;
 
+  ///
+  /// \brief get parameters of the car with the given index
+  /// \param row
+  /// \return list with parameters
   Q_INVOKABLE QVariantList parameters(int row) const;
+
+  ///
+  /// \brief get color of the car with the given index
+  /// \param row
+  /// \return color in #RRGGBB format
   Q_INVOKABLE QString color(int row) const;
 
   QHash<int, QByteArray> roleNames() const override;
 
+  ///
+  /// \brief updatePoplation
+  /// Resets the model, loads a new population and generates colors for new
+  /// cars
   void updatePoplation();
 
  private:

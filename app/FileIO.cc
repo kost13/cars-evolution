@@ -1,3 +1,6 @@
+// module: App
+// author: Lukasz Kostrzewa
+
 #include "FileIO.h"
 
 #include <QFile>

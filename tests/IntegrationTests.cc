@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(integration_test) {
   // simulation 1
   {
     root.runSimulation();
-    auto best_distance = root.getBestDistance();
+    auto best_distance = root.getBestCar().second;
     auto expected_best_distance = 19.9696;
     std::cout << "best distance after 1st run: " << best_distance << std::endl;
     BOOST_CHECK_CLOSE(best_distance, expected_best_distance, 1e-2);
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(integration_test) {
   // simulation 2
   {
     root.runSimulation();
-    auto best_distance = root.getBestDistance();
+    auto best_distance = root.getBestCar().second;
     auto expected_best_distance = 19.9827;
     std::cout << "best distance after 2nd run: " << best_distance << std::endl;
     BOOST_CHECK_CLOSE(best_distance, expected_best_distance, 1e-2);
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(integration_test) {
   // simulation 3
   {
     root.runSimulation();
-    auto best_distance = root.getBestDistance();
+    auto best_distance = root.getBestCar().second;
     auto expected_best_distance = 180.54;
     std::cout << "best distance after 3rd run: " << best_distance << std::endl;
     BOOST_CHECK_CLOSE(best_distance, expected_best_distance, 1e-2);

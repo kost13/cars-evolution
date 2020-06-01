@@ -41,10 +41,11 @@ cer::ParametersMatrix dummyPopulation(size_t n) {
 cer::evolution::Evolution::Evolution(cer::CarsPopulationData *population,
                                      int seed)
     : population_(population), seed_(seed) {
-  if (seed == -1) {
-    seed_ = std::chrono::system_clock::now().time_since_epoch().count();
+  if (seed != -1) {
+    std::srand(seed_);
+  } else {
+    std::srand(time(nullptr));
   }
-  std::srand(seed_);
   initializeEvolutionParameters();
 }
 
@@ -118,7 +119,7 @@ void cer::evolution::Evolution::setParameterValue(const std::string &name,
 void cer::evolution::Evolution::initializeEvolutionParameters() {
   std::lock_guard<std::mutex> locker(parameters_mutex_);
   parameters_ = {
-      {"std", Parameter{"Odchylenie standardowe mutacji", 0.03, ""}}};
+      {"std", Parameter{"Odchylenie standardowe mutacji", 0.05, ""}}};
 }
 
 cer::ParametersMatrix cer::evolution::Evolution::initialPopulation(
@@ -132,8 +133,8 @@ cer::ParametersMatrix cer::evolution::Evolution::initialPopulation(
   auto u = math::upperLimits(ParametersMatrix::parametersNum());
 
   for (size_t i = 0; i < cars_num; ++i) {
-    cars.push_back(static_cast<double>((rand() % 50 + 1) / 100.));
-    cars.push_back(static_cast<double>((rand() % 50 + 1) / 100.));
+    cars.push_back(static_cast<double>((rand() % 50 + 4) / 100.));
+    cars.push_back(static_cast<double>((rand() % 50 + 4) / 100.));
 
     int k{2};
     std::vector<double> points =

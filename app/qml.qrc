@@ -15,5 +15,7 @@
         <file>gui/img/icon_preview.png</file>
         <file>gui/CarDetailsPopup.qml</file>
         <file>gui/Route.qml</file>
+        <file>gui/Chart.qml</file>
+        <file>gui/ParametersListView.qml</file>
     </qresource>
 </RCC>

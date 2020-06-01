@@ -21,77 +21,79 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
   world_ = std::make_unique<b2World>(gravity);
 
   b2Body* ground = nullptr;
-  {
-    // track is created
-    b2BodyDef bd;
-    bd.type = b2_staticBody;
-    ground = world_->CreateBody(&bd);
 
-    b2EdgeShape shape;
+  std::lock_guard<std::mutex> locker(route_mutex_);
 
-    b2FixtureDef fd;
-    fd.shape = &shape;
-    fd.density = 0.0f;
-    fd.friction = 0.6f;
-    fd.filter.maskBits = 0x0002;
-    fd.filter.categoryBits = 0x0001;
+  // track is created
+  b2BodyDef bd;
+  bd.type = b2_staticBody;
+  ground = world_->CreateBody(&bd);
 
-    const int size = 100;  // settings.number_of_stages;
-    const float dx = 2;
+  b2EdgeShape shape;
 
-    // create high wall at the left end of the track
-    shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(-5 * dx, 5 * dx));
+  b2FixtureDef fd;
+  fd.shape = &shape;
+  fd.density = 0.0f;
+  fd.friction = 0.6f;
+  fd.filter.maskBits = 0x0002;
+  fd.filter.categoryBits = 0x0001;
+
+  const int size = 100;  // settings.number_of_stages;
+  const float dx = 2;
+
+  // create high wall at the left end of the track
+  shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(-5 * dx, 5 * dx));
+  ground->CreateFixture(&fd);
+  // loading points of track to send it to the visualisation module
+  route_.emplace_back(-5 * dx, 5 * dx);  // wall at the left end
+
+  // start is at flat plate, size 10*dx, on the ground level
+  shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(5 * dx, 0.0f));
+  ground->CreateFixture(&fd);
+  route_.emplace_back(-5 * dx, 0);  // starting plate left end
+  route_.emplace_back(5 * dx, 0);   // starting plate right end
+
+  // on the right end of the starting plate
+  // a bumpy track is created, starting from (5dx,0) point
+  float x = 5 * dx;
+  float y1 = 0.0f;
+
+  // vector holding y positions of next points of the track
+  // x position change is constant step defined in the settings file
+  float hs[size] = {
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
+
+  // float hs[size];
+
+  for (unsigned int i = 0; i < size; ++i) {
+    // h[i]=RandomFloat(-5.0f,5.0f)
+    float y2 = hs[i];
+    shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, y2));
     ground->CreateFixture(&fd);
-    // loading points of track to send it to the visualisation module
-    route_.emplace_back(-5 * dx, 5 * dx);  // wall at the left end
-
-    // start is at flat plate, size 10*dx, on the ground level
-    shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(5 * dx, 0.0f));
-    ground->CreateFixture(&fd);
-    route_.emplace_back(-5 * dx, 0);  // starting plate left end
-    route_.emplace_back(5 * dx, 0);   // starting plate right end
-
-    // on the right end of the starting plate
-    // a bumpy track is created, starting from (5dx,0) point
-    float x = 5 * dx;
-    float y1 = 0.0f;
-
-    // vector holding y positions of next points of the track
-    // x position change is constant step defined in the settings file
-    float hs[size] = {
-        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
-
-    // float hs[size];
-
-    for (unsigned int i = 0; i < size; ++i) {
-      // h[i]=RandomFloat(-5.0f,5.0f)
-      float y2 = hs[i];
-      shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, y2));
-      ground->CreateFixture(&fd);
-      y1 = y2;
-      x += dx;
-      route_.emplace_back(x, y1);  // loading road
-    }
-
-    // wall at the end
-    // remove if track could be extended
-    shape.Set(b2Vec2(x - dx, 0.0f), b2Vec2(x - dx, 100 * dx));
-    ground->CreateFixture(&fd);
-    route_.emplace_back(x - dx, 0);
-    route_.emplace_back(x - dx, 100 * dx);
+    y1 = y2;
+    x += dx;
+    route_.emplace_back(x, y1);  // loading road
   }
+
+  // wall at the end
+  // remove if track could be extended
+  shape.Set(b2Vec2(x - dx, 0.0f), b2Vec2(x - dx, 100 * dx));
+  ground->CreateFixture(&fd);
+  route_.emplace_back(x - dx, 0);
+  route_.emplace_back(x - dx, 100 * dx);
 }
 
 std::vector<std::pair<double, double>> cer::physics::World::getRoute() const {
+  std::lock_guard<std::mutex> locker(route_mutex_);
   return route_;
 }
 

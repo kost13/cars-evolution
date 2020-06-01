@@ -1,3 +1,6 @@
+// module: GUI
+// author: Lukasz Kostrzewa
+
 import QtQuick 2.9
 
 Item {
@@ -18,6 +21,40 @@ Item {
     property var active: true
     property var dx: 50
     property var dy: 50
+
+    transform: Rotation {
+        id: car_rotation
+        origin.x: parent.x;
+        origin.y: parent.y;
+        angle: 0
+    }
+
+    Canvas {
+        id: car_canvas
+
+        onPaint: {
+            var ctx = getContext("2d");
+
+            // wheels
+            ctx.beginPath()
+            ctx.arc(front_x+dx, height-front_y-dy, front_r, 0, 2*Math.PI, false)
+            ctx.arc(rear_x+dx, height-rear_y-dy, rear_r, 0, 2*Math.PI, false)
+            ctx.fillStyle = Qt.rgba(0.25, 0.25, 0.25, 1);
+            ctx.fill()
+            ctx.closePath()
+
+            //body
+            ctx.beginPath()
+            ctx.moveTo(polygon_points[0]+dx, height-polygon_points[1]-dy)
+            for(var i=2; i<polygon_points.length; i+=2){
+                ctx.lineTo(polygon_points[i]+dx, height-polygon_points[i+1]-dy)
+            }
+
+            ctx.fillStyle = car_color
+            ctx.fill()
+            ctx.closePath()
+        }
+    }
 
     function setActive(active_flag){
         active = active_flag
@@ -97,42 +134,5 @@ Item {
         dy= car_canvas.height - boundries[3] - Math.max(rear_r, front_r)
         car_canvas.requestPaint()
         return [width, height]
-    }
-
-    transform: Rotation {
-        id: car_rotation
-        origin.x: parent.x;
-        origin.y: parent.y;
-        angle: 0
-    }
-
-    Canvas {
-        id: car_canvas
-
-        onPaint: {
-            var ctx = getContext("2d");
-
-//            ctx.fillStyle = Qt.rgba(1, 0, 0, 1);
-//            ctx.strokeRect(0, 0, width, height);
-
-            // wheels
-            ctx.beginPath()
-            ctx.arc(front_x+dx, height-front_y-dy, front_r, 0, 2*Math.PI, false)
-            ctx.arc(rear_x+dx, height-rear_y-dy, rear_r, 0, 2*Math.PI, false)
-            ctx.fillStyle = Qt.rgba(0.25, 0.25, 0.25, 1);
-            ctx.fill()
-            ctx.closePath()
-
-            //body
-            ctx.beginPath()
-            ctx.moveTo(polygon_points[0]+dx, height-polygon_points[1]-dy)
-            for(var i=2; i<polygon_points.length; i+=2){
-                ctx.lineTo(polygon_points[i]+dx, height-polygon_points[i+1]-dy)
-            }
-
-            ctx.fillStyle = car_color
-            ctx.fill()
-            ctx.closePath()
-        }
     }
 }
