@@ -4,23 +4,10 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import QtCharts 2.2
 
 Item {
     property var best_car: []
     property var best_distance: []
-
-    function flush_best_car(){
-        for(var i=0; i<best_car.length; ++i){
-            chartView.updateChart(best_car[i])
-
-            if(best_distance[i] > cars_global_distance_summary.cars_distance){
-                cars_global_distance_summary.cars_distance = best_distance[i]
-            }
-        }
-        best_car = []
-        best_distance = []
-    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -107,120 +94,14 @@ Item {
 
             clip: true
 
-            ListView {                
+            ParametersListView {
                 id: parametersList
-
                 width: 120
                 Layout.fillHeight: true
-
-                interactive: false
-                ScrollBar.vertical: populationScrollBar
-
-                header: Text {
-                    text: "Populacja"
-                    height: 20
-                }
-
-                model: PopulationModel
-                delegate: populationDelegate
-
-                ScrollBar {
-                    id: populationScrollBar
-                    policy: ScrollBar.AsNeeded
-                }
-
-                Component {
-                    id: populationDelegate
-
-                    Row {
-                        spacing: 5
-                        width: parametersList.width
-                        height: 35
-
-                        Text {
-                            width: 12
-                            text: model.number
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Rectangle {
-                            width: 30
-                            height: 30
-                            color: model.color
-                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Button {
-                            text: ""
-                            width: 40
-                            height: 30
-
-                            background: Image {
-                                id: image
-                                source: "qrc:/gui/img/icon_preview.png"
-                                fillMode: Image.PreserveAspectFit
-                                anchors.centerIn: parent
-                                height: parent.height
-                                width:  parent.height
-                            }
-
-                            onHoveredChanged: hovered ? popup.open() : popup.close()
-
-                            CarDetailsPopup {
-                                id: popup
-                                x: 30
-                                y: -100
-                                car_num: model.number - 1
-                            }
-                        }
-                    }
-                }
             }
 
-            ChartView {
+            Chart {
                 id: chartView
-                title: "Parametery Pojazdów"
-
-                property int generation: 0
-
-                antialiasing: true
-
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                ValueAxis {
-                    id: axisX
-                    min: 1
-                    titleText: "Generacja"
-                }
-
-                ValueAxis {
-                    id: axisY
-                    titleText: "Wartości parametrów"
-                }
-
-                ScatterSeries {
-                    id: car_rear_wheel_size
-                    axisX: axisX
-                    axisY: axisY                    
-                    name: "Promień tylnego koła"
-                }
-
-                ScatterSeries {
-                    id: car_front_wheel_size
-                    axisX: axisX
-                    axisY: axisY
-                    name: "Promień przedniego koła"
-                }
-
-                function updateChart(i){
-                   var parameters = PopulationModel.parameters(i)
-                   generation += 1
-                   car_rear_wheel_size.append(generation, parameters[0])
-                   car_front_wheel_size.append(generation, parameters[1])
-                   axisX.max = generation + 1
-                   axisY.max = Math.max(axisY.max, parameters[0]*1.2, parameters[1]*1.2)
-                }
             }
         }
     }
@@ -235,7 +116,7 @@ Item {
 
     Timer {
         id: simulationTimer
-        interval: 50
+        interval: 30
         running: false
         repeat: true
         onTriggered: simulation_window.updateCarPosition()
@@ -243,7 +124,7 @@ Item {
 
     Timer {
         id: newSimulationTimer
-        interval: 1000
+        interval: 800
         running: false
         repeat: false
         onTriggered: {
@@ -251,4 +132,18 @@ Item {
             AppInterface.startSimulation()
         }
      }
+
+
+    function flush_best_car(){
+        for(var i=0; i<best_car.length; ++i){
+            chartView.updateChart(best_car[i])
+
+            if(best_distance[i] > cars_global_distance_summary.cars_distance){
+                cars_global_distance_summary.cars_distance = best_distance[i]
+            }
+        }
+        best_car = []
+        best_distance = []
+    }
+
 }
