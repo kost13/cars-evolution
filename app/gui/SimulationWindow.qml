@@ -1,3 +1,6 @@
+// module: GUI
+// author: Lukasz Kostrzewa
+
 import QtQuick 2.9
 
 Rectangle {
@@ -9,15 +12,14 @@ Rectangle {
     property var global_best_position: 0
     property var active_cars_num: 0
 
+    signal newBestPosition(real xPosition)
+    signal newGlobalBestPosition(real xPosition)
+    signal animationFinished(int bestCarIndex)
+
     color: "#d3ecf6"
     border.color: "#000000"
     border.width: 2
     clip: true
-
-
-    signal newBestPosition(real xPosition)
-    signal newGlobalBestPosition(real xPosition)
-    signal animationFinished(int bestCarIndex)
 
     Route {
         id: route

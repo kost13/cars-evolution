@@ -1,13 +1,12 @@
+// module: GUI
+// author: Lukasz Kostrzewa
+
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.0
 
 ToolBar {
-
-//        background: Rectangle {
-//                color: "yellow"
-//            }
 
     signal pageSelected(string page)
 
@@ -65,7 +64,7 @@ ToolBar {
 
     FileDialog {
         id: saveFileDialog
-        title: "Save Population Parameters"
+        title: "Zapisz parametry samochodów do pliku"
         folder: shortcuts.home
         selectMultiple: false
         selectExisting: false
@@ -76,7 +75,7 @@ ToolBar {
 
     FileDialog {
         id: openFileDialog
-        title: "Open Population Parameters"
+        title: "Otwórz plik z parametrami samochodów"
         folder: shortcuts.home
         selectMultiple: false
         selectExisting: true
