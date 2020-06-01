@@ -27,6 +27,10 @@ void AppInterface::startSimulation() {
 
   worker_.async([=] {
     root_->runSimulation();
+    int best_car_index{};
+    double distance{};
+    std::tie(best_car_index, distance) = root_->getBestCar();
+    emit newBestCar(best_car_index, distance);
     if (worker_.empty()) {
       emit simulationEnded();
     }

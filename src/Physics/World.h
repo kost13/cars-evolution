@@ -4,6 +4,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include <mutex>
 #include <vector>
 
 #include "Car.h"
@@ -29,6 +30,9 @@ class World {
                  SimulationData *simulation_data);
   World(const World &) = delete;
   World &operator=(const World &) = delete;
+  World(World &&) = delete;
+  World &operator=(World &&) = delete;
+  ~World() = default;
 
   ///
   /// \brief runSimulation
@@ -63,6 +67,7 @@ class World {
   std::vector<std::unique_ptr<Car>> cars_;
   std::unique_ptr<b2World> world_;
   std::vector<std::pair<double, double>> route_;
+  mutable std::mutex route_mutex_;
 };
 
 }  // namespace physics

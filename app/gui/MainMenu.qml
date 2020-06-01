@@ -25,6 +25,7 @@ Item {
             }
 
             onClicked: {
+                flush_best_car()
                 AppInterface.startSimulation()                
             }
         }

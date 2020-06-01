@@ -70,6 +70,13 @@ class AppInterface : public QObject {
   ///
   void newPopulationGenerated();
 
+  ///
+  /// \brief newBestCar signals a new result of the simulation
+  /// \param car_index
+  /// \param distance
+  ///
+  void newBestCar(int car_index, double distance);
+
  private:
   cer::CarsEvolutionRoot *root_;
   cpputils::Worker worker_;

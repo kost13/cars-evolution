@@ -87,9 +87,9 @@ class CarsEvolutionRoot {
 
   ///
   /// \brief getBestDistance
-  /// \return the best distance from the last simulation
+  /// \return the pair of the best car and its distance
   ///
-  double getBestDistance();
+  std::pair<int, double> getBestCar();
 
   ///
   /// \brief popPosition

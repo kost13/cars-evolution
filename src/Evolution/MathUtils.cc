@@ -7,6 +7,11 @@
 #include <random>
 #include <stdexcept>
 
+namespace {
+std::random_device rd{};
+std::mt19937 gen{rd()};
+}
+
 using cer::evolution::math::iterator;
 
 cer::evolution::math::RandomGenerator::RandomGenerator(int seed)
@@ -18,6 +23,9 @@ cer::evolution::math::RandomGenerator::RandomGenerator(double std, int seed)
 void cer::evolution::math::RandomGenerator::setStd(double std) { std_ = std; }
 
 double cer::evolution::math::RandomGenerator::operator()(double v) const {
+  if (seed_ == -1) {
+    return std::normal_distribution<double>{v, std_}(gen);
+  }
   std::mt19937 generator(seed_);
   return std::normal_distribution<double>{v, std_}(generator);
 }
@@ -78,5 +86,9 @@ std::vector<double> cer::evolution::math::lowerLimits(
 
 std::vector<double> cer::evolution::math::upperLimits(
     std::size_t params_count) {
-  return std::vector<double>(params_count, 3.0);
+  auto v = std::vector<double>(params_count, 3.0);
+  if (params_count > 1) {
+    v[0] = v[1] = 1.0;
+  }
+  return v;
 }
