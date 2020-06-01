@@ -1,3 +1,6 @@
+// module: App
+// author: Lukasz Kostrzewa
+
 #include "AppBuilder.h"
 
 #include <QCoreApplication>

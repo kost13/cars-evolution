@@ -1,3 +1,6 @@
+// module: GUI
+// author: Lukasz Kostrzewa
+
 import QtQuick 2.9
 
 Item {
@@ -13,6 +16,41 @@ Item {
     property var polygon_points: []
     property var car_color: "#FF0000"
     property var animation_dx: 0
+
+    transform: Rotation {
+        id: car_rotation
+        origin.x: parent.x;
+        origin.y: parent.y;
+        angle: 0
+    }
+
+    Canvas {
+        id: car_canvas
+
+        onPaint: {
+            var ctx = getContext("2d");
+
+            // wheels
+            ctx.beginPath()
+            ctx.arc(front_x+50, height-front_y-50, front_r, 0, 2*Math.PI, false)
+            ctx.arc(rear_x+50, height-rear_y-50, rear_r, 0, 2*Math.PI, false)
+            ctx.fillStyle = Qt.rgba(0.25, 0.25, 0.25, 1);
+            ctx.fill()
+            ctx.closePath()
+
+            //body
+            ctx.beginPath()
+            ctx.moveTo(polygon_points[0]+50, height-polygon_points[1]-50)
+            for(var i=2; i<polygon_points.length; i+=2){
+                ctx.lineTo(polygon_points[i]+50, height-polygon_points[i+1]-50)
+            }
+            ctx.lineTo(polygon_points[0]+50, height-polygon_points[1]-50)
+
+            ctx.fillStyle = car_color
+            ctx.fill()
+            ctx.closePath()
+        }
+    }
 
     function initialize(color, parameters){
 
@@ -61,7 +99,7 @@ Item {
         }
 
         car_canvas.width = 2 * (max_x - min_x + 50)
-        car_canvas.height = 2 * (max_y - min_y + 50)  
+        car_canvas.height = 2 * (max_y - min_y + 50)
     }
 
     function transformX(x){
@@ -74,45 +112,7 @@ Item {
 
     function move(new_position){
         body.x = transformX(new_position[0])
-        body.y = transformY(new_position[1])        
+        body.y = transformY(new_position[1])
         car_rotation.angle = new_position[2]
-    }
-
-    transform: Rotation {
-        id: car_rotation
-        origin.x: parent.x;
-        origin.y: parent.y;
-        angle: 0
-    }
-
-    Canvas {
-        id: car_canvas
-
-        onPaint: {
-            var ctx = getContext("2d");
-
-//            ctx.fillStyle = Qt.rgba(1, 0, 0, 1);
-//            ctx.strokeRect(0, 0, width, height);
-
-            // wheels
-            ctx.beginPath()
-            ctx.arc(front_x+50, height-front_y-50, front_r, 0, 2*Math.PI, false)
-            ctx.arc(rear_x+50, height-rear_y-50, rear_r, 0, 2*Math.PI, false)
-            ctx.fillStyle = Qt.rgba(0.25, 0.25, 0.25, 1);
-            ctx.fill()
-            ctx.closePath()
-
-            //body
-            ctx.beginPath()
-            ctx.moveTo(polygon_points[0]+50, height-polygon_points[1]-50)
-            for(var i=2; i<polygon_points.length; i+=2){
-                ctx.lineTo(polygon_points[i]+50, height-polygon_points[i+1]-50)
-            }
-            ctx.lineTo(polygon_points[0]+50, height-polygon_points[1]-50)
-
-            ctx.fillStyle = car_color
-            ctx.fill()
-            ctx.closePath()
-        }
     }
 }

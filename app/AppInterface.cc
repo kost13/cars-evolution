@@ -1,3 +1,6 @@
+// module: App
+// author: Lukasz Kostrzewa
+
 #include "AppInterface.h"
 
 #include <QUrl>
