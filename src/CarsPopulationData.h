@@ -1,3 +1,6 @@
+// module: Core
+// author: Lukasz Kostrzewa
+
 #ifndef CARSPOPULATIONDATA_H
 #define CARSPOPULATIONDATA_H
 
@@ -9,6 +12,11 @@
 
 namespace cer {
 
+///
+/// \brief The CarsPopulationData class is a wrapper for the ParametersMatrix
+/// The CarsPopulationData class allows to use ParametersMatrix in the thread
+/// safe way. All methods are thread safe.
+///
 class CarsPopulationData {
  public:
   CarsPopulationData();

@@ -1,56 +1,74 @@
+// module: Core.Physics
+// author: Marcin Gajewski
+
 #include "World.h"
 
 #include <cpputils/logger.hpp>
 
+#include "Car.h"
 #include "CarsPopulationData.h"
 #include "SimulationData.h"
 
-namespace logger = cpputils::log;  // not used so far
+namespace logger = cpputils::log;
 
-// constructor
+// constructor, here is initialized physics engine and created track.
 cer::physics::World::World(const cer::CarsPopulationData& population,
                            cer::SimulationData* simulation_data)
     : population_(population), simulation_data_(simulation_data) {
-  // the scene is initiated
+  // the scene is initiated with gravity vector
   b2Vec2 gravity;
-  gravity.Set(settings.gravity_x, settings.gravity_y);
-  m_world = std::make_unique<b2World>(gravity);
-
-  // b2BodyDef bodyDef;
-  // m_groundBody = m_world->CreateBody(&bodyDef);
+  gravity.Set(0, -10.0);
+  world_ = std::make_unique<b2World>(gravity);
 
   b2Body* ground = nullptr;
   {
+    // track is created
     b2BodyDef bd;
     bd.type = b2_staticBody;
-    ground = m_world->CreateBody(&bd);
+    ground = world_->CreateBody(&bd);
 
     b2EdgeShape shape;
 
     b2FixtureDef fd;
     fd.shape = &shape;
-    fd.density = settings.ground_density;
-    fd.friction = settings.ground_friction;
-    /*fd.filter.categoryBits = 0x0001;
+    fd.density = 0.0f;
+    fd.friction = 0.6f;
     fd.filter.maskBits = 0x0002;
-    */
+    fd.filter.categoryBits = 0x0001;
 
-    const int size = 20;  // settings.number_of_stages;
-    const float dx = settings.stage_width_x;
+    const int size = 100;  // settings.number_of_stages;
+    const float dx = 2;
 
-    // start is at flat plate, size 4*dx, on the ground level
-    shape.Set(b2Vec2(-2 * dx, 0.0f), b2Vec2(2 * dx, 0.0f));
+    // create high wall at the left end of the track
+    shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(-5 * dx, 5 * dx));
     ground->CreateFixture(&fd);
+    // loading points of track to send it to the visualisation module
+    route_.emplace_back(-5 * dx, 5 * dx);  // wall at the left end
 
-    float x = 2 * dx;
+    // start is at flat plate, size 10*dx, on the ground level
+    shape.Set(b2Vec2(-5 * dx, 0.0f), b2Vec2(5 * dx, 0.0f));
+    ground->CreateFixture(&fd);
+    route_.emplace_back(-5 * dx, 0);  // starting plate left end
+    route_.emplace_back(5 * dx, 0);   // starting plate right end
+
+    // on the right end of the starting plate
+    // a bumpy track is created, starting from (5dx,0) point
+    float x = 5 * dx;
     float y1 = 0.0f;
 
-    // można potem zamienić na wektor, jak zdecydujemy
-    // gdzie to przechowujemy
-
-    float hs[size] = {1.0f, 0.3f,   0.4f,  -1.0f, -0.2f,  0.8f, 0.4f,
-                      0.5f, -0.25f, 0.0f,  0.1f,  -0.1f,  0.3f, 0.0f,
-                      0.0f, -0.1f,  -0.2f, -0.5f, -0.25f, 0.0f};
+    // vector holding y positions of next points of the track
+    // x position change is constant step defined in the settings file
+    float hs[size] = {
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+        1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+        0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
 
     // float hs[size];
 
@@ -61,290 +79,91 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
       ground->CreateFixture(&fd);
       y1 = y2;
       x += dx;
+      route_.emplace_back(x, y1);  // loading road
     }
 
     // wall at the end
     // remove if track could be extended
-
-    shape.Set(b2Vec2(x, 0.0f), b2Vec2(x, 2 * dx));
+    shape.Set(b2Vec2(x - dx, 0.0f), b2Vec2(x - dx, 100 * dx));
     ground->CreateFixture(&fd);
-
-    route.emplace_back(-2 * dx, 2 * dx);
-    route.emplace_back(-2 * dx, 0);
-    route.emplace_back(2 * dx, 0);
-
-    double x_ = 2 * dx;
-    double y_;
-    // saving road
-    for (int k = 0; k < settings.number_of_stages; k++) {
-      x_ += dx;
-      y_ = hs[k];
-      route.emplace_back(x_, y_);
-    }
-
-    x_ += dx;
-    route.emplace_back(x_, 0);
-    route.emplace_back(x_, 2 * dx);
-
-    for (int k = 0; k < 25; k++) {
-      std::cout << "x: " << route[k].first << std::endl
-                << "y: " << route[k].second << std::endl;
-    }
+    route_.emplace_back(x - dx, 0);
+    route_.emplace_back(x - dx, 100 * dx);
   }
 }
 
-std::vector<std::pair<double, double>> cer::physics::World::getRoute() {
-  return route;
+std::vector<std::pair<double, double>> cer::physics::World::getRoute() const {
+  return route_;
 }
 
-std::vector<b2Body*> cer::physics::World::generateCars() {
+void cer::physics::World::generateCars() {
+  // clear existing cars
+  for (auto& c : cars_) {
+    c->deleteFromWorld();
+  }
+  cars_.clear();
+
   // number of cars in simulation
-  static const size_t car_No = 1;  // population_.cars().carsNum();
-  // static const int BODY_POINTS_NUM =
-  // (population_.cars().parametersNum()-2)/2;
-  static const int BODY_POINTS_NUM = 8;
+  static const size_t car_No = population_.cars().carsNum();
 
-  std::cout << "Body points:" << BODY_POINTS_NUM << std::endl;
   // vector of cars
-  std::vector<b2Body*> cars;
-  auto parametersMatrix = population_.cars();
 
-  std::vector<double>::iterator it;
+  // loading parametersMatrix from evoultion module
+  auto parametersMatrix = population_.cars();
 
   // for each car
   for (size_t i = 0; i < car_No; i++) {
-    b2Body* m_car;
-    b2Body* m_wheel1;
-    b2Body* m_wheel2;
-    b2WheelJoint* m_spring1;
-    b2WheelJoint* m_spring2;
-
-    b2PolygonShape chassis;
-    b2Vec2 vertices[BODY_POINTS_NUM];
-    b2CircleShape circle_front;
-    b2CircleShape circle_rear;
-    b2BodyDef bd;
-    b2FixtureDef fdc;
-    b2WheelJointDef jd;
-
-    Car car_t;  // temporary object
-
-    car_t.car_num = i;
-
-    // radiuses of wheels are saved
-    it = parametersMatrix.begin(i);
-    circle_front.m_radius = *it;
-    it++;
-    circle_rear.m_radius = *it;
-    it++;
-
-    std::cout << "r1: " << circle_front.m_radius
-              << "r2: " << circle_rear.m_radius << std::endl;
-
-    // body point coordinates
-    double x_;
-    double y_;
-
-    // coordinates of wheels are set later
-    double wheel1_x = 0;
-    double wheel1_y = 0;
-
-    double wheel2_x = 0;
-    double wheel2_y = 0;
-
-    // shape of a car
-
-    int j;
-    for (it = parametersMatrix.begin(i) + 2, j = 0;
-         it != parametersMatrix.end(i) - 1 && j < BODY_POINTS_NUM; ++it, ++j) {
-      x_ = *it;  //+10.0f;
-      ++it;
-      y_ = *it;  //+25.0f;
-      logger::info() << x_ << " " << y_;
-      std::cout << "x: " << x_ << "y: " << y_ << std::endl;
-      vertices[j].Set(x_, y_);
-
-      /*there is no method for getting coordinates from vertices
-      so it is better to save them*/
-      if (j == settings.wheel1_point_no) {
-        wheel1_x = x_;
-        wheel1_y = y_;
-      }
-
-      if (j == settings.wheel2_point_no) {
-        wheel2_x = x_;
-        wheel2_y = y_;
-      }
-    }
-
-    chassis.Set(vertices, BODY_POINTS_NUM);
-
-    // jezeli koło nie bedzie sie krecic to ten blok skopiowac
-    // do wheel 2
-
-    bd.type = b2_dynamicBody;
-    bd.position.Set(settings.starting_position_x, settings.starting_position_y);
-    m_car = m_world->CreateBody(&bd);
-
-    m_car->CreateFixture(&chassis, 1.0f);
-    fdc.filter.categoryBits = 0x0002;  // jak przypisać maski itd.
-    fdc.filter.maskBits = 0x0001;
-
-    b2Vec2 axis(settings.starting_position_x, settings.starting_position_y);
-
-    // wheel 1
-
-    fdc.shape = &circle_front;
-    fdc.density = settings.wheel1_density;
-    fdc.friction = settings.wheel1_friction;
-
-    bd.position.Set(wheel1_x, wheel1_y);  // wheel position
-    m_wheel1 = m_world->CreateBody(&bd);
-    fdc.filter.categoryBits = 0x0002;
-    fdc.filter.maskBits = 0x0001;
-    m_wheel1->CreateFixture(&fdc);
-
-    jd.Initialize(m_car, m_wheel1, m_wheel1->GetPosition(), axis);
-    jd.motorSpeed = settings.motor1_speed;
-    jd.maxMotorTorque = settings.motor1_maxTorque;
-    jd.enableMotor = settings.motor1_enable;
-    //       car_t.jd.frequencyHz = settings.motor1_frequencyHz;
-    jd.damping = settings.wheel1_dampingRatio;
-    m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&jd);
-
-    // wheel 2
-    // m_car->CreateFixture(&car_t.chassis, 1.0f);
-    fdc.shape = &circle_rear;
-    fdc.density = settings.wheel2_density;
-    fdc.friction = settings.wheel2_friction;
-
-    fdc.filter.categoryBits = 0x0002;
-    fdc.filter.maskBits = 0x0001;
-
-    bd.position.Set(wheel2_x, wheel2_y);  // wheel position
-    m_wheel2 = m_world->CreateBody(&bd);
-    m_wheel2->CreateFixture(&fdc);
-
-    jd.Initialize(m_car, m_wheel2, m_wheel2->GetPosition(), axis);
-    jd.motorSpeed = settings.motor2_speed;
-    jd.maxMotorTorque = settings.motor2_maxTorque;
-    jd.enableMotor = settings.motor2_enable;
-    //        car_t.jd.frequencyHz = settings.motor2_frequencyHz;
-    jd.damping = settings.wheel2_dampingRatio;
-    m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&jd);
-
-    car_t.iter_stopped = 0;  // simualtion management default parameter
-    car_t.stopped = 0;       // simualtion management default parameter
-    // car_t.mass_center=
-
-    printf("%d \n", car_t.car_num);
-
-    cars.push_back(m_car);
+    std::vector<double> parametersVector(parametersMatrix.begin(i),
+                                         parametersMatrix.end(i));
+    cars_.push_back(std::make_unique<Car>(world_.get(), parametersVector, i));
   }
-
-  return cars;
 }
 
 bool cer::physics::World::runSimulation() {
   auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
-/* for dummy simulation
-auto cars_num = population_.cars().carsNum();
-simulation_data_->reset(cars_num);
-*/
 
-/*
-// dummy simulation
-std::vector<float> speeds(cars_num);
-for (auto &s : speeds) {
-  s = float(rand() % 10);
-}
-*/
-
-#if defined(_WIN32)
-  // Enable memory-leak reports
-  _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
-#endif
-
-  float timeStep =
-      settings.m_hertz > 0.0f ? 1.0f / settings.m_hertz : float(0.0f);
-
-  // m_world->SetAllowSleeping(settings.m_enableSleep);
-  m_world->SetWarmStarting(settings.m_enableWarmStarting);
-  m_world->SetContinuousPhysics(settings.m_enableContinuous);
-  m_world->SetSubStepping(settings.m_enableSubStepping);
+  float timeStep = 1.0f / 60;
 
   // creating physical car objects
   //'population_' was assigned in constructor
-  std::vector<b2Body*> cars = generateCars();
-  bool stop = 0;  // flag for simulation control
+  generateCars();
+
+  bool stop = false;  // flag for simulation control
   int iter = 0;
-  int flag_stop = 0;
+  int flag_stop = 0;  // 1 if one of cars reached ending
 
-  std::vector<b2Body*>::iterator it;
-
-  b2Vec2 position;
+  // used for simualtion control
   b2Vec2 last_position;
   b2Vec2 diff_position;  // for b2vec2 only -= operator is defined
   last_position.SetZero();
-  float angle;
-  float mass_x;
-  float mass_y;
-  // int cars_not_moving;
 
-  std::vector<Car> cars_struct;
+  while (!stop && iter < 30000) {
+    world_->Step(timeStep, 8, 3);
 
-  for (size_t i = 0; i < cars.size(); i++) {
-    Car car(i);
-    cars_struct.push_back(car);
-  }
-  std::vector<Car>::iterator it2;
+    // for each car
+    for (const auto& car : cars_) {
+      b2Vec2 position = car->getRearWheelPos();
+      float angle = car->getAngle();
+      float correctionAngle = car->getCorrectionAngle();
+      float correctionSection = (car->getCorrectionSection());
 
-  b2Vec2 axis(settings.starting_position_x, settings.starting_position_y);
-  for (it = cars.begin(), it2 = cars_struct.begin();
-       it != cars.begin() + 1 /*cars.end()*/; ++it, ++it2) {
-    it2->mass_center = ((*it)->GetLocalCenter());
-    printf("Nr: %d    (%4.2f, %4.2f)= (%4.2f, %4.2f)-(%4.2f, %4.2f)\n",
-           it2->car_num, (it2->mass_center).x, (it2->mass_center).y,
-           ((*it)->GetLocalCenter()).x, ((*it)->GetLocalCenter()).y, axis.x,
-           axis.y);
-  }
+      Position position_ = {position.x, position.y,
+                            -angle /*+ (correctionAngle / 2)*/};
+      simulation_data_->pushPosition(car->getCarNum(), position_);
 
-  while (!stop && iter < settings.sim_max_iter) {
-    // simulate computations
-    //    logger::info() << "runSimulation" << j;
+      // maximal reached distance
+      if (position_.x > car->getMaximalDistanceReached()) {
+        car->setMaximalDistanceReached(position_.x);
+      }
 
-    /*for each car
-     *jeżeli tak zdecydujemy, to można nie liczyć dla samochodów
-     *które mają status zatrzymanych*/
-
-    // pamietac, poprawic to +1 te powyzej
-    for (it = cars.begin(), it2 = cars_struct.begin();
-         it != cars.begin() + 1 /*cars.end()*/; ++it, ++it2) {
-      m_world->Step(timeStep, settings.m_velocityIterations,
-                    settings.m_positionIterations);
-
-      position = (*it)->GetPosition();
-      angle = (*it)->GetAngle();
-      mass_x = (*it2).mass_center.x;
-      mass_y = (*it2).mass_center.y;
-
-      Position position_ = {position.x - mass_x, position.y - mass_y, angle};
-      if (position_.x > 215 && position_.y > -5) {
-        std::cout << "dojechales kurwa do konca" << std::endl;
+      // check if any car reached ending
+      // later parameters can be taken to the settings struct
+      if (position_.x > 200 && position_.y > -5) {
+        logger::info() << "Car " << car->getCarNum()
+                       << "has reached the end of the track" << std::endl;
         flag_stop = 1;
         break;
       }
-
-      // printf("%d\n",iter/10);
-      // if(iter==0){
-      printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x, position_.y,
-             position_.theta);
-      // printf("%d %4.2f %4.2f %4.2f\n", it2->car_num, position_.x + mass_x,
-      //      position_.y + mass_y, position_.theta);
-      //}
-
-      simulation_data_->pushPosition(it2->car_num, position_);
 
       /* checks if car is moving in our definition and
        * if can be counted as stopped.
@@ -357,31 +176,37 @@ for (auto &s : speeds) {
       diff_position = position;
       diff_position -= last_position;  // for b2vec2 only -= operator is defined
 
-      if (diff_position.Length() < settings.minimumLength_of_vector)
-        (it2->iter_stopped)++;
-      else
-        it2->iter_stopped = 0;
+      int pom = car->GetIterStopped();
+      if (diff_position.Length() < 5) {
+        ++pom;
+      } else {
+        pom = 0;
+      }
+      car->setIterStopped(pom);
 
       position = last_position;
 
-      if (it2->iter_stopped > settings.max_car_iter)  // flaga up
-        it2->stopped = 1;
+      if (car->GetIterStopped() > 10000) {  // flag up
+        car->setStopped(true);
+      }
 
       iter++;
 
     }  // for each car
 
-    if (flag_stop) break;
+    if (flag_stop != 0) {
+      break;
+    }
 
     // Checks if any car is moving.
     // If not, 'stop' will be left with value 1 and simualtion stopped.
-
-    stop = 1;
-    for (it2 = cars_struct.begin(); it2 != cars_struct.end(); it2++)
-      if (!it2->stopped) {
-        stop = 0;
+    stop = true;
+    for (const auto& car : cars_) {
+      if (!car->getStopped()) {
+        stop = false;
         break;
       }
+    }
 
   }  // simulation loop 'while'
 
@@ -392,18 +217,39 @@ bool cer::physics::World::runDummySimulation() {
   auto cars_num = population_.cars().carsNum();
   simulation_data_->reset(cars_num);
 
-  std::vector<float> speeds(cars_num);
-  for (auto& s : speeds) {
-    s = float(rand() % 10);
+  const int size = 100;  // settings.number_of_stages;
+  const float dx = 2;
+
+  float x = 5 * dx;
+  float y1 = 0.0f;
+
+  float hs[size] = {
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
+
+  for (float y2 : hs) {
+    auto p = Position{x, y2, float(x * b2_pi) / 180.0f};
+    simulation_data_->pushPosition(1, p);
+
+    x += dx;
   }
-  for (int j = 0; j < 200; ++j) {
-    {
-      for (size_t i = 0; i < cars_num; ++i) {
-        simulation_data_->pushPosition(
-            i, Position{(0.05f * speeds[i] + 1.0f) * j, 0.5,
-                        speeds[i] * 0.1f * j});
-      }
-    }
-  }
+
   return true;
+}
+
+std::vector<double> cer::physics::World::maxDistanceReached() const {
+  std::vector<double> distance_reached;
+  for (const auto& car : cars_) {
+    distance_reached.push_back(double(car->getMaximalDistanceReached()));
+  }
+
+  return distance_reached;
 }

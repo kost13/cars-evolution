@@ -1,20 +1,20 @@
+// module: Core
+// author: Lukasz Kostrzewa, Marcin Gajewski
+
 #include "CarsEvolutionRoot.h"
 
-#include <cpputils/logger.hpp>
-
+#include "CarsPopulationData.h"
 #include "Evolution/Evolution.h"
 #include "Physics/World.h"
-
-#include "CarsPopulationData.h"
 #include "SimulationData.h"
 
+#include <algorithm>
+
 struct cer::CarsEvolutionRoot::Opaque {
-  explicit Opaque(CarsEvolutionRoot *parent)
+  explicit Opaque(CarsEvolutionRoot *parent, int seed)
       : p_(parent),
         world_(cars_population_, &simulation_data_),
-        evolution_(&cars_population_) {
-    srand(time(nullptr));
-  }
+        evolution_(&cars_population_, seed) {}
 
   CarsEvolutionRoot *p_;
   CarsPopulationData cars_population_;
@@ -23,16 +23,29 @@ struct cer::CarsEvolutionRoot::Opaque {
   evolution::Evolution evolution_;
 };
 
-cer::CarsEvolutionRoot::CarsEvolutionRoot()
-    : o_(std::make_unique<Opaque>(this)) {}
+cer::CarsEvolutionRoot::CarsEvolutionRoot(int seed)
+    : o_(std::make_unique<Opaque>(this, seed)) {}
 
 void cer::CarsEvolutionRoot::generatePopulation() {
+  auto fitness = o_->world_.maxDistanceReached();
+
+  if (!fitness.empty()) {
+    o_->evolution_.setPopulationFitness(fitness);
+  }
   o_->evolution_.generatePopulation();
 }
 
 cer::CarsEvolutionRoot::~CarsEvolutionRoot() = default;
 
-void cer::CarsEvolutionRoot::runSimulation() { o_->world_.runSimulation(); /*o_->world_.runDummySimulation();*/ }
+void cer::CarsEvolutionRoot::runSimulation() {
+  o_->world_.runSimulation();
+  // o_->world_.runDummySimulation();
+}
+
+double cer::CarsEvolutionRoot::getBestDistance() {
+  auto distances = o_->world_.maxDistanceReached();
+  return *std::max_element(distances.begin(), distances.end());
+}
 
 cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {
   return o_->cars_population_.cars();
@@ -40,6 +53,16 @@ cer::ParametersMatrix cer::CarsEvolutionRoot::cars() const {
 
 void cer::CarsEvolutionRoot::setCars(const cer::ParametersMatrix &cars) {
   o_->cars_population_.setCars(cars);
+}
+
+std::map<std::string, cer::evolution::Parameter>
+cer::CarsEvolutionRoot::parameters() const {
+  return o_->evolution_.parameters();
+}
+
+void cer::CarsEvolutionRoot::setParameterValue(const std::string &name,
+                                               double val) {
+  o_->evolution_.setParameterValue(name, val);
 }
 
 cer::Position cer::CarsEvolutionRoot::popPosition(size_t car_index) {

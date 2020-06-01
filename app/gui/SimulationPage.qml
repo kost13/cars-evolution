@@ -11,14 +11,15 @@ Item {
 
         RowLayout {
             id: row_layout
-            anchors.fill: parent
             spacing: 10
+            Layout.preferredHeight: parent.height * 0.5
+            Layout.alignment: Qt.AlignTop
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
             MainMenu {
                 id: main_menu
-                anchors.top: parent.top
+                Layout.alignment: Qt.AlignTop
             }
 
             ColumnLayout {
@@ -27,12 +28,20 @@ Item {
                     id: simulation_window
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 300
-
-                    anchors.top: parent.top
+                    Layout.preferredHeight: row_layout.height * 0.9
+                    Layout.alignment: Qt.AlignTop
 
                     onNewBestPosition: {
                         cars_distance_summary.cars_distance = xPosition
+                    }
+
+                    onNewGlobalBestPosition: {
+                        cars_global_distance_summary.cars_distance = xPosition
+                    }
+
+                    onAnimationFinished: {
+                        chartView.updateChart(bestCarIndex)
+                        newSimulationTimer.start()
                     }
                 }
 
@@ -55,6 +64,11 @@ Item {
                         id: cars_distance_summary
                         property var cars_distance: 0
                         text: "Dystans: " + cars_distance.toFixed(2)
+                    }
+                    Text {
+                        id: cars_global_distance_summary
+                        property var cars_distance: 0
+                        text: "Najlepszy dystans: " + cars_distance.toFixed(2)
                     }
                 }
 
@@ -89,7 +103,7 @@ Item {
                 }
 
                 model: PopulationModel
-                delegate: populatioDelegate
+                delegate: populationDelegate
 
                 ScrollBar {
                     id: populationScrollBar
@@ -97,11 +111,11 @@ Item {
                 }
 
                 Component {
-                    id: populatioDelegate
+                    id: populationDelegate
 
                     Row {
                         spacing: 5
-                        width: parent.width
+                        width: parametersList.width
                         height: 35
 
                         Text {
@@ -136,7 +150,7 @@ Item {
                             CarDetailsPopup {
                                 id: popup
                                 x: 30
-                                y: 0
+                                y: -100
                                 car_num: model.number - 1
                             }
                         }
@@ -146,8 +160,8 @@ Item {
 
             ChartView {
                 id: chartView
-                title: "Cars position"
-                legend.visible: false
+                title: "Parameters"
+
                 antialiasing: true
 
                 Layout.fillWidth: true
@@ -155,36 +169,35 @@ Item {
 
                 ValueAxis {
                     id: axisX
-                    titleText: "X"
+                    min: 1
+                    titleText: "Simulation number"
                 }
 
                 ValueAxis {
                     id: axisY
-                    titleText: "Y"
+                    titleText: "Parameter Values"
                 }
 
-                LineSeries {
-                    id: s1
+                ScatterSeries {
+                    id: car_rear_wheel_size
+                    axisX: axisX
+                    axisY: axisY                    
+                    name: "Rear wheel"
+                }
+
+                ScatterSeries {
+                    id: car_front_wheel_size
                     axisX: axisX
                     axisY: axisY
+                    name: "Front wheel"
                 }
 
-                LineSeries {
-                    id: s2
-                    axisX: axisX
-                    axisY: axisY
-                }
-
-                function updateChart(i, x, y){
-                    if(i === 0){
-                        s1.append(x,y)
-                        chartView.axisX(s1).max = x;
-                        chartView.axisY(s1).max = y;
-                    } else if(i === 1){
-                        s2.append(x,y)
-                        chartView.axisX(s2).max = x;
-                        chartView.axisY(s2).max = y;
-                    }
+                function updateChart(i){
+                   var parameters = PopulationModel.parameters(i)
+                   car_rear_wheel_size.append(generation_summary.generation_number, parameters[0])
+                   car_front_wheel_size.append(generation_summary.generation_number, parameters[1])
+                   axisX.max = generation_summary.generation_number + 1
+                   axisY.max = Math.max(axisY.max, parameters[0]*1.2, parameters[1]*1.2)
                 }
             }
         }
@@ -196,5 +209,13 @@ Item {
         running: false
         repeat: true
         onTriggered: simulation_window.updateCarPosition()
+     }
+
+    Timer {
+        id: newSimulationTimer
+        interval: 1000
+        running: false
+        repeat: false
+        onTriggered: AppInterface.startSimulation()
      }
 }

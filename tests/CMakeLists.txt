@@ -39,3 +39,8 @@ target_link_libraries(${PHYSICS_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UN
 set(EVOLUTION_TESTS_NAME evolution_tests)
 add_executable(${EVOLUTION_TESTS_NAME} EvolutionTests.cc)
 target_link_libraries(${EVOLUTION_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+set(INTEGRATION_TESTS integration_tests)
+add_executable(${INTEGRATION_TESTS} IntegrationTests.cc)
+target_link_libraries(${INTEGRATION_TESTS} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+

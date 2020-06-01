@@ -1,28 +1,35 @@
+// module: Core.Evolution
+// author: Lukasz Kostrzewa
+
 #include "MathUtils.h"
 
 #include <algorithm>
 #include <random>
-
-namespace {
-std::random_device rd{};
-std::mt19937 gen{rd()};
-}
+#include <stdexcept>
 
 using cer::evolution::math::iterator;
 
-cer::evolution::math::RandomGenerator::RandomGenerator(double std)
-    : std_(std) {}
+cer::evolution::math::RandomGenerator::RandomGenerator(int seed)
+    : seed_(seed) {}
+
+cer::evolution::math::RandomGenerator::RandomGenerator(double std, int seed)
+    : std_(std), seed_(seed) {}
 
 void cer::evolution::math::RandomGenerator::setStd(double std) { std_ = std; }
 
 double cer::evolution::math::RandomGenerator::operator()(double v) const {
-  return std::normal_distribution<double>{v, std_}(gen);
+  std::mt19937 generator(seed_);
+  return std::normal_distribution<double>{v, std_}(generator);
 }
 
 std::vector<double> cer::evolution::math::crossover(iterator p1_first,
                                                     iterator p1_last,
                                                     iterator p2_first,
                                                     iterator p2_last) {
+  if (std::distance(p1_first, p1_last) != std::distance(p2_first, p2_last)) {
+    throw std::invalid_argument("Crossover vectors sizes don't match");
+  }
+
   std::vector<double> child;
   child.reserve(std::distance(p1_first, p1_last));
   for (; p1_first != p1_last && p2_first != p2_last; ++p1_first, ++p2_first) {
@@ -34,8 +41,12 @@ std::vector<double> cer::evolution::math::crossover(iterator p1_first,
 
 void cer::evolution::math::mutate(iterator first, iterator last,
                                   const RandomGenerator &rg) {
+  auto l = lowerLimits(std::distance(first, last));
+  auto u = upperLimits(std::distance(first, last));
+  int k{0};
   for (; first != last; ++first) {
-    *first = rg(*first);
+    *first = std::min(u[k], std::max(rg(*first), l[k]));
+    ++k;
   }
 }
 
@@ -54,4 +65,18 @@ std::vector<size_t> cer::evolution::math::tournamentSelection(
     res.push_back(*selected);
   }
   return res;
+}
+
+std::vector<double> cer::evolution::math::lowerLimits(
+    std::size_t params_count) {
+  auto v = std::vector<double>(params_count, 0.0);
+  if (params_count > 1) {
+    v[0] = v[1] = 0.01;
+  }
+  return v;
+}
+
+std::vector<double> cer::evolution::math::upperLimits(
+    std::size_t params_count) {
+  return std::vector<double>(params_count, 3.0);
 }

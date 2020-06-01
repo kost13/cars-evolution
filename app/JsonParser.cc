@@ -22,6 +22,7 @@ QJsonArray carParametersToJson(const cer::ParametersMatrix &parameters) {
 
     QJsonObject params{{"front_wheel", *it}, {"rear_wheel", *(++it)}};
     QJsonArray points;
+    ++it;
     for (; it != end; ++it) {
       points.append(*it);
     }

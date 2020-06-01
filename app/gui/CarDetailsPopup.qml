@@ -18,5 +18,8 @@ Popup {
         var parameters = PopulationModel.parameters(car_num)
         var color = PopulationModel.color(car_num)
         carModel.initialize(color, parameters)
+        var size = carModel.shrinkToMinimumSize()
+        width = size[0]
+        height = size[1]
     }
 }
