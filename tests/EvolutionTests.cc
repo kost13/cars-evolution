@@ -1,4 +1,3 @@
-#define BOOST_TEST_MODULE
 #include <boost/test/unit_test.hpp>
 
 #include <iostream>
@@ -18,6 +17,8 @@ BOOST_AUTO_TEST_CASE(evolution_test) {
   BOOST_CHECK(!pd.cars().empty());
 
   auto population = pd.cars();
+
+  ev.setPopulationFitness(std::vector<double>(population.carsNum(), 1.0));
 
   ev.generatePopulation();
   BOOST_CHECK_EQUAL(pd.cars().size(), population.size());
