@@ -28,17 +28,16 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 include_directories(../src)
 
-set(CORE_TESTS_NAME core_tests)
-add_executable(${CORE_TESTS_NAME} CarsEvolutionCoreTests.cc)
-target_link_libraries(${CORE_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
-set(PHYSICS_TESTS_NAME physics_tests)
-add_executable(${PHYSICS_TESTS_NAME} PhysicsTests.cc)
-target_link_libraries(${PHYSICS_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+if(CMAKE_BUILD_TYPE MATCHES Debug AND CMAKE_COMPILER_IS_GNUCXX)
+    SET(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
+    SET(CMAKE_C_FLAGS "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
+    SET(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
+endif()
 
-set(EVOLUTION_TESTS_NAME evolution_tests)
-add_executable(${EVOLUTION_TESTS_NAME} EvolutionTests.cc)
-target_link_libraries(${EVOLUTION_TESTS_NAME} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+set(UNIT_TESTS unit_tests)
+add_executable(${UNIT_TESTS} Main.cc CarsEvolutionCoreTests.cc PhysicsTests.cc EvolutionTests.cc)
+target_link_libraries(${UNIT_TESTS} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set(INTEGRATION_TESTS integration_tests)
 add_executable(${INTEGRATION_TESTS} IntegrationTests.cc)
