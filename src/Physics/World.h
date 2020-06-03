@@ -41,12 +41,6 @@ class World {
   bool runSimulation();
 
   ///
-  /// \brief runDummySimulation
-  /// \return execution status
-  /// method helpful for calibration of the animation with physics simualtion
-  bool runDummySimulation();
-
-  ///
   /// \brief getRoute
   /// \return vector of points creating the track
   ///
