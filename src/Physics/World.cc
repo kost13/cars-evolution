@@ -72,10 +72,7 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
       1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
       0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
 
-  // float hs[size];
-
   for (unsigned int i = 0; i < size; ++i) {
-    // h[i]=RandomFloat(-5.0f,5.0f)
     float y2 = hs[i];
     shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, y2));
     ground->CreateFixture(&fd);
@@ -139,7 +136,7 @@ bool cer::physics::World::runSimulation() {
   b2Vec2 diff_position;  // for b2vec2 only -= operator is defined
   last_position.SetZero();
 
-  while (!stop && iter < 30000) {
+  while (!stop && iter < 20000) {
     world_->Step(timeStep, 8, 3);
 
     // for each car
@@ -179,7 +176,7 @@ bool cer::physics::World::runSimulation() {
       diff_position -= last_position;  // for b2vec2 only -= operator is defined
 
       int pom = car->GetIterStopped();
-      if (diff_position.Length() < 5) {
+      if (diff_position.Length() < 3) {
         ++pom;
       } else {
         pom = 0;
@@ -188,7 +185,7 @@ bool cer::physics::World::runSimulation() {
 
       position = last_position;
 
-      if (car->GetIterStopped() > 10000) {  // flag up
+      if (car->GetIterStopped() > 2000) {  // flag up
         car->setStopped(true);
       }
 
@@ -211,38 +208,6 @@ bool cer::physics::World::runSimulation() {
     }
 
   }  // simulation loop 'while'
-
-  return true;
-}
-
-bool cer::physics::World::runDummySimulation() {
-  auto cars_num = population_.cars().carsNum();
-  simulation_data_->reset(cars_num);
-
-  const int size = 100;  // settings.number_of_stages;
-  const float dx = 2;
-
-  float x = 5 * dx;
-  float y1 = 0.0f;
-
-  float hs[size] = {
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
-
-  for (float y2 : hs) {
-    auto p = Position{x, y2, float(x * b2_pi) / 180.0f};
-    simulation_data_->pushPosition(1, p);
-
-    x += dx;
-  }
 
   return true;
 }
