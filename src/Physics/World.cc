@@ -105,7 +105,7 @@ void cer::physics::World::generateCars() {
   cars_.clear();
 
   // number of cars in simulation
-  static const size_t car_No = population_.cars().carsNum();
+  const size_t car_No = population_.cars().carsNum();
 
   // vector of cars
 

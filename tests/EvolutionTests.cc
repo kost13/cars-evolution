@@ -36,6 +36,23 @@ BOOST_AUTO_TEST_CASE(evolution_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(evolution_test_random) {
+  cer::CarsPopulationData pd;
+  BOOST_CHECK(pd.cars().empty());
+
+  cer::evolution::Evolution ev(&pd);
+  ev.generatePopulation();
+  BOOST_CHECK(!pd.cars().empty());
+
+  auto population = pd.cars();
+
+  ev.generatePopulation();
+  BOOST_CHECK_EQUAL(pd.cars().size(), population.size());
+
+  ev.generatePopulation();
+  BOOST_CHECK_EQUAL(pd.cars().size(), population.size());
+}
+
 BOOST_AUTO_TEST_CASE(evolution_parameters_test) {
   cer::CarsPopulationData pd;
   cer::evolution::Evolution ev(&pd);
@@ -96,6 +113,12 @@ BOOST_AUTO_TEST_CASE(evolution_math_test) {
   math::mutate(parameters.begin(), parameters.end(), rg);
   auto l = math::lowerLimits(n);
   auto u = math::upperLimits(n);
+  for (size_t i = 0; i < n; ++i) {
+    BOOST_CHECK(u[i] >= parameters[i] && l[i] <= parameters[i]);
+  }
+
+  math::RandomGenerator rg2(0.1, -1);
+  math::mutate(parameters.begin(), parameters.end(), rg2);
   for (size_t i = 0; i < n; ++i) {
     BOOST_CHECK(u[i] >= parameters[i] && l[i] <= parameters[i]);
   }

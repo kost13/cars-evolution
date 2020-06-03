@@ -28,16 +28,15 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 include_directories(../src)
 
-
-if(CMAKE_BUILD_TYPE MATCHES Debug AND CMAKE_COMPILER_IS_GNUCXX)
-    SET(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
-    SET(CMAKE_C_FLAGS "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
-    SET(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
-endif()
-
 set(UNIT_TESTS unit_tests)
 add_executable(${UNIT_TESTS} Main.cc CarsEvolutionCoreTests.cc PhysicsTests.cc EvolutionTests.cc)
 target_link_libraries(${UNIT_TESTS} PRIVATE CarsEvolutionCore ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+if(CMAKE_BUILD_TYPE MATCHES Debug AND CMAKE_COMPILER_IS_GNUCXX)
+    target_compile_options(${UNIT_TESTS} PRIVATE -g -O0 -Wall -W -fprofile-arcs -ftest-coverage)
+    target_link_options(${UNIT_TESTS} PRIVATE -fprofile-arcs -ftest-coverage)
+    target_link_libraries(${UNIT_TESTS} PRIVATE gcov)
+endif()
 
 set(INTEGRATION_TESTS integration_tests)
 add_executable(${INTEGRATION_TESTS} IntegrationTests.cc)

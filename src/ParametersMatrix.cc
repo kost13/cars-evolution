@@ -24,6 +24,9 @@ void cer::ParametersMatrix::setCarParameters(std::size_t car_num,
   if (car_num >= carsNum()) {
     throw std::out_of_range("car number out of range");
   }
+  if (v.size() != params_num_) {
+    throw std::runtime_error("wrong parameters size");
+  }
   std::copy(v.begin(), v.end(), begin(car_num));
 }
 
