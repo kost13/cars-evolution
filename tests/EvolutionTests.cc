@@ -1,5 +1,5 @@
+#include <algorithm>
 #include <boost/test/unit_test.hpp>
-
 #include <iostream>
 #include <stdexcept>
 #include <vector>
