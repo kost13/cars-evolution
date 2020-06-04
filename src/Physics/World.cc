@@ -61,16 +61,16 @@ cer::physics::World::World(const cer::CarsPopulationData& population,
   // vector holding y positions of next points of the track
   // x position change is constant step defined in the settings file
   float hs[size] = {
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
-      1.0f, 0.3f,  0.4f, -1.0f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
-      0.1f, -0.1f, 0.3f, 0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
+      1.0f, 0.3f,  0.4f,  -1.0f, -0.2f, 0.5f,  1.4f,  0.5f,  -0.8f,  0.0f,
+      0.1f, -0.1f, 0.3f,  0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 0.3f,  0.4f,  -1.0f, -1.5f, -1.5f, 0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f,  0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 2.5f,  0.4f,  -1.5f, -0.2f, 0.5f,  0.4f,  0.5f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.4f,  -1.0f, -1.5f, -1.5f, -1.5f, -1.5f, 0.5f,   0.0f,
+      1.0f, 0.3f,  1.2f,  -1.0f, -2.0f, -2.5f, -1.4f, 0.6f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f,  0.0f,  -2.0f, -1.1f, -0.2f, -0.5f, -0.25f, 0.0f,
+      1.0f, 1.8f,  -2.4f, -2.5f, -2.2f, -1.8f, -1.2f, 0.0f,  -0.25f, 0.0f,
+      0.1f, -0.1f, 0.3f,  0.0f,  0.0f,  -0.1f, -0.2f, -0.5f, -0.25f, 0.0f};
 
   for (unsigned int i = 0; i < size; ++i) {
     float y2 = hs[i];
@@ -136,18 +136,15 @@ bool cer::physics::World::runSimulation() {
   b2Vec2 diff_position;  // for b2vec2 only -= operator is defined
   last_position.SetZero();
 
-  while (!stop && iter < 20000) {
+  while (!stop && iter < 30000) {
     world_->Step(timeStep, 8, 3);
 
     // for each car
     for (const auto& car : cars_) {
       b2Vec2 position = car->getRearWheelPos();
       float angle = car->getAngle();
-      float correctionAngle = car->getCorrectionAngle();
-      float correctionSection = (car->getCorrectionSection());
 
-      Position position_ = {position.x, position.y,
-                            -angle /*+ (correctionAngle / 2)*/};
+      Position position_ = {position.x, position.y, -angle};
       simulation_data_->pushPosition(car->getCarNum(), position_);
 
       // maximal reached distance
