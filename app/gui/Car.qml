@@ -19,8 +19,8 @@ Item {
     readonly property int no_progress_max_count: 5
     property int no_progress_count: no_progress_max_count
     property var active: true
-    property var dx: 50
-    property var dy: 50
+    property var dx: 100
+    property var dy: 100
 
     transform: Rotation {
         id: car_rotation
@@ -81,8 +81,8 @@ Item {
         }
 
         var boundries = find_boundires()
-        car_canvas.width = 2 * (boundries[1] - boundries[0] + dx)
-        car_canvas.height = 2 * (boundries[3] - boundries[2] + dy)
+        car_canvas.width = 3 * (boundries[1] - boundries[0] + dx)
+        car_canvas.height = 3 * (boundries[3] - boundries[2] + dy)
 
         car_rotation.origin.x = rear_x + dx
         car_rotation.origin.y = car_canvas.height-rear_y-dy
