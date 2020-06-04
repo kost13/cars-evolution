@@ -21,7 +21,7 @@ namespace evolution {
 ///
 struct Parameter {
   std::string accesible_name;
-  double value;
+  double value{};
   std::string description;
 };
 
