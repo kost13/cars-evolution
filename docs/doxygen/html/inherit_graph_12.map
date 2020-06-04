@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$dc/d4f/class_q_object.html" title="QObject" alt="" coords="5,56,76,83"/>
+<area shape="rect" id="node2" href="$d5/db5/class_app_builder.html" title="The AppBuilder class creates main app objects. " alt="" coords="129,5,215,32"/>
+<area shape="rect" id="node3" href="$d8/d9e/class_app_interface.html" title="The AppInterface class It creates an interface between the GUI and the logic model of the app..." alt="" coords="124,56,220,83"/>
+<area shape="rect" id="node4" href="$d9/d3f/class_file_i_o.html" title="The FileIO class allows to read the given file. " alt="" coords="143,107,201,133"/>
+</map>
