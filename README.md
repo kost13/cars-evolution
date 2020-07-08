@@ -1,9 +1,9 @@
-# Ewolucja pojazdów
+# Cars Evolution
 
 ## Dependencies
 - CMake >= 3.10
-- Qt  5.9.5 + QtQuick and QtQuick Controls
-- Boost 1.65
+- Qt >= 5.9.5 + QtQuick and QtQuick Controls
+- Boost >= 1.65
 - Windows: MSVC 14 (Microsoft Visual Studio Express for Dekstop 2015)
 
 For development
@@ -11,26 +11,13 @@ For development
 - clang-tidy
 
 ### Linux dependencies installation
-For Ubuntu 18.04 LTS
-```
-sudo apt-get install <PACKAGE>
-```
-packages
-```
-build-essential
-qt5-default
-qtdeclarative5-dev
-qml-module-qtquick-controls
-libboost-all-dev
-cmake
-```
+run *install.sh* script
 
-## Uruchomienie
-### pobranie plików
+### Repository setup
 ```
 git clone git@github.com:kost13/cars_evolution.git
 ```
-lub 
+or
 ```
 git clone https://github.com/kost13/cars_evolution
 ```
@@ -40,47 +27,21 @@ cd cars_evolution
 git submodule update --init
 ```
 
-### budowanie 
+### Building
+a) run *build.sh* from *scripts* <br/>
+b) run the following commands
+
 ```
 mkdir build && cd build
 cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<QT_PATH>
-```
-
-dodatkowe opcja, obie sa true:
-- BUILD_TESTS
-- BUILD_GUI
-
-np.
-```
-cmake -DBUILD_GUI=OFF ..
-```
-
-budowanie linux
-```
 cmake --build . --target all
 ```
-budowanie windows
-```
-cmake --build . --target BUILD_ALL
-```
 
-### uruchomienie
-```
-./build/src/CarsEvolution
-```
-
-### testy
-```
-./build/tests/core_tests
-./build/tests/evolution_tests
-./build/tests/physics_tests
-```
-
-## Zarzadzanie kodem
-Kod źródłowy jest formatowany za pomocą clang-format. \
-Jakość kodu jest sprawdzana za pomocą clang-tidy:
+## Code managements
+Source code is formated using clang-format. \
+Static code analysis is done using clang-tidy:
 *cppcoreguidelines, boost, google, misc, modernize, performance, readability*. \
-Opis: https://clang.llvm.org/extra/clang-tidy/#using-clang-tidy
+Description: https://clang.llvm.org/extra/clang-tidy/#using-clang-tidy
 
 ## Code style
 Consistent with https://google.github.io/styleguide/cppguide.html
