@@ -17,17 +17,17 @@ EvolutionSettingsModel::EvolutionSettingsModel(cer::CarsEvolutionRoot *root,
   }
 }
 
-int EvolutionSettingsModel::rowCount(const QModelIndex &parent) const {
+int EvolutionSettingsModel::rowCount(const QModelIndex & /*parent*/) const {
   return parameters_.size();
 }
 
-int EvolutionSettingsModel::columnCount(const QModelIndex &parent) const {
+int EvolutionSettingsModel::columnCount(const QModelIndex & /*parent*/) const {
   return 3;
 }
 
 QVariant EvolutionSettingsModel::data(const QModelIndex &index,
                                       int role) const {
-  if (!index.isValid() || index.row() >= parameters_.size()) {
+  if (!index.isValid() || size_t(index.row()) >= parameters_.size()) {
     return {};
   }
 
@@ -45,7 +45,7 @@ QVariant EvolutionSettingsModel::data(const QModelIndex &index,
 
 bool EvolutionSettingsModel::setData(const QModelIndex &index,
                                      const QVariant &value, int role) {
-  if (data(index, role) != value && index.row() < parameters_.size()) {
+  if (data(index, role) != value && size_t(index.row()) < parameters_.size()) {
     auto key = parameters_keys_[index.row()];
     parameters_[index.row()].value = value.toDouble();
     root_->setParameterValue(key, value.toDouble());
