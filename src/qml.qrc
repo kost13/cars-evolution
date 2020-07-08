@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>gui/main.qml</file>
-        <file>gui/qtquickcontrols2.conf</file>
-        <file>gui/Car.qml</file>
-    </qresource>
-</RCC>

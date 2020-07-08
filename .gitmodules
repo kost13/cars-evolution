@@ -1,6 +1,6 @@
 [submodule "box2d"]
-	path = box2d
-	url = https://github.com/erincatto/box2d
+	path = extern/box2d
+	url = https://github.com/kost13/box2d
 [submodule "CppUtils"]
-	path = CppUtils
+	path = extern/CppUtils
 	url = https://github.com/kost13/cpp-utils

@@ -1,0 +1,5 @@
+<map id="QObject" name="QObject">
+<area shape="rect" id="node2" href="$d5/db5/class_app_builder.html" title="The AppBuilder class creates main app objects. " alt="" coords="5,80,91,107"/>
+<area shape="rect" id="node3" href="$d8/d9e/class_app_interface.html" title="The AppInterface class It creates an interface between the GUI and the logic model of the app..." alt="" coords="115,80,211,107"/>
+<area shape="rect" id="node4" href="$d9/d3f/class_file_i_o.html" title="The FileIO class allows to read the given file. " alt="" coords="235,80,293,107"/>
+</map>
