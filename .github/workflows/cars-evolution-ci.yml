@@ -1,0 +1,27 @@
+name: cars-evolution-ci
+
+on: [push, pull_request]
+jobs:
+  linux_job:
+    name: linux_build
+    runs-on: ubuntu-latest      
+    container:
+      image: kost13/qt-cpp-base:5.12.8
+    strategy:
+      fail-fast: true
+        
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - name: install boost tests
+        run: apt-get install libboost-test-dev -y  
+      - name: build
+        run: |
+          mkdir -p build && cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --target all
+      - name: run_tests
+        run: |          
+          ./build/tests/unit_tests
+          ./build/tests/integration_tests
