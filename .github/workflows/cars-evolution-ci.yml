@@ -6,7 +6,7 @@ jobs:
     name: linux_build
     runs-on: ubuntu-latest      
     container:
-      image: kost13/qt-cpp-base:5.12.8
+      image: kost13/qt-cpp:5.12.8
     strategy:
       fail-fast: true
         
