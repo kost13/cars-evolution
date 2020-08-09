@@ -1,4 +1,5 @@
 # Cars Evolution
+![GitHub Actions](https://github.com/kost13/cars-evolution/workflows/cars-evolution-ci/badge.svg)
 
 ## Dependencies
 - CMake >= 3.10
